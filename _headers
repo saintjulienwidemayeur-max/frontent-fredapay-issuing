@@ -1,0 +1,28 @@
+# En-têtes de sécurité et de cache. Ce fichier doit rester à la racine du dossier publié (Netlify ou Cloudflare Pages).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self)
+
+# Espaces privés : jamais mis en cache ni indexés
+/dashboard
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/checkout
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+
+# Fichiers statiques qui changent rarement (le HTML garde le cache par défaut)
+/images/*
+  Cache-Control: public, max-age=604800
+/team/*
+  Cache-Control: public, max-age=604800
+/press-kit/*
+  Cache-Control: public, max-age=604800
+/favicon*
+  Cache-Control: public, max-age=604800
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800
+/analytics.js
+  Cache-Control: public, max-age=86400

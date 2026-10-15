@@ -1,0 +1,26 @@
+# Redirections pour Cloudflare.
+# - Les URLs propres (/checkout, /dashboard, /docs, ...) sont gerees automatiquement par Cloudflare
+#   Pages (checkout.html est servi sur /checkout), donc aucune regle de rewrite ici.
+# - La page 404.html est utilisee automatiquement pour les chemins inconnus.
+# - Le blog et le sitemap sont proxifies par worker.js (Cloudflare ne proxifie pas via _redirects).
+# - Cloudflare ne sait pas faire de regles conditionnees par query string ni le "!" : les anciens
+#   liens ci-dessous sont des 301 simples, et les parametres (?link=, ?invite=, ?reset=) sont conserves.
+
+/freda-pay-checkout        /checkout                  301
+/freda-pay-checkout.html   /checkout                  301
+/freda-pay-signup          /signup                    301
+/freda-pay-signup.html     /signup                    301
+/freda-pay-sandbox         /dashboard                 301
+/freda-pay-sandbox.html    /dashboard                 301
+/sandbox                   /dashboard                 301
+/inscription               /signup                    301
+/freda-pay-docs            /docs                      301
+/freda-pay-docs.html       /docs                      301
+/documentation             /docs                      301
+/freda-pay-terms           /terms                     301
+/freda-pay-terms.html      /terms                     301
+/freda-pay-privacy         /privacy                   301
+/freda-pay-privacy.html    /privacy                   301
+/confidentialite           /privacy                   301
+/freda-pay-landing         /                          301
+/freda-pay-landing.html    /                          301

@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un compte : Freda Pay Issuing</title>
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="favicon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://issuing.fredapay.com/signup">
+<meta name="description" content="Créez votre compte Freda Pay Issuing : mode test gratuit pour le Payment Gateway MonCash et Natcash et l'émission de cartes virtuelles.">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* The hidden attribute must always win over component display rules (flex/grid/inline-flex), or "hidden" elements stay visible. */
+  [hidden]{display:none !important}
+
+  :root{
+    --ink:#111111;
+    --gold:#ff4081;
+    --gold-light:#ff80ab;
+    --gold-soft:rgba(255,64,129,.08);
+    --muted:#666666;
+    --line:#e5e5e5;
+    --bg:#ffffff;
+    --bg-soft:#f6f6f6;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  /* ===== Shell : split screen ===== */
+  .auth-shell{display:grid;grid-template-columns:420px 1fr;min-height:100vh}
+  @media (max-width:920px){ .auth-shell{grid-template-columns:1fr} }
+
+  /* ===== Left branding panel ===== */
+  .auth-side{background:#12070f;color:#fff;padding:44px 40px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+  .auth-side::before{content:"";position:absolute;top:-160px;right:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle, rgba(255,64,129,.22), transparent 70%);pointer-events:none}
+  .side-inner{position:relative;z-index:1;display:flex;flex-direction:column;height:100%}
+  .side-logo{display:flex;align-items:center;gap:10px;margin-bottom:56px}
+  .side-logo .mark{width:34px;height:34px;border-radius:9px;overflow:hidden;background:var(--gold)}
+  .side-logo .mark img{width:100%;height:100%;object-fit:cover;display:block}
+  .side-logo .brand-text{font-weight:800;font-size:1.02rem;color:#fff}
+  .side-logo .brand-issuing{color:var(--gold-light);font-weight:800;margin-left:4px}
+
+  .side-headline{font-size:1.7rem;font-weight:700;letter-spacing:-.01em;line-height:1.28;margin-bottom:16px}
+  .side-headline span{color:var(--gold-light)}
+  .side-sub{color:rgba(255,255,255,.6);font-size:.92rem;max-width:320px;margin-bottom:40px}
+
+  .side-list{list-style:none;display:flex;flex-direction:column;gap:18px;margin-top:auto;margin-bottom:40px}
+  .side-list li{display:flex;align-items:flex-start;gap:12px;font-size:.88rem;color:rgba(255,255,255,.85)}
+  .side-list .ck{width:22px;height:22px;border-radius:50%;background:rgba(255,64,129,.18);border:1px solid rgba(255,64,129,.4);color:var(--gold-light);display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+
+  .side-quote{border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:.78rem;color:rgba(255,255,255,.45)}
+
+  @media (max-width:920px){
+    .auth-side{padding:32px 28px}
+    .side-list{margin-top:20px;margin-bottom:24px}
+    .side-headline{font-size:1.4rem}
+  }
+
+  /* ===== Right form panel ===== */
+  .auth-main{display:flex;justify-content:center;padding:48px 28px}
+  .auth-form-wrap{width:100%;max-width:480px}
+  @media (max-width:920px){ .auth-main{padding:36px 22px 64px} }
+
+  .top-row{display:flex;justify-content:flex-end;margin-bottom:18px}
+  .back-link{font-size:.85rem;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .back-link:hover{color:var(--ink)}
+
+  .auth-tabs{display:flex;background:var(--bg-soft);border-radius:12px;padding:4px;margin-bottom:30px}
+  .auth-tab{flex:1;text-align:center;padding:11px 0;border-radius:9px;font-weight:700;font-size:.92rem;color:var(--muted);cursor:pointer;transition:.2s}
+  .auth-tab.active{background:#fff;color:var(--ink);box-shadow:0 4px 14px -6px rgba(0,0,0,.18)}
+
+  .auth-view{display:none}
+  .auth-view.active{display:block}
+
+  h1.auth-title{font-size:1.5rem;margin-bottom:6px;letter-spacing:-.01em}
+  .auth-sub{color:var(--muted);font-size:.92rem;margin-bottom:28px}
+
+  /* Stepper */
+  .stepper{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;gap:2px}
+  .step-node{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+  .step-node:not(:last-child)::after{content:"";position:absolute;top:14px;left:calc(50% + 18px);width:calc(100% - 18px);height:2px;background:var(--line);z-index:0}
+  .step-node.done:not(:last-child)::after{background:var(--gold)}
+  .step-circle{width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-size:.74rem;font-weight:800;color:var(--muted);z-index:1;transition:.2s}
+  .step-node.active .step-circle{border-color:var(--gold);color:var(--gold)}
+  .step-node.done .step-circle{background:var(--gold);border-color:var(--gold);color:#fff}
+  .step-label{font-size:.62rem;font-weight:700;color:var(--muted);margin-top:7px;text-align:center;letter-spacing:.01em;line-height:1.25}
+  .step-node.active .step-label{color:var(--ink)}
+
+  /* Form elements */
+  .step-panel{display:none}
+  .step-panel.active{display:block;animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:7px;color:var(--ink)}
+  .field .hint{font-size:.76rem;color:var(--muted);font-weight:400;margin-left:4px}
+  .field input,.field select,.field textarea{width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--line);font-size:.94rem;font-family:inherit;color:var(--ink);background:#fff;transition:.15s;appearance:none}
+
+  .pw-field{position:relative}
+  .pw-field input{padding-right:44px}
+  .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;display:flex}
+  .pw-toggle:hover{color:var(--ink)}
+
+  .field.valid input,.field.valid select{border-color:#22c55e}
+  .field.invalid input,.field.invalid select{border-color:#e74c3c}
+  .field-hint{font-size:.76rem;margin-top:6px;display:none}
+  .field.invalid .field-hint{display:block;color:#e74c3c}
+  .field textarea{resize:vertical;min-height:84px;line-height:1.5}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:480px){ .field-row{grid-template-columns:1fr} }
+  .phone-row{display:grid;grid-template-columns:150px 1fr;gap:10px}
+
+  /* Selectable cards (account type / services) */
+  .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
+  .type-grid.services{grid-template-columns:1fr}
+  @media (max-width:480px){ .type-grid{grid-template-columns:1fr} }
+  .type-card{border:2px solid var(--line);border-radius:14px;padding:18px 16px;cursor:pointer;transition:.18s ease;text-align:left;display:flex;gap:14px;align-items:flex-start;position:relative}
+  .type-card:hover{transform:translateY(-1px)}
+  .type-card:hover{border-color:var(--gold-light)}
+  .type-card.selected{border-color:var(--gold);background:var(--gold-soft)}
+  .type-card .check-badge{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;background:var(--gold);color:#fff;display:none;place-items:center}
+  .type-card.selected .check-badge{display:grid}
+  .type-card .ticon{width:38px;height:38px;border-radius:10px;background:var(--gold-soft);color:var(--gold);display:grid;place-items:center;flex-shrink:0}
+  .type-card.selected .ticon{background:var(--gold);color:#fff}
+  .type-card .tbody h3{font-size:.96rem;margin-bottom:4px}
+  .type-card .tbody p{font-size:.8rem;color:var(--muted);line-height:1.5}
+  .type-grid:not(.services) .type-card{flex-direction:column}
+  .type-grid:not(.services) .type-card .ticon{margin-bottom:10px}
+
+  /* Password strength */
+  .pw-meter{display:flex;gap:5px;margin-top:8px}
+  .pw-meter span{height:4px;flex:1;border-radius:2px;background:var(--line);transition:.2s}
+  .pw-hint{font-size:.76rem;color:var(--muted);margin-top:7px}
+
+  /* Recap */
+  .recap{background:var(--bg-soft);border-radius:12px;padding:18px 20px;margin-bottom:20px}
+  .recap-row{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;padding:8px 0;border-bottom:1px solid var(--line)}
+  .recap-row:last-child{border-bottom:none}
+  .recap-row .k{color:var(--muted)}
+  .recap-row .v{font-weight:600;text-align:right}
+
+  .check-row{display:flex;align-items:flex-start;gap:10px;font-size:.83rem;color:var(--muted);margin-bottom:22px}
+  .check-row input{margin-top:3px;accent-color:var(--gold)}
+  .check-row a{color:var(--gold);font-weight:600}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:11px;font-weight:700;font-size:.92rem;border:1px solid transparent;cursor:pointer;transition:.18s ease;font-family:inherit;width:100%}
+  .btn-primary{background:var(--ink);color:#fff}
+  .btn-primary:hover{background:#2a2a2a;transform:translateY(-1px);box-shadow:0 8px 20px -8px rgba(0,0,0,.35)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary:disabled{background:#cfcfcf;cursor:not-allowed}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:var(--bg-soft)}
+  .btn-row{display:flex;gap:12px;margin-top:6px}
+  .btn-row .btn-ghost{flex:0 0 120px}
+
+  .field-error{border-color:#e74c3c !important}
+  .error-msg{color:#e74c3c;font-size:.76rem;margin-top:6px;display:none}
+  .error-msg.show{display:block}
+
+  .alt-action{text-align:center;font-size:.86rem;color:var(--muted);margin-top:20px}
+  .alt-action a{font-weight:700;color:var(--gold)}
+
+  .success-view{display:none;text-align:center;padding:20px 0 6px}
+  .otp-view{display:none;text-align:center;padding:20px 0 6px}
+  .otp-view p{color:var(--muted);font-size:.92rem;line-height:1.5}
+  .success-view.active{display:block;animation:fadeIn .3s ease}
+  .otp-view.active{display:block;animation:fadeIn .3s ease}
+  .success-icon{width:64px;height:64px;border-radius:50%;background:var(--gold-soft);color:var(--gold);display:grid;place-items:center;margin:0 auto 20px;animation:popIn .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  .success-view h2{font-size:1.35rem;margin-bottom:10px}
+  .success-view p{color:var(--muted);font-size:.92rem;max-width:380px;margin:0 auto 26px}
+
+  .forgot{display:block;text-align:right;font-size:.82rem;font-weight:600;color:var(--gold);margin:-8px 0 20px}
+
+  .auth-error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:.83rem;padding:11px 14px;border-radius:10px;margin-bottom:16px}
+  .auth-error.show{display:block}
+
+  .btn .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+  .btn.loading .btn-label{visibility:hidden;position:absolute}
+  .btn.loading{position:relative;color:transparent}
+  .btn.loading .spinner{display:inline-block;position:absolute;left:50%;top:50%;margin:-8px 0 0 -8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="auth-shell">
+
+  <!-- ===== Left branding panel ===== -->
+  <aside class="auth-side">
+    <div class="side-inner">
+      <a href="/" class="side-logo">
+        <span class="mark"><img src="logo.png" alt="Freda Pay Issuing"></span>
+        <span class="brand-text">FREDA PAY <span class="brand-issuing">ISSUING</span></span>
+      </a>
+
+      <h1 class="side-headline">L'infrastructure de paiement <span>tout-en-un</span> pour votre entreprise</h1>
+      <p class="side-sub">Émettez des cartes virtuelles et encaissez MonCash et Natcash, depuis un seul compte.</p>
+
+      <ul class="side-list">
+        <li><span class="ck"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Acceptez MonCash, Natcash, Visa et Mastercard</li>
+        <li><span class="ck"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Émettez des cartes virtuelles en quelques secondes</li>
+        <li><span class="ck"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Accès sandbox complet dès la création du compte</li>
+        <li><span class="ck"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Aucun frais de configuration</li>
+      </ul>
+
+      <p class="side-quote">Entreprise enregistrée ou non, particulier ou société : Freda Pay Issuing s'adapte à votre situation.</p>
+    </div>
+  </aside>
+
+  <!-- ===== Right form panel ===== -->
+  <main class="auth-main">
+    <div class="auth-form-wrap">
+
+      <div class="top-row">
+        <a href="/" class="back-link">&larr; Retour au site</a>
+      </div>
+
+      <div class="auth-tabs" id="authTabsRow">
+        <div class="auth-tab active" id="tabSignup" onclick="switchTab('signup')">Créer un compte</div>
+        <div class="auth-tab" id="tabLogin" onclick="switchTab('login')">Se connecter</div>
+      </div>
+
+      <!-- ===================== LOGIN VIEW ===================== -->
+      <div class="auth-view" id="viewLogin">
+        <h1 class="auth-title">Content de vous revoir</h1>
+        <p class="auth-sub">Connectez-vous pour accéder à votre dashboard Freda Pay Issuing.</p>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <div class="auth-error" id="loginError"></div>
+          <div class="field">
+            <label for="loginEmail">Adresse email</label>
+            <input type="email" id="loginEmail" placeholder="vous@entreprise.com" required autocomplete="email">
+          </div>
+          <div class="field pw-field">
+            <label for="loginPassword">Mot de passe</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)" aria-label="Afficher le mot de passe">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <a href="#" class="forgot" onclick="switchTab('forgot');return false;">Mot de passe oublié&nbsp;?</a>
+          <button type="submit" class="btn btn-primary" id="loginSubmitBtn"><span class="btn-label">Se connecter</span><span class="spinner"></span></button>
+        </form>
+
+        <!-- Step 2 of login: the code emailed to the account, asked at every login -->
+        <div id="loginOtpBlock" hidden>
+          <h2 style="font-size:1.25rem;margin:4px 0 8px">Confirmez votre connexion</h2>
+          <p class="auth-sub" style="margin-bottom:18px">Entrez le code à 6 chiffres envoyé à <strong id="loginOtpEmail"></strong>. Ce code vous est demandé à chaque connexion.</p>
+          <form onsubmit="return handleLoginOtp(event)">
+            <div class="field">
+              <label for="loginOtpCode">Code de connexion</label>
+              <input type="text" id="loginOtpCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000" style="text-align:center;letter-spacing:.4em;font-size:1.3rem;font-weight:700" autocomplete="one-time-code" required>
+            </div>
+            <div class="auth-error" id="loginOtpError"></div>
+            <button type="submit" class="btn btn-primary" id="loginOtpBtn"><span class="btn-label">Se connecter</span><span class="spinner"></span></button>
+          </form>
+          <p class="alt-action" style="margin-top:16px">
+            Pas reçu de code&nbsp;?
+            <a href="#" id="loginOtpResend" onclick="resendLoginOtp(event)">Renvoyer le code</a>
+            &nbsp;·&nbsp; <a href="#" onclick="backToLogin(event)">Retour</a>
+          </p>
+        </div>
+
+        <p class="alt-action" id="loginSignupHint">Pas encore de compte&nbsp;? <a href="#" onclick="switchTab('signup');return false;">Créer un compte</a></p>
+      </div>
+
+      <!-- ===================== FORGOT PASSWORD VIEW ===================== -->
+      <div class="auth-view" id="viewForgot">
+        <h1 class="auth-title">Réinitialiser votre mot de passe</h1>
+        <p class="auth-sub">Entrez l'adresse email de votre compte, nous vous enverrons un lien pour créer un nouveau mot de passe.</p>
+
+        <form id="forgotForm" onsubmit="return handleForgotSubmit(event)">
+          <div class="auth-error" id="forgotError"></div>
+          <div class="field">
+            <label for="forgotEmail">Adresse email</label>
+            <input type="email" id="forgotEmail" placeholder="vous@entreprise.com" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="forgotBtn"><span class="btn-label">Envoyer le lien</span><span class="spinner"></span></button>
+        </form>
+
+        <div class="success-view" id="forgotSuccess">
+          <div class="success-icon">
+            <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+          </div>
+          <h2 style="font-size:1.15rem">Email envoyé</h2>
+          <p>Si un compte existe avec cette adresse, vous recevrez un lien de réinitialisation dans quelques minutes. Il est valable 60 minutes. Pensez à vérifier vos courriers indésirables.</p>
+        </div>
+
+        <p class="alt-action">Vous vous souvenez de votre mot de passe&nbsp;? <a href="#" onclick="switchTab('login');return false;">Retour à la connexion</a></p>
+      </div>
+
+      <!-- ===================== RESET PASSWORD VIEW (link from the email) ===================== -->
+      <div class="auth-view" id="viewReset">
+        <h1 class="auth-title">Nouveau mot de passe</h1>
+        <p class="auth-sub" id="resetSub">Vérification de votre lien…</p>
+        <div class="auth-error" id="resetError"></div>
+        <form id="resetForm" onsubmit="return handleResetSubmit(event)" hidden>
+          <div class="field pw-field">
+            <label for="resetPassword">Nouveau mot de passe</label>
+            <input type="password" id="resetPassword" placeholder="8 caractères minimum" autocomplete="new-password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('resetPassword', this)" aria-label="Afficher le mot de passe">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="field">
+            <label for="resetPassword2">Confirmer le mot de passe</label>
+            <input type="password" id="resetPassword2" placeholder="••••••••" autocomplete="new-password" required>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="resetBtn"><span class="btn-label">Changer mon mot de passe</span><span class="spinner"></span></button>
+          </div>
+        </form>
+        <div class="success-view" id="resetDone">
+          <div class="success-icon"><svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <h2 style="font-size:1.15rem">Mot de passe modifié</h2>
+          <p>Vos sessions ouvertes ont été déconnectées. Connectez-vous avec votre nouveau mot de passe.</p>
+          <button class="btn btn-primary" style="margin-top:18px" onclick="leaveReset('login')">Me connecter</button>
+        </div>
+        <p class="alt-action" id="resetNewLink" hidden>Ce lien ne fonctionne plus&nbsp;? <a href="#" onclick="leaveReset('forgot');return false;">Demander un nouveau lien</a></p>
+      </div>
+
+      <!-- ===================== INVITATION VIEW ===================== -->
+      <div class="auth-view" id="viewInvite">
+        <h1 class="auth-title">Créez votre mot de passe</h1>
+        <p class="auth-sub" id="inviteSub">Vérification de votre invitation…</p>
+        <div class="auth-error" id="inviteError"></div>
+        <form id="inviteForm" onsubmit="return handleAcceptInvite(event)" hidden>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="inviteEmailShown" disabled>
+          </div>
+          <div class="field">
+            <label>Mot de passe</label>
+            <input type="password" id="invitePassword" placeholder="8 caractères minimum" autocomplete="new-password" required>
+          </div>
+          <div class="field">
+            <label>Confirmer le mot de passe</label>
+            <input type="password" id="invitePassword2" placeholder="••••••••" autocomplete="new-password" required>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="inviteSubmitBtn"><span class="btn-label">Activer mon accès</span><span class="spinner"></span></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ===================== SIGNUP VIEW ===================== -->
+      <div class="auth-view active" id="viewSignup">
+        <h1 class="auth-title" id="signupTitle">Créer votre compte</h1>
+        <p class="auth-sub" id="signupSubtitle">Encaissez des paiements et émettez des cartes en quelques minutes.</p>
+
+        <div class="stepper" id="stepper">
+          <div class="step-node active" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Compte</div>
+          </div>
+          <div class="step-node" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Services</div>
+          </div>
+          <div class="step-node" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Informations</div>
+          </div>
+          <div class="step-node" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Sécurité</div>
+          </div>
+          <div class="step-node" data-step="5">
+            <div class="step-circle">5</div>
+            <div class="step-label">Confirmation</div>
+          </div>
+        </div>
+
+        <form id="signupForm" onsubmit="return handleSignupSubmit(event)">
+
+          <!-- STEP 1 : Account type -->
+          <div class="step-panel active" data-panel="1">
+            <div class="type-grid">
+              <div class="type-card" id="cardBusiness" onclick="selectAccountType('business')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="ticon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1"/></svg>
+                </div>
+                <div class="tbody">
+                  <h3>Entreprise enregistrée</h3>
+                  <p>Mon entreprise a un numéro d'enregistrement officiel</p>
+                </div>
+              </div>
+              <div class="type-card" id="cardIndividual" onclick="selectAccountType('individual')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="ticon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+                </div>
+                <div class="tbody">
+                  <h3>Particulier</h3>
+                  <p>Mon entreprise n'est pas encore enregistrée</p>
+                </div>
+              </div>
+            </div>
+            <div class="error-msg" id="typeError">Choisissez une option pour continuer.</div>
+
+            <div class="btn-row" style="margin-top:24px">
+              <button type="button" class="btn btn-primary" onclick="goNext()">Continuer</button>
+            </div>
+          </div>
+
+          <!-- STEP 2 : Services -->
+          <div class="step-panel" data-panel="2">
+            <div class="type-grid services">
+              <div class="type-card" id="cardGateway" onclick="selectService('gateway')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="ticon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
+                </div>
+                <div class="tbody">
+                  <h3>Payment Gateway</h3>
+                  <p>Acceptez les paiements MonCash et Natcash via notre API de paiement.</p>
+                </div>
+              </div>
+              <div class="type-card" id="cardIssuing" onclick="selectService('issuing')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="ticon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 9.5h20M6 15h4"/></svg>
+                </div>
+                <div class="tbody">
+                  <h3>Card Issuing</h3>
+                  <p>Émettez des cartes virtuelles pour votre entreprise ou vos utilisateurs finaux.</p>
+                </div>
+              </div>
+              <div class="type-card" id="cardBoth" onclick="selectService('both')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div class="ticon">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/></svg>
+                </div>
+                <div class="tbody">
+                  <h3>Les deux services</h3>
+                  <p>Encaissement et émission de cartes, sur la même plateforme.</p>
+                </div>
+              </div>
+            </div>
+            <div class="error-msg" id="serviceError">Choisissez au moins un service pour continuer.</div>
+
+            <div id="onboardingBlock" hidden style="margin-top:22px">
+              <div class="field">
+                <label for="obDescription">Décrivez votre activité</label>
+                <textarea id="obDescription" rows="3" maxlength="400" placeholder="Ex. : plateforme en ligne de vente de vêtements, avec paiement à la livraison et cartes pour nos fournisseurs."></textarea>
+              </div>
+              <div class="field" id="obVolumeField">
+                <label for="obVolume">Montant que vous pensez encaisser par mois (équivalent en dollars US)</label>
+                <select id="obVolume">
+                  <option value="">Choisir une tranche</option>
+                  <option value="lt_1k">Moins de 1 000 $ (USD)</option>
+                  <option value="1k_10k">1 000 à 10 000 $</option>
+                  <option value="10k_50k">10 000 à 50 000 $</option>
+                  <option value="50k_250k">50 000 à 250 000 $</option>
+                  <option value="gt_250k">Plus de 250 000 $</option>
+                </select>
+              </div>
+              <div class="field" id="obCardsField">
+                <label for="obCards">Nombre de cartes que vous pensez émettre par mois</label>
+                <select id="obCards">
+                  <option value="">Choisir une tranche</option>
+                  <option value="lt_10">Moins de 10</option>
+                  <option value="10_50">10 à 50</option>
+                  <option value="50_200">50 à 200</option>
+                  <option value="200_1000">200 à 1 000</option>
+                  <option value="gt_1000">Plus de 1 000</option>
+                </select>
+              </div>
+              <div class="field" id="obUseCaseField">
+                <label for="obUseCase">Pour quel usage principal émettrez-vous des cartes ?</label>
+                <select id="obUseCase">
+                  <option value="">Choisir</option>
+                  <option value="company_expenses">Dépenses de mon entreprise</option>
+                  <option value="employee_cards">Cartes pour mes employés</option>
+                  <option value="customer_cards">Cartes pour mes clients</option>
+                  <option value="online_subscriptions">Abonnements et achats en ligne</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+              <div class="field" id="obFundsField">
+                <label for="obFunds">Origine des fonds qui alimenteront vos cartes</label>
+                <select id="obFunds">
+                  <option value="">Choisir</option>
+                  <option value="business_revenue">Revenus de mon activité</option>
+                  <option value="savings">Épargne personnelle</option>
+                  <option value="investors">Investisseurs</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+              <label class="check-row" style="margin-top:6px">
+                <input type="checkbox" id="obCompliance">
+                <span>Je confirme que mon activité n'implique ni jeux d'argent illégaux, ni armes, ni produits interdits.</span>
+              </label>
+            </div>
+
+            <div class="btn-row">
+              <button type="button" class="btn btn-ghost" onclick="goBack()">Retour</button>
+              <button type="button" class="btn btn-primary" onclick="goNext()">Continuer</button>
+            </div>
+          </div>
+
+          <!-- STEP 3 : Information -->
+          <div class="step-panel" data-panel="3">
+
+            <div id="businessFields">
+              <div class="field">
+                <label for="businessName">Nom de l'entreprise</label>
+                <input type="text" id="businessName" placeholder="Ex : Acme Commerce LLC" autocomplete="organization">
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="businessType">Type d'entreprise</label>
+                  <select id="businessType">
+                    <option value="">Sélectionner…</option>
+                    <option value="LLC">LLC (société à responsabilité limitée)</option>
+                    <option value="Corporation">Corporation / Inc.</option>
+                    <option value="Ltd">Ltd (private limited company)</option>
+                    <option value="SA">Société anonyme (SA, AG, plc, SAS)</option>
+                    <option value="SARL">SARL / GmbH / BV</option>
+                    <option value="Partnership">Société de personnes (partnership)</option>
+                    <option value="EI">Entrepreneur individuel (sole proprietorship)</option>
+                    <option value="NonProfit">Association / organisation à but non lucratif</option>
+                    <option value="Cooperative">Coopérative</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="businessRegNumber">N° d'enregistrement <span class="hint">(registre du commerce, EIN, SIREN…)</span></label>
+                  <input type="text" id="businessRegNumber" placeholder="Ex : 12-3456789">
+                </div>
+              </div>
+            </div>
+
+            <div id="individualFields" style="display:none">
+              <div class="field-row">
+                <div class="field">
+                  <label for="indFirstName">Prénom</label>
+                  <input type="text" id="indFirstName" placeholder="Prénom" autocomplete="given-name">
+                </div>
+                <div class="field">
+                  <label for="indLastName">Nom</label>
+                  <input type="text" id="indLastName" placeholder="Nom" autocomplete="family-name">
+                </div>
+              </div>
+              <div class="field">
+                <label for="indActivity">Nom de votre activité <span class="hint">(facultatif)</span></label>
+                <input type="text" id="indActivity" placeholder="Ex : Vente en ligne">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="repName">Nom du responsable du compte</label>
+              <input type="text" id="repName" placeholder="Prénom et nom" autocomplete="name">
+            </div>
+
+            <div class="field">
+              <label for="signupCountry" id="signupCountryLabel">Pays</label>
+              <select id="signupCountry"><option value="">Sélectionner…</option></select>
+            </div>
+
+            <div class="field">
+              <label for="signupEmail">Adresse email</label>
+              <input type="email" id="signupEmail" placeholder="vous@entreprise.com" autocomplete="email">
+            </div>
+
+            <div class="field">
+              <label for="signupPhone">Numéro de téléphone</label>
+              <div class="phone-row">
+                <select id="phoneCountry"><option value="">Pays…</option></select>
+                <input type="tel" id="signupPhone" placeholder="Numéro de téléphone" autocomplete="tel-national" inputmode="numeric" oninput="formatPhone(this)">
+              </div>
+            </div>
+
+            <div class="error-msg" id="infoError">Merci de remplir les champs requis.</div>
+
+            <div class="btn-row">
+              <button type="button" class="btn btn-ghost" onclick="goBack()">Retour</button>
+              <button type="button" class="btn btn-primary" onclick="goNext()">Continuer</button>
+            </div>
+          </div>
+
+          <!-- STEP 4 : Security -->
+          <div class="step-panel" data-panel="4">
+            <div class="field pw-field">
+              <label for="signupPassword">Mot de passe</label>
+              <input type="password" id="signupPassword" placeholder="8 caractères minimum" autocomplete="new-password" oninput="updatePwMeter()">
+              <button type="button" class="pw-toggle" onclick="togglePw('signupPassword', this)" aria-label="Afficher le mot de passe">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <div class="pw-meter"><span></span><span></span><span></span><span></span></div>
+              <div class="pw-hint">Utilisez au moins 8 caractères, avec une majuscule et un chiffre.</div>
+            </div>
+            <div class="field pw-field">
+              <label for="signupPasswordConfirm">Confirmer le mot de passe</label>
+              <input type="password" id="signupPasswordConfirm" placeholder="••••••••" autocomplete="new-password">
+              <button type="button" class="pw-toggle" onclick="togglePw('signupPasswordConfirm', this)" aria-label="Afficher le mot de passe">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+
+            <div class="error-msg" id="pwError">Les mots de passe ne correspondent pas ou sont trop courts.</div>
+
+            <div class="btn-row">
+              <button type="button" class="btn btn-ghost" onclick="goBack()">Retour</button>
+              <button type="button" class="btn btn-primary" onclick="goNext()">Continuer</button>
+            </div>
+          </div>
+
+          <!-- STEP 5 : Confirmation -->
+          <div class="step-panel" data-panel="5">
+            <div class="recap" id="recapBox"></div>
+            <div class="auth-error" id="signupError"></div>
+
+            <label class="check-row">
+              <input type="checkbox" id="termsCheck" required>
+              <span>J'accepte les <a href="/terms" target="_blank" rel="noopener">Conditions d'utilisation</a> et la <a href="/privacy" target="_blank" rel="noopener">Politique de confidentialité</a> de Freda Pay Issuing.</span>
+            </label>
+
+            <div class="btn-row">
+              <button type="button" class="btn btn-ghost" onclick="goBack()">Retour</button>
+              <button type="submit" class="btn btn-primary" id="submitBtn"><span class="btn-label">Créer mon compte</span><span class="spinner"></span></button>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- OTP verification state -->
+        <div class="otp-view" id="otpView">
+          <div class="success-icon" style="background:var(--gold-soft);color:var(--gold)">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </div>
+          <h2>Vérifiez votre email</h2>
+          <p>Entrez le code à 6 chiffres envoyé à <strong id="otpEmailLabel"></strong>.</p>
+
+          <form onsubmit="return handleOtpSubmit(event)" style="margin-top:22px;text-align:left">
+            <div class="field">
+              <label>Code de vérification</label>
+              <input type="text" id="otpCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000" style="text-align:center;letter-spacing:.4em;font-size:1.3rem;font-weight:700" autocomplete="one-time-code" required>
+            </div>
+            <div class="auth-error" id="otpError"></div>
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary" id="otpSubmitBtn"><span class="btn-label">Vérifier</span><span class="spinner"></span></button>
+            </div>
+          </form>
+          <p class="alt-action" style="margin-top:16px">
+            Pas reçu de code&nbsp;?
+            <a href="#" id="otpResendLink" onclick="handleResendOtp(event)">Renvoyer le code</a>
+          </p>
+        </div>
+
+        <!-- Success state -->
+        <div class="success-view" id="successView">
+          <div class="success-icon">
+            <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2>Compte créé avec succès</h2>
+          <p>Votre compte est prêt. Votre dashboard vous attend : vous pouvez commencer à tester l'API en Sandbox dès maintenant.</p>
+          <a class="btn btn-primary" style="max-width:260px;margin:0 auto" href="dashboard.html">Accéder à mon dashboard</a>
+        </div>
+
+        <p class="alt-action" id="signupAltAction">Vous avez déjà un compte&nbsp;? <a href="#" onclick="switchTab('login');return false;">Se connecter</a></p>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="countries.js"></script>
+<script>
+  // Change this to your deployed backend URL when you host it for real
+  // (e.g. "https://api.fredapay.com"). Defaults to a local backend for testing.
+  const API_BASE_URL = window.FREDA_API_BASE_URL || 'https://api.fredapay.com';
+
+  let currentStep = 1;
+  let accountType = null;
+  let selectedService = null;
+  const totalSteps = 5;
+
+  function switchTab(tab){
+    document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+    document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+    document.getElementById('viewLogin').classList.toggle('active', tab==='login');
+    document.getElementById('viewSignup').classList.toggle('active', tab==='signup');
+    document.getElementById('viewForgot').classList.toggle('active', tab==='forgot');
+    const rv = document.getElementById('viewReset'); if(rv) rv.classList.remove('active');
+    document.getElementById('authTabsRow').style.display = (tab==='forgot') ? 'none' : 'flex';
+  }
+
+  /** Asks the server to send the reset email. The answer is the same whether or not the address has an account. */
+  async function handleForgotSubmit(e){
+    e.preventDefault();
+    hideError('forgotError');
+    const email = document.getElementById('forgotEmail').value.trim();
+    const btn = document.getElementById('forgotBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/forgot-password', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok){
+        showError('forgotError', (data.error && data.error.message) || 'Impossible d\u2019envoyer le lien pour le moment.');
+        return false;
+      }
+      document.getElementById('forgotForm').style.display = 'none';
+      document.getElementById('forgotSuccess').classList.add('active');
+    }catch(err){
+      showError('forgotError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  /* ===== Reset password: the page opened from the link in the email (?reset=TOKEN) ===== */
+  let resetToken = null;
+
+  async function initReset(){
+    resetToken = new URLSearchParams(window.location.search).get('reset');
+    if(!resetToken) return;
+    document.getElementById('authTabsRow').style.display = 'none';
+    ['viewLogin','viewForgot','viewSignup','viewInvite'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
+    document.getElementById('viewReset').classList.add('active');
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/reset-info?token=' + encodeURIComponent(resetToken));
+      const data = await res.json();
+      if(!res.ok) throw new Error((data.error && data.error.message) || 'Ce lien est invalide ou a expiré.');
+      document.getElementById('resetSub').textContent = 'Choisissez un nouveau mot de passe pour ' + data.email_hint + '.';
+      document.getElementById('resetForm').hidden = false;
+    }catch(err){
+      document.getElementById('resetSub').textContent = '';
+      showError('resetError', err.message || 'Ce lien est invalide ou a expiré.');
+      document.getElementById('resetNewLink').hidden = false;
+    }
+  }
+
+  async function handleResetSubmit(e){
+    e.preventDefault();
+    hideError('resetError');
+    const p1 = document.getElementById('resetPassword').value;
+    const p2 = document.getElementById('resetPassword2').value;
+    if(p1.length < 8){ showError('resetError', 'Le mot de passe doit contenir au moins 8 caractères.'); return false; }
+    if(p1 !== p2){ showError('resetError', 'Les deux mots de passe ne correspondent pas.'); return false; }
+    const btn = document.getElementById('resetBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/reset-password', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ token: resetToken, password: p1 }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok){
+        showError('resetError', (data.error && data.error.message) || 'Changement impossible.');
+        if(data.error && data.error.code === 'RESET_LINK_INVALID'){ document.getElementById('resetForm').hidden = true; document.getElementById('resetNewLink').hidden = false; }
+        return false;
+      }
+      document.getElementById('resetForm').hidden = true;
+      document.getElementById('resetSub').textContent = '';
+      document.getElementById('resetDone').classList.add('active');
+      try{ localStorage.removeItem('freda_session_token'); localStorage.removeItem('freda_merchant'); }catch(_){}
+    }catch(err){
+      showError('resetError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  /** Leaves the reset page (and drops the token from the address bar) for the login or the "forgot" form. */
+  function leaveReset(tab){
+    resetToken = null;
+    history.replaceState(null, '', window.location.pathname);
+    document.getElementById('viewReset').classList.remove('active');
+    switchTab(tab);
+  }
+
+  function selectAccountType(type){
+    accountType = type;
+    { const l = document.getElementById('signupCountryLabel'); if(l) l.textContent = type==='business' ? "Pays d'enregistrement de l'entreprise" : 'Pays de résidence'; }
+    document.getElementById('cardBusiness').classList.toggle('selected', type==='business');
+    document.getElementById('cardIndividual').classList.toggle('selected', type==='individual');
+    document.getElementById('typeError').classList.remove('show');
+
+    document.getElementById('businessFields').style.display = (type==='business') ? 'block' : 'none';
+    document.getElementById('individualFields').style.display = (type==='individual') ? 'block' : 'none';
+  }
+
+  function selectService(service){
+    selectedService = service;
+    document.getElementById('cardGateway').classList.toggle('selected', service==='gateway');
+    document.getElementById('cardIssuing').classList.toggle('selected', service==='issuing');
+    document.getElementById('cardBoth').classList.toggle('selected', service==='both');
+    document.getElementById('serviceError').classList.remove('show');
+    const wantsIssuing = service==='issuing' || service==='both';
+    const wantsGateway = service==='gateway' || service==='both';
+    document.getElementById('onboardingBlock').hidden = false;
+    document.getElementById('obVolumeField').hidden = !wantsGateway;
+    document.getElementById('obCardsField').hidden = !wantsIssuing;
+    // Issuing needs the extra security questions; Gateway-only keeps it short.
+    document.getElementById('obUseCaseField').hidden = !wantsIssuing;
+    document.getElementById('obFundsField').hidden = !wantsIssuing;
+  }
+
+  function collectOnboarding(){
+    const v = id => document.getElementById(id).value;
+    const o = { product: selectedService, business_description: v('obDescription').trim(), country: v('signupCountry') };
+    if(selectedService==='gateway' || selectedService==='both') o.monthly_volume = v('obVolume');
+    if(selectedService==='issuing' || selectedService==='both'){
+      o.monthly_cards = v('obCards');
+      o.card_use_case = v('obUseCase');
+      o.source_of_funds = v('obFunds');
+    }
+    return o;
+  }
+
+  function validateOnboarding(){
+    const o = collectOnboarding();
+    let ok = o.business_description.length >= 10 && document.getElementById('obCompliance').checked;
+    if(o.monthly_volume !== undefined && !o.monthly_volume) ok = false;
+    if(o.monthly_cards !== undefined && (!o.monthly_cards || !o.card_use_case || !o.source_of_funds)) ok = false;
+    return ok;
+  }
+
+  function showStep(n){
+    document.querySelectorAll('.step-panel').forEach(p=>{
+      p.classList.toggle('active', parseInt(p.dataset.panel)===n);
+    });
+    document.querySelectorAll('.step-node').forEach(node=>{
+      const s = parseInt(node.dataset.step);
+      node.classList.toggle('active', s===n);
+      node.classList.toggle('done', s<n);
+    });
+    currentStep = n;
+  }
+
+  function validateStep(n){
+    if(n===1){
+      if(!accountType){
+        document.getElementById('typeError').classList.add('show');
+        return false;
+      }
+      return true;
+    }
+    if(n===2){
+      if(!selectedService){
+        document.getElementById('serviceError').textContent = 'Choisissez au moins un service pour continuer.';
+        document.getElementById('serviceError').classList.add('show');
+        return false;
+      }
+      if(!validateOnboarding()){
+        document.getElementById('serviceError').textContent = 'Répondez à toutes les questions et confirmez la dernière case pour continuer.';
+        document.getElementById('serviceError').classList.add('show');
+        return false;
+      }
+      document.getElementById('serviceError').classList.remove('show');
+      return true;
+    }
+    if(n===3){
+      let ok = true;
+      const required = [];
+      if(accountType==='business'){
+        required.push('businessName','businessType');
+      } else {
+        required.push('indFirstName','indLastName');
+      }
+      required.push('repName','signupCountry','signupEmail','signupPhone','phoneCountry');
+      required.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el.value.trim()){ ok=false; el.classList.add('field-error'); }
+        else{ el.classList.remove('field-error'); }
+      });
+      document.getElementById('infoError').classList.toggle('show', !ok);
+      return ok;
+    }
+    if(n===4){
+      const pw = document.getElementById('signupPassword').value;
+      const pw2 = document.getElementById('signupPasswordConfirm').value;
+      const ok = pw.length>=8 && pw===pw2;
+      document.getElementById('pwError').classList.toggle('show', !ok);
+      document.getElementById('signupPassword').classList.toggle('field-error', pw.length<8);
+      document.getElementById('signupPasswordConfirm').classList.toggle('field-error', pw!==pw2);
+      return ok;
+    }
+    return true;
+  }
+
+  function goNext(){
+    if(!validateStep(currentStep)) return;
+    if(currentStep===4){ buildRecap(); }
+    if(currentStep < totalSteps){ showStep(currentStep+1); }
+  }
+
+  function goBack(){
+    if(currentStep>1){ showStep(currentStep-1); }
+  }
+
+  function updatePwMeter(){
+    const pw = document.getElementById('signupPassword').value;
+    let score = 0;
+    if(pw.length>=8) score++;
+    if(/[A-Z]/.test(pw)) score++;
+    if(/[0-9]/.test(pw)) score++;
+    if(pw.length>=12) score++;
+    const bars = document.querySelectorAll('.pw-meter span');
+    const colors = ['#e74c3c','#f39c12','#f1c40f','#28a745'];
+    bars.forEach((b,i)=>{
+      b.style.background = i<score ? colors[Math.min(score,4)-1] : 'var(--line)';
+    });
+  }
+
+  function serviceLabel(s){
+    if(s==='gateway') return 'Payment Gateway';
+    if(s==='issuing') return 'Card Issuing';
+    if(s==='both') return 'Gateway + Issuing (tous les services)';
+    return '-';
+  }
+
+  function buildRecap(){
+    const type = accountType==='business' ? 'Entreprise enregistrée' : 'Particulier';
+    const name = accountType==='business'
+      ? document.getElementById('businessName').value
+      : (document.getElementById('indFirstName').value + ' ' + document.getElementById('indLastName').value).trim();
+    const entityType = accountType==='business' ? (document.getElementById('businessType').value || '-') : null;
+    const email = document.getElementById('signupEmail').value;
+    const phone = document.getElementById('signupPhone').value;
+    const dialCode = document.getElementById('phoneCountry').value;
+
+    const rows = [['Type de compte', type]];
+    if(entityType){ rows.push(["Type d'entreprise", entityType]); }
+    rows.push(['Services', serviceLabel(selectedService)]);
+    rows.push(['Nom', name || '-']);
+    { const cs = document.getElementById('signupCountry'); rows.push([accountType==='business' ? "Pays d'enregistrement" : 'Pays de résidence', cs.value ? cs.options[cs.selectedIndex].textContent : '-']); }
+    rows.push(['Email', email || '-']);
+    rows.push(['Téléphone', phone ? ((dialCode || '') + ' ' + phone) : '-']);
+
+    document.getElementById('recapBox').innerHTML = rows.map(r =>
+      `<div class="recap-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`
+    ).join('');
+  }
+
+  /* ===== Auth helpers ===== */
+  /** Where to go: clean URLs online (/dashboard, /signup), the real file when the page is opened from disk. */
+  function pageUrl(name){ return window.location.protocol === 'file:' ? name + '.html' : '/' + name; }
+  function setLoading(btn, isLoading){
+    btn.classList.toggle('loading', isLoading);
+    btn.disabled = isLoading;
+  }
+  function showError(id, message){
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.classList.add('show');
+  }
+  function hideError(id){
+    document.getElementById(id).classList.remove('show');
+  }
+  function saveSession(sessionToken, merchant){
+    // Works once these pages are hosted on a real server (not inside the
+    // Claude.ai artifact preview, where browser storage is disabled).
+    try{
+      localStorage.setItem('freda_session_token', sessionToken);
+      localStorage.setItem('freda_merchant', JSON.stringify(merchant));
+    }catch(e){ /* storage unavailable in this preview - continues via in-memory flow */ }
+  }
+
+  let pendingMerchantId = null;
+  let pendingEmail = null;
+  let otpResendCooldownUntil = 0;
+
+  function showOtpView(email, fromLogin){
+    pendingEmail = email;
+
+    // The OTP view lives inside the "signup" auth-view/tab. Explicitly force
+    // that view active (regardless of which tab - signup or login - the
+    // person was on when this was triggered), so the OTHER view's heading
+    // (e.g. "Content de vous revoir" from the login view) can never be left
+    // showing underneath/behind the OTP screen.
+    document.getElementById('tabLogin').classList.remove('active');
+    document.getElementById('tabSignup').classList.add('active');
+    document.getElementById('viewLogin').classList.remove('active');
+    document.getElementById('viewForgot').classList.remove('active');
+    document.getElementById('viewSignup').classList.add('active');
+    document.getElementById('authTabsRow').style.display = 'none';
+
+    // Hide the signup view's OWN header too ("Créer votre compte...") - it
+    // would otherwise stay visible above the OTP box and, for someone who
+    // was just trying to log in to an EXISTING account, wrongly suggest
+    // they're creating a new one.
+    document.getElementById('signupTitle').style.display = 'none';
+    document.getElementById('signupSubtitle').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('stepper').style.display = 'none';
+    document.getElementById('signupAltAction').style.display = 'none';
+    document.getElementById('successView').classList.remove('active');
+
+    const otpHeading = document.querySelector('#otpView h2');
+    const otpSub = document.querySelector('#otpView > p');
+    if(fromLogin){
+      otpHeading.textContent = 'Confirmez votre email pour continuer';
+      otpSub.innerHTML = 'Votre compte existe déjà, mais son email n\'est pas encore vérifié. Entrez le code envoyé à <strong id="otpEmailLabel">' + email + '</strong>.';
+    }else{
+      otpHeading.textContent = 'Vérifiez votre email';
+      otpSub.innerHTML = 'Entrez le code à 6 chiffres envoyé à <strong id="otpEmailLabel">' + email + '</strong>.';
+    }
+
+    document.getElementById('otpView').classList.add('active');
+    document.getElementById('otpCode').focus();
+  }
+
+  async function handleSignupSubmit(e){
+    e.preventDefault();
+    hideError('signupError');
+    if(!document.getElementById('termsCheck').checked){
+      showError('signupError', "Merci d'accepter les Conditions d'utilisation pour continuer.");
+      return false;
+    }
+
+    const businessName = accountType==='business'
+      ? document.getElementById('businessName').value.trim()
+      : (document.getElementById('indFirstName').value + ' ' + document.getElementById('indLastName').value).trim();
+    const dialCode = document.getElementById('phoneCountry').value;
+    const phoneDigits = document.getElementById('signupPhone').value.replace(/\s/g,'');
+
+    const payload = {
+      business_name: businessName,
+      entity_type: accountType==='business' ? document.getElementById('businessType').value : null,
+      account_type: accountType,
+      email: document.getElementById('signupEmail').value.trim(),
+      phone: dialCode ? (dialCode + phoneDigits) : phoneDigits,
+      password: document.getElementById('signupPassword').value,
+      onboarding: collectOnboarding(),
+    };
+
+    const btn = document.getElementById('submitBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showError('signupError', (data.error && data.error.message) || 'La création du compte a échoué.');
+        return false;
+      }
+      pendingMerchantId = data.merchant_id;
+      otpResendCooldownUntil = Date.now() + 60000;
+      showOtpView(payload.email);
+    }catch(err){
+      showError('signupError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  async function handleOtpSubmit(e){
+    e.preventDefault();
+    hideError('otpError');
+    const code = document.getElementById('otpCode').value.trim();
+    if(!/^\d{6}$/.test(code)){
+      showError('otpError', 'Entrez les 6 chiffres du code.');
+      return false;
+    }
+    const btn = document.getElementById('otpSubmitBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/verify-otp', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ merchant_id: pendingMerchantId, code }),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showError('otpError', (data.error && data.error.message) || 'Code invalide.');
+        return false;
+      }
+      saveSession(data.session_token, data.merchant);
+      document.getElementById('otpView').classList.remove('active');
+      document.getElementById('successView').classList.add('active');
+    }catch(err){
+      showError('otpError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  async function handleResendOtp(e){
+    e.preventDefault();
+    if(Date.now() < otpResendCooldownUntil) return false;
+    const link = document.getElementById('otpResendLink');
+    const originalText = link.textContent;
+    link.textContent = 'Envoi en cours…';
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/resend-otp', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ merchant_id: pendingMerchantId }),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showError('otpError', (data.error && data.error.message) || "Impossible de renvoyer le code pour l'instant.");
+        link.textContent = originalText;
+        return false;
+      }
+      otpResendCooldownUntil = Date.now() + 60000;
+      link.textContent = 'Code renvoyé ✓';
+      setTimeout(() => { link.textContent = originalText; }, 4000);
+    }catch(err){
+      showError('otpError', "Impossible de contacter le serveur.");
+      link.textContent = originalText;
+    }
+    return false;
+  }
+
+  async function handleLogin(e){
+    e.preventDefault();
+    hideError('loginError');
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginSubmitBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        if(data.error && data.error.code === 'EMAIL_NOT_VERIFIED' && data.error.merchant_id){
+          pendingMerchantId = data.error.merchant_id;
+          otpResendCooldownUntil = Date.now() + 60000;
+          showOtpView(email, true);
+          return false;
+        }
+        showError('loginError', (data.error && data.error.message) || 'Connexion échouée.');
+        return false;
+      }
+      if(data.otp_required){
+        // Correct password: now ask for the code that was just emailed.
+        showLoginOtp(data);
+        return false;
+      }
+      saveSession(data.session_token, data.merchant);
+      window.location.href = pageUrl('dashboard');
+    }catch(err){
+      showError('loginError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  /* ===== Login code (asked at every login) ===== */
+  let loginChallengeId = null;
+  let loginResendTimer = null;
+
+  function showLoginOtp(data){
+    loginChallengeId = data.challenge_id;
+    document.getElementById('loginOtpEmail').textContent = data.email_hint || 'votre adresse email';
+    document.getElementById('loginForm').hidden = true;
+    document.getElementById('loginSignupHint').hidden = true;
+    document.getElementById('loginOtpBlock').hidden = false;
+    document.getElementById('loginOtpCode').value = '';
+    hideError('loginOtpError');
+    startLoginResendCooldown(60);
+    setTimeout(() => document.getElementById('loginOtpCode').focus(), 50);
+  }
+
+  function backToLogin(e){
+    if(e) e.preventDefault();
+    loginChallengeId = null;
+    clearInterval(loginResendTimer);
+    document.getElementById('loginOtpBlock').hidden = true;
+    document.getElementById('loginForm').hidden = false;
+    document.getElementById('loginSignupHint').hidden = false;
+    document.getElementById('loginPassword').value = '';
+  }
+
+  function startLoginResendCooldown(seconds){
+    const link = document.getElementById('loginOtpResend');
+    clearInterval(loginResendTimer);
+    let left = seconds;
+    link.style.pointerEvents = 'none'; link.style.opacity = '.5';
+    link.textContent = 'Renvoyer le code (' + left + 's)';
+    loginResendTimer = setInterval(() => {
+      left -= 1;
+      if(left <= 0){ clearInterval(loginResendTimer); link.style.pointerEvents = ''; link.style.opacity = ''; link.textContent = 'Renvoyer le code'; }
+      else link.textContent = 'Renvoyer le code (' + left + 's)';
+    }, 1000);
+  }
+
+  async function handleLoginOtp(e){
+    e.preventDefault();
+    hideError('loginOtpError');
+    const code = document.getElementById('loginOtpCode').value.trim();
+    const btn = document.getElementById('loginOtpBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/login/verify', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ challenge_id: loginChallengeId, code }),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showError('loginOtpError', (data.error && data.error.message) || 'Code invalide.');
+        if(data.error && ['LOGIN_CHALLENGE_INVALID','OTP_LOCKED','OTP_EXPIRED'].includes(data.error.code)){
+          document.getElementById('loginOtpCode').value = '';
+        }
+        return false;
+      }
+      saveSession(data.session_token, data.merchant);
+      window.location.href = pageUrl('dashboard');
+    }catch(err){
+      showError('loginOtpError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+
+  async function resendLoginOtp(e){
+    e.preventDefault();
+    hideError('loginOtpError');
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/login/resend', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ challenge_id: loginChallengeId }),
+      });
+      const data = await res.json();
+      if(!res.ok){ showError('loginOtpError', (data.error && data.error.message) || 'Impossible de renvoyer le code.'); return; }
+      loginChallengeId = data.challenge_id;
+      document.getElementById('loginOtpCode').value = '';
+      startLoginResendCooldown(60);
+    }catch(err){
+      showError('loginOtpError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }
+  }
+
+  /* ===== Show / hide password ===== */
+  const eyeOpen = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const eyeOff = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a20.6 20.6 0 0 1 4.22-5.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 7 11 7a20.6 20.6 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  function togglePw(id, btn){
+    const input = document.getElementById(id);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = show ? eyeOff : eyeOpen;
+    btn.setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  }
+
+  /* ===== Phone formatting ===== */
+  function formatPhone(input){
+    let digits = input.value.replace(/\D/g,'').slice(0,10);
+    let formatted = digits;
+    if(digits.length>4){ formatted = digits.slice(0,2)+' '+digits.slice(2,4)+' '+digits.slice(4); }
+    else if(digits.length>2){ formatted = digits.slice(0,2)+' '+digits.slice(2); }
+    input.value = formatted;
+    markValid(input, digits.length>=7);
+  }
+
+  /* ===== Real-time validation ===== */
+  function markValid(input, isValid){
+    const field = input.closest('.field');
+    if(!field) return;
+    if(!input.value.trim()){ field.classList.remove('valid','invalid'); return; }
+    field.classList.toggle('valid', isValid);
+    field.classList.toggle('invalid', !isValid);
+  }
+
+  function checkPwConfirm(){
+    const pw = document.getElementById('signupPassword').value;
+    const pw2 = document.getElementById('signupPasswordConfirm');
+    if(!pw2.value){ pw2.closest('.field').classList.remove('valid','invalid'); return; }
+    markValid(pw2, pw2.value===pw && pw.length>=8);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const email = document.getElementById('signupEmail');
+    if(email) email.addEventListener('input', function(){ markValid(this, emailPattern.test(this.value.trim())); });
+
+    const loginEmail = document.getElementById('loginEmail');
+    if(loginEmail) loginEmail.addEventListener('input', function(){ markValid(this, emailPattern.test(this.value.trim())); });
+
+    ['businessName','indFirstName','indLastName','repName'].forEach(function(id){
+      const el = document.getElementById(id);
+      if(el) el.addEventListener('input', function(){ markValid(this, this.value.trim().length>0); });
+    });
+
+    const businessType = document.getElementById('businessType');
+    if(businessType) businessType.addEventListener('change', function(){ markValid(this, !!this.value); });
+
+    const phoneCountry = document.getElementById('phoneCountry');
+    const signupCountry = document.getElementById('signupCountry');
+    if(window.FREDA_COUNTRIES && phoneCountry && signupCountry){
+      FREDA_COUNTRIES.fill(signupCountry, 'iso', 'Sélectionner…');
+      FREDA_COUNTRIES.fill(phoneCountry, 'dial', 'Pays…');
+      // No pre-selected country: it is compliance data, so the visitor chooses it deliberately.
+      // choosing the country pre-selects its dial code (still editable)
+      signupCountry.addEventListener('change', function(){ markValid(this, !!this.value); if(this.value) FREDA_COUNTRIES.selectIso(phoneCountry, this.value); });
+    }
+    if(phoneCountry) phoneCountry.addEventListener('change', function(){ markValid(this, !!this.value); });
+
+    const pw = document.getElementById('signupPassword');
+    if(pw) pw.addEventListener('input', function(){ markValid(this, this.value.length>=8); checkPwConfirm(); });
+
+    const pw2 = document.getElementById('signupPasswordConfirm');
+    if(pw2) pw2.addEventListener('input', checkPwConfirm);
+  });
+
+  /* ===== Team invitation: an invited person sets a password ===== */
+  let inviteToken = null;
+
+  async function initInvite(){
+    inviteToken = new URLSearchParams(window.location.search).get('invite');
+    if(!inviteToken) return;
+    document.getElementById('authTabsRow').style.display = 'none';
+    ['viewLogin','viewForgot','viewSignup'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('viewInvite').classList.add('active');
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/invite-info?token=' + encodeURIComponent(inviteToken));
+      const data = await res.json();
+      if(!res.ok) throw new Error((data.error && data.error.message) || "Ce lien d'invitation est invalide.");
+      const roleLabel = data.role === 'admin' ? 'Administrateur' : 'Lecture seule';
+      document.getElementById('inviteSub').textContent = 'Vous êtes invité à rejoindre ' + data.business_name + ' (' + roleLabel + ').';
+      document.getElementById('inviteEmailShown').value = data.email;
+      document.getElementById('inviteForm').hidden = false;
+    }catch(err){
+      document.getElementById('inviteSub').textContent = '';
+      showError('inviteError', err.message || "Ce lien d'invitation est invalide.");
+    }
+  }
+
+  async function handleAcceptInvite(e){
+    e.preventDefault();
+    hideError('inviteError');
+    const p1 = document.getElementById('invitePassword').value;
+    const p2 = document.getElementById('invitePassword2').value;
+    if(p1.length < 8){ showError('inviteError', 'Le mot de passe doit contenir au moins 8 caractères.'); return false; }
+    if(p1 !== p2){ showError('inviteError', 'Les deux mots de passe ne correspondent pas.'); return false; }
+    const btn = document.getElementById('inviteSubmitBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/accept-invite', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ token: inviteToken, password: p1 }),
+      });
+      const data = await res.json();
+      if(!res.ok){ showError('inviteError', (data.error && data.error.message) || 'Activation impossible.'); return false; }
+      saveSession(data.session_token, data.merchant);
+      window.location.href = pageUrl('dashboard');
+    }catch(err){
+      showError('inviteError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{
+      setLoading(btn, false);
+    }
+    return false;
+  }
+  document.addEventListener('DOMContentLoaded', initInvite);
+  document.addEventListener('DOMContentLoaded', initReset);
+</script>
+
+<script src="/analytics.js" defer></script>
+</body>
+</html>

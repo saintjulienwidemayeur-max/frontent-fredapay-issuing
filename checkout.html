@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payer : Freda Pay Payment Gateway</title>
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="favicon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111111; --gold:#ff4081; --gold-light:#ff80ab; --gold-soft:rgba(255,64,129,.08);
+    --muted:#666666; --line:#e5e5e5; --bg-soft:#f6f6f6;
+    --green:#16a34a; --green-soft:#dcfce7; --red:#dc2626; --red-soft:#fee2e2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:#f4f1f3;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  .topbrand{display:flex;align-items:center;justify-content:center;gap:10px;padding:26px 20px 10px}
+  .topbrand .mark{width:34px;height:34px;border-radius:9px;overflow:hidden;background:var(--gold)}
+  .topbrand .mark img{width:100%;height:100%;object-fit:cover;display:block}
+  .topbrand .brand-text{font-weight:800;font-size:1.05rem;color:var(--ink)}
+  .topbrand .brand-issuing{color:var(--gold);font-weight:800;margin-left:4px}
+
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+  [hidden]{display:none !important}
+  .checkout-card{width:100%;max-width:440px;background:#fff;border-radius:22px;box-shadow:0 30px 70px -25px rgba(0,0,0,.25);overflow:hidden}
+
+  .amount-hero{background:linear-gradient(135deg,#1a0d16,#2a0f1d 60%,#3a0f22);color:#fff;padding:34px 30px 28px;text-align:center;position:relative;overflow:hidden}
+  .amount-hero::before{content:"";position:absolute;top:-90px;right:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle, rgba(255,64,129,.35), transparent 70%)}
+  .amount-hero .to{position:relative;font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:6px}
+  .amount-hero .biz{position:relative;font-weight:800;font-size:1.05rem;margin-bottom:18px}
+  .amount-hero .amt{position:relative;font-size:2.3rem;font-weight:900;letter-spacing:-.02em}
+  .amount-hero .desc{position:relative;font-size:.85rem;color:rgba(255,255,255,.65);margin-top:6px}
+
+  .body-pad{padding:26px 28px 30px}
+  .section-label{font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:12px}
+
+  .method-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+  .method-card{display:flex;align-items:center;gap:14px;border:2px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s}
+  .method-card.disabled{cursor:not-allowed;opacity:.5;filter:grayscale(.4)}
+  .method-card.disabled:hover{border-color:var(--line)}
+  .method-card:hover{border-color:var(--gold-light)}
+  .method-card.selected{border-color:var(--gold);background:var(--gold-soft)}
+  .method-card .micon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-weight:900;font-size:.72rem;color:#fff;letter-spacing:-.02em;overflow:hidden}
+  .mi-moncash{background:#fff;border:1px solid var(--line);padding:6px}
+  .mi-moncash img{width:100%;height:100%;object-fit:contain}
+  .mi-natcash{background:#fff;border:1px solid var(--line)}
+  .mi-natcash img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+  .mi-carte{background:linear-gradient(135deg,#334155,#0f172a)}
+  .method-card .mname{font-weight:700;font-size:.92rem}
+  .method-card .msub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .method-card .mcheck{margin-left:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0}
+  .method-card.selected .mcheck{border-color:var(--gold);background:var(--gold);position:relative}
+  .method-card.selected .mcheck::after{content:"";position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+
+  .field{margin:14px 0}
+  .field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:7px}
+  .field input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--line);font-size:.94rem;font-family:inherit}
+  .field input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border-radius:12px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;transition:.18s ease;font-family:inherit;background:var(--ink);color:#fff;margin-top:8px}
+  .btn:hover{background:#2a2a2a;transform:translateY(-1px)}
+  .btn:disabled{background:#d8d8d8;color:#999;cursor:not-allowed;transform:none}
+  .btn .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+  .btn.loading .btn-label{visibility:hidden;position:absolute}
+  .btn.loading{position:relative;color:transparent}
+  .btn.loading .spinner{display:inline-block;position:absolute}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .secured-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:18px;font-size:.74rem;color:var(--muted)}
+
+  .state-view{display:none;text-align:center;padding:10px 4px}
+  .state-view.active{display:block}
+  .state-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px}
+  .state-icon.pending{background:var(--gold-soft);color:var(--gold)}
+  .state-icon.pending svg{animation:spin 1.1s linear infinite}
+  .state-icon.success{background:var(--green-soft);color:var(--green);animation:popIn .45s cubic-bezier(.2,1.4,.4,1)}
+  .state-icon.error{background:var(--red-soft);color:var(--red)}
+  @keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  .state-view h2{font-size:1.2rem;margin-bottom:8px}
+  .state-view p{font-size:.88rem;color:var(--muted);line-height:1.6}
+
+  footer{text-align:center;padding:18px 20px 26px;font-size:.76rem;color:#999}
+</style>
+</head>
+<body>
+
+<div class="topbrand">
+  <span class="mark"><img src="logo.png" alt="Freda Pay"></span>
+  <span class="brand-text">FREDA PAY <span class="brand-issuing">PAYMENT GATEWAY</span></span>
+</div>
+
+<main>
+  <div class="checkout-card">
+
+    <div class="amount-hero">
+      <div class="to">Paiement pour</div>
+      <div class="biz" id="bizName">-</div>
+      <div class="amt" id="amt">-</div>
+      <div class="desc" id="desc" hidden></div>
+    </div>
+
+    <div class="body-pad">
+
+      <!-- Method selection view -->
+      <div class="state-view active" id="view-select">
+        <div class="field" id="openAmountField" hidden>
+          <label>Montant à payer (<span id="openCur">HTG</span>)</label>
+          <input type="number" id="openAmount" placeholder="Ex : 500" oninput="validatePayButton()">
+        </div>
+
+        <div class="section-label">Choisissez votre méthode de paiement</div>
+        <div class="method-grid">
+          <div class="method-card" id="mc-moncash" data-method="moncash" onclick="selectMethod('moncash')">
+            <div class="micon mi-moncash"><img src="https://moncashdfs.com/theme/images/logo.png" alt="MonCash"></div>
+            <div><div class="mname">MonCash</div><div class="msub" id="sub-moncash">Paiement mobile en HTG</div></div>
+            <div class="mcheck"></div>
+          </div>
+          <div class="method-card" id="mc-natcash" data-method="natcash" onclick="selectMethod('natcash')">
+            <div class="micon mi-natcash"><img src="https://play-lh.googleusercontent.com/VSzs3X7r3DNthDl1jvhmtrAY7p1jX2LeX3i7l9uZsolwVU85CapsmKYPdPzkp4ZQrEKf6nsHmuk9qUbbZWKp2bc=s256" alt="Natcash"></div>
+            <div><div class="mname">Natcash</div><div class="msub" id="sub-natcash">Paiement mobile en HTG</div></div>
+            <div class="mcheck"></div>
+          </div>
+          <div class="method-card" id="mc-carte" data-method="carte" onclick="selectMethod('carte')">
+            <div class="micon mi-carte">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
+            </div>
+            <div><div class="mname">Carte de débit/crédit</div><div class="msub" id="sub-carte">Visa, Mastercard · paiement en USD</div></div>
+            <div class="mcheck"></div>
+          </div>
+        </div>
+
+        <div id="cardInfoFields" hidden>
+          <div class="field">
+            <label>Nom sur la carte</label>
+            <input type="text" id="payerName" placeholder="Prénom Nom" autocomplete="name">
+          </div>
+          <div class="field">
+            <label>Email <span style="font-weight:400;color:var(--muted)">(pour votre reçu, facultatif)</span></label>
+            <input type="email" id="payerEmail" placeholder="vous@exemple.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="field" id="phoneField" hidden>
+          <label>Numéro de téléphone</label>
+          <input type="tel" id="payerPhone" placeholder="509XXXXXXXX" inputmode="numeric">
+        </div>
+
+        <button class="btn" id="payBtn" disabled onclick="startPayment()">
+          <span class="btn-label">Payer</span><span class="spinner"></span>
+        </button>
+
+        <div class="secured-row">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Paiement sécurisé par Freda Pay Payment Gateway
+        </div>
+      </div>
+
+      <!-- Card form view: the card fields are shown by the secure payment widget, never handled by this page -->
+      <div class="state-view" id="view-card">
+        <div class="section-label">Entrez les informations de votre carte</div>
+        <div id="card-element" style="min-height:120px;margin-bottom:14px"></div>
+        <div id="cardError" style="color:#b91c1c;font-size:.85rem;margin-bottom:10px" hidden></div>
+        <button class="btn" id="cardPayBtn" onclick="confirmCard()">
+          <span class="btn-label" id="cardPayLabel">Payer</span><span class="spinner"></span>
+        </button>
+        <div class="secured-row">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Vos informations de carte sont chiffrées et ne passent jamais par nos serveurs
+        </div>
+      </div>
+
+      <!-- Pending / redirect view -->
+      <div class="state-view" id="view-pending">
+        <div class="state-icon pending">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        </div>
+        <h2>En attente de confirmation</h2>
+        <p id="pendingText">Complétez le paiement sur votre téléphone, puis revenez ici.</p>
+      </div>
+
+      <!-- Success view -->
+      <div class="state-view" id="view-success">
+        <div class="state-icon success">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2>Paiement réussi</h2>
+        <p>Merci ! Votre paiement a été confirmé.</p>
+        <a class="btn" id="returnBtn" href="#" style="margin-top:18px;text-decoration:none;display:none;justify-content:center" rel="noopener">Retourner au site du marchand</a>
+      </div>
+
+      <!-- Error view -->
+      <div class="state-view" id="view-error">
+        <div class="state-icon error">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+        </div>
+        <h2 id="errorTitle">Une erreur est survenue</h2>
+        <p id="errorText">Veuillez réessayer.</p>
+        <button class="btn btn-ghost" id="errorRetry" style="margin-top:18px;background:transparent;border:1px solid var(--line);color:var(--ink)" onclick="resetToSelect()">Réessayer</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>© <span id="year"></span> Freda Pay LLC · <span id="footerNote">Ce lien est fourni par un marchand utilisant Freda Pay Payment Gateway.</span></footer>
+
+<script>
+  const API_BASE_URL = window.FREDA_API_BASE_URL || 'https://api.fredapay.com';
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const params = new URLSearchParams(window.location.search);
+  const linkId = params.get('link');
+  let selectedMethod = null;
+  let linkInfo = null;
+
+  function fmtAmount(amount, currency){
+    if(amount == null) return 'Montant libre';
+    if(currency === 'USD') return Number(amount).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' $';
+    return Number(amount).toLocaleString('fr-FR') + ' ' + (currency || 'HTG');
+  }
+
+  function showState(id){
+    document.querySelectorAll('.state-view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function resetToSelect(){
+    showState('view-select');
+  }
+
+  function selectMethod(method){
+    selectedMethod = method;
+    document.querySelectorAll('.method-card').forEach(c => c.classList.toggle('selected', c.dataset.method===method));
+    document.getElementById('phoneField').hidden = true;
+    document.getElementById('cardInfoFields').hidden = method !== 'carte';
+    validatePayButton();
+  }
+
+  function validatePayButton(){
+    const btn = document.getElementById('payBtn');
+    const openAmountOk = linkInfo && linkInfo.amount != null
+      ? true
+      : (parseFloat(document.getElementById('openAmount').value) > 0);
+    btn.disabled = !(selectedMethod && openAmountOk);
+    showMethodAmounts();
+    if(linkInfo && linkInfo.amount == null){
+      const val = parseFloat(document.getElementById('openAmount').value);
+      document.getElementById('amt').textContent = val > 0 ? fmtAmount(val, linkInfo.currency) : 'Montant libre';
+    }
+  }
+
+  /** "Vous paierez X" under each method (same rule as the server: fixed rate, USD for card, HTG for MonCash / Natcash). */
+  function chargeIn(amount, method){
+    const cur = method === 'carte' ? 'USD' : 'HTG';
+    if(!linkInfo || linkInfo.currency === cur) return { amount, currency: cur };
+    const rate = linkInfo.rate_htg_per_usd || 133;
+    return cur === 'USD' ? { amount: Math.round(amount / rate * 100) / 100, currency: cur } : { amount: Math.round(amount * rate), currency: cur };
+  }
+  function showMethodAmounts(){
+    const amt = currentAmount();
+    const ok = amt > 0;
+    [['moncash','Paiement mobile'],['natcash','Paiement mobile'],['carte','Visa, Mastercard']].forEach(function(m){
+      const el = document.getElementById('sub-' + m[0]);
+      if(!el) return;
+      if(!ok){ el.textContent = m[0] === 'carte' ? m[1] + ' · paiement en USD' : m[1] + ' en HTG'; return; }
+      const c = chargeIn(amt, m[0]);
+      el.textContent = m[1] + ' · vous paierez ' + fmtAmount(c.amount, c.currency);
+    });
+  }
+
+  function currentAmount(){
+    if(linkInfo && linkInfo.amount != null) return Number(linkInfo.amount);
+    return parseFloat(document.getElementById('openAmount').value);
+  }
+
+  async function loadLink(){
+    if(!linkId){
+      document.getElementById('bizName').textContent = 'Lien invalide';
+      document.getElementById('amt').textContent = '-';
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Lien de paiement invalide';
+      document.getElementById('errorText').textContent = "Aucun lien n'a été fourni dans l'adresse.";
+      return;
+    }
+    try{
+      const res = await fetch(API_BASE_URL + '/public/payment-links/' + linkId);
+      const data = await res.json();
+      if(!res.ok){
+        document.getElementById('bizName').textContent = 'Lien introuvable';
+        document.getElementById('amt').textContent = '-';
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Ce lien n\u2019est plus disponible';
+        document.getElementById('errorText').textContent = (data.error && data.error.message) || 'Le lien a peut-être été désactivé par le marchand.';
+        return;
+      }
+      linkInfo = data;
+      // One link, every method: the amount is converted to the currency of the method chosen.
+      document.getElementById('openCur').textContent = data.currency === 'USD' ? 'USD' : 'HTG';
+      showMethodAmounts();
+      document.getElementById('bizName').textContent = data.business_name;
+      document.getElementById('amt').textContent = fmtAmount(data.amount, data.currency);
+      if(data.description){
+        const d = document.getElementById('desc');
+        d.textContent = data.description;
+        d.hidden = false;
+      }
+      if(data.amount == null){
+        document.getElementById('openAmountField').hidden = false;
+      }
+    }catch(err){
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Connexion impossible';
+      document.getElementById('errorText').textContent = "Impossible de contacter le serveur de paiement.";
+    }
+  }
+
+  async function startPayment(){
+    if(!selectedMethod) return;
+    const amount = currentAmount();
+    if(!amount || amount<=0){ return; }
+    const btn = document.getElementById('payBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    try{
+      const body = { method: selectedMethod };
+      if(linkInfo && linkInfo.amount == null) body.amount = amount;
+      if(selectedMethod === 'carte'){
+        body.customer_name = document.getElementById('payerName').value.trim() || undefined;
+        body.customer_email = document.getElementById('payerEmail').value.trim() || undefined;
+      }
+      const res = await fetch(API_BASE_URL + '/public/payment-links/' + linkId + '/pay', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Paiement refusé';
+        document.getElementById('errorText').textContent = (data.error && data.error.message) || 'Veuillez réessayer.';
+        return;
+      }
+      if(selectedMethod === 'carte' && data.card){
+        showCardForm(data);
+        return;
+      }
+      showState('view-pending');
+      if(data.checkout_url){
+        document.getElementById('pendingText').innerHTML = 'Une nouvelle fenêtre va s\u2019ouvrir pour finaliser votre paiement ' + selectedMethod + '. Revenez sur cet onglet une fois terminé.';
+        window.open(data.checkout_url, '_blank');
+      }
+      pollPaymentStatus(data.id);
+    }catch(err){
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Connexion impossible';
+      document.getElementById('errorText').textContent = "Impossible de contacter le serveur de paiement.";
+    }finally{
+      btn.classList.remove('loading');
+    }
+  }
+
+  /* ===== Card payment: the partner's secure widget shows the card fields; "success" there only updates the screen,
+     the real confirmation always comes from our server (which gets it from the partner's signed notification). ===== */
+  let cardPaymentId = null;
+  function loadCardScript(){
+    return new Promise((resolve, reject) => {
+      if(window.TranzakCard) return resolve();
+      const sc = document.createElement('script');
+      sc.src = 'https://api.tranzak.co/js/tranzak-card.js';
+      sc.onload = () => resolve();
+      sc.onerror = () => reject(new Error('script'));
+      document.head.appendChild(sc);
+    });
+  }
+  async function showCardForm(data){
+    cardPaymentId = data.id;
+    const cc = hosted ? { amount: data.amount, currency: data.currency } : chargeIn(currentAmount(), 'carte');
+    document.getElementById('cardPayLabel').textContent = 'Payer ' + fmtAmount(cc.amount, cc.currency);
+    document.getElementById('cardError').hidden = true;
+    showState('view-card');
+    try{
+      await loadCardScript();
+      document.getElementById('card-element').innerHTML = '';
+      window.TranzakCard.mount({ containerId: 'card-element', clientSecret: data.card.client_secret, publishableKey: data.card.publishable_key });
+    }catch(err){
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Formulaire de carte indisponible';
+      document.getElementById('errorText').textContent = 'Impossible de charger le formulaire de paiement par carte. Vérifiez votre connexion et réessayez.';
+    }
+  }
+  function confirmCard(){
+    const btn = document.getElementById('cardPayBtn');
+    const err = document.getElementById('cardError');
+    err.hidden = true;
+    btn.classList.add('loading'); btn.disabled = true;
+    window.TranzakCard.confirm({
+      onSuccess: function(){
+        btn.classList.remove('loading');
+        showState('view-pending');
+        document.getElementById('pendingText').textContent = 'Nous confirmons votre paiement, cela ne prend que quelques secondes.';
+        pollPaymentStatus(cardPaymentId);
+      },
+      onError: function(e){
+        btn.classList.remove('loading'); btn.disabled = false;
+        err.textContent = (e && e.message) || 'La carte a été refusée. Essayez une autre carte.';
+        err.hidden = false;
+      },
+    });
+  }
+
+  /* ===== Hosted card page: opened from an integration (plugin, custom site) with ?payment=...&t=... ===== */
+  const hostedId = params.get('payment');
+  const hostedToken = params.get('t');
+  const hosted = !!hostedId;
+  let returnUrl = null;
+  function showSuccess(){
+    showState('view-success');
+    const b = document.getElementById('returnBtn');
+    if(returnUrl){ b.href = returnUrl; b.style.display = 'flex'; setTimeout(function(){ window.location.href = returnUrl; }, 4000); }
+  }
+  async function loadCardCheckout(){
+    document.getElementById('footerNote').textContent = 'Ce paiement est demandé par un marchand utilisant Freda Pay Payment Gateway.';
+    try{
+      const res = await fetch(API_BASE_URL + '/public/card-checkout/' + encodeURIComponent(hostedId) + '?t=' + encodeURIComponent(hostedToken || ''));
+      const data = await res.json();
+      if(!res.ok){
+        document.getElementById('bizName').textContent = 'Paiement introuvable';
+        document.getElementById('amt').textContent = '-';
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Ce lien n\u2019est plus disponible';
+        document.getElementById('errorText').textContent = (data.error && data.error.message) || 'Retournez sur le site du marchand et recommencez.';
+        document.getElementById('errorRetry').style.display = 'none';
+        return;
+      }
+      returnUrl = data.return_url;
+      document.getElementById('bizName').textContent = data.business_name;
+      document.getElementById('amt').textContent = fmtAmount(data.amount, data.currency);
+      if(data.reference){ const d = document.getElementById('desc'); d.textContent = 'Référence : ' + data.reference; d.hidden = false; }
+      if(data.status === 'succeeded'){ showSuccess(); return; }
+      if(data.status === 'failed'){
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Paiement échoué';
+        document.getElementById('errorText').textContent = 'Ce paiement n\u2019a pas abouti. Retournez sur le site du marchand pour réessayer.';
+        document.getElementById('errorRetry').style.display = 'none';
+        return;
+      }
+      showCardForm({ id: hostedId, amount: data.amount, currency: data.currency, card: data.card });
+    }catch(err){
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Connexion impossible';
+      document.getElementById('errorText').textContent = "Impossible de contacter le serveur de paiement.";
+    }
+  }
+
+  async function pollPaymentStatus(paymentId, attempt){
+    attempt = attempt || 0;
+    if(attempt > 60){
+      showState('view-error');
+      document.getElementById('errorTitle').textContent = 'Délai dépassé';
+      document.getElementById('errorText').textContent = 'La confirmation prend plus de temps que prévu. Contactez le marchand si le montant a bien été débité.';
+      return;
+    }
+    try{
+      const res = await fetch(hosted
+        ? API_BASE_URL + '/public/card-checkout/' + encodeURIComponent(hostedId) + '/status?t=' + encodeURIComponent(hostedToken || '')
+        : API_BASE_URL + '/public/payment-links/' + linkId + '/payments/' + paymentId);
+      const data = await res.json();
+      if(data.return_url) returnUrl = data.return_url;
+      if(data.status === 'succeeded'){ showSuccess(); return; }
+      if(data.status === 'failed'){
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Paiement échoué';
+        document.getElementById('errorText').textContent = 'Le paiement n\u2019a pas pu être confirmé. Vous pouvez réessayer.';
+        return;
+      }
+      setTimeout(() => pollPaymentStatus(paymentId, attempt+1), 3000);
+    }catch(err){
+      setTimeout(() => pollPaymentStatus(paymentId, attempt+1), 4000);
+    }
+  }
+
+  if(hosted) loadCardCheckout(); else loadLink();
+</script>
+
+</body>
+</html>

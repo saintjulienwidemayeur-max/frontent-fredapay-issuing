@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Espaces privés (connexion requise) : jamais indexés.
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /admin
+Disallow: /admin.html
+# Anciens noms, au cas où un vieux lien serait encore exploré
+Disallow: /freda-pay-sandbox
+Disallow: /freda-pay-checkout
+
+Sitemap: https://issuing.fredapay.com/sitemap.xml
