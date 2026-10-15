@@ -19,6 +19,9 @@ export default {
       });
       const headers = new Headers(upstream.headers);
       headers.delete('set-cookie');
+      // Anti-cache : toujours la derniere version du blog / sitemap (navigateur et CDN)
+      headers.set('Cache-Control', 'no-cache, must-revalidate');
+      headers.set('CDN-Cache-Control', 'no-cache');
       return new Response(upstream.body, { status: upstream.status, headers });
     } catch (e) {
       return new Response('Service temporairement indisponible.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

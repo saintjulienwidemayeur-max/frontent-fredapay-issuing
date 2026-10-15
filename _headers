@@ -13,16 +13,10 @@
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
 
-# Fichiers statiques qui changent rarement (le HTML garde le cache par défaut)
-/images/*
-  Cache-Control: public, max-age=604800
-/team/*
-  Cache-Control: public, max-age=604800
-/press-kit/*
-  Cache-Control: public, max-age=604800
-/favicon*
-  Cache-Control: public, max-age=604800
-/apple-touch-icon.png
-  Cache-Control: public, max-age=604800
-/analytics.js
-  Cache-Control: public, max-age=86400
+# Anti-cache : le navigateur doit TOUJOURS revalider aupres du serveur avant de reutiliser un fichier
+# (HTML, JS, images...). Si rien n'a change, le serveur repond 304 (rapide) ; sinon la derniere version est servie.
+# Les regles s'additionnent : /dashboard et /checkout ci-dessus donnent "no-cache, no-store" (no-store l'emporte).
+/*
+  Cache-Control: no-cache, must-revalidate
+  CDN-Cache-Control: no-cache
+  Cloudflare-CDN-Cache-Control: no-cache
