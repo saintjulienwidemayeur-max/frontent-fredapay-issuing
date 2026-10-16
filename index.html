@@ -360,6 +360,25 @@
     .btn{padding:11px 20px;font-size:.92rem;border-radius:10px;white-space:nowrap}
     .hero-cta{gap:10px}
   }
+
+  /* Moyens de paiement acceptés : défilement de gauche à droite */
+  .pm-marquee-section{padding:34px 0 10px;text-align:center}
+  .pm-marquee-title{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .pm-marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .pm-track{display:flex;width:max-content;animation:pmScroll 28s linear infinite}
+  .pm-marquee:hover .pm-track{animation-play-state:paused}
+  .pm-group{display:flex;gap:14px;padding-right:14px}
+  .pm-pill{display:inline-flex;align-items:center;height:44px;padding:0 22px;border:1px solid var(--line,#e5e5e5);border-radius:12px;background:#fff;font-weight:800;font-size:.95rem;white-space:nowrap;box-shadow:0 6px 16px -10px rgba(0,0,0,.25)}
+  .pm-visa{color:#1a1f71;font-style:italic;letter-spacing:.02em}
+  .pm-mc{color:#eb001b}
+  .pm-moncash{color:#d71920}
+  .pm-natcash{color:#f59e0b}
+  .pm-amz{color:#232f3e}
+  .pm-cash{color:#00a63e}
+  .pm-link{color:#00b36b}
+  .pm-marquee-note{font-size:.78rem;color:var(--muted);margin-top:12px;padding:0 16px}
+  @keyframes pmScroll{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+  @media (prefers-reduced-motion:reduce){.pm-track{animation:none}.pm-marquee{overflow-x:auto}}
 </style>
 </head>
 <body>
@@ -491,6 +510,18 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Moyens de paiement acceptés (défilement de gauche à droite) -->
+  <section class="pm-marquee-section" aria-label="Moyens de paiement acceptés">
+    <p class="pm-marquee-title">Moyens de paiement acceptés</p>
+    <div class="pm-marquee">
+      <div class="pm-track">
+        <div class="pm-group"><span class="pm-pill pm-visa">VISA</span><span class="pm-pill pm-mc">Mastercard</span><span class="pm-pill pm-moncash">MonCash</span><span class="pm-pill pm-natcash">Natcash</span><span class="pm-pill pm-amz">Amazon Pay</span><span class="pm-pill pm-cash">Cash App</span><span class="pm-pill pm-link">Link</span></div>
+        <div class="pm-group" aria-hidden="true"><span class="pm-pill pm-visa">VISA</span><span class="pm-pill pm-mc">Mastercard</span><span class="pm-pill pm-moncash">MonCash</span><span class="pm-pill pm-natcash">Natcash</span><span class="pm-pill pm-amz">Amazon Pay</span><span class="pm-pill pm-cash">Cash App</span><span class="pm-pill pm-link">Link</span></div>
+      </div>
+    </div>
+    <p class="pm-marquee-note">Amazon Pay, Cash App et Link sont proposés dans le formulaire de carte selon le pays du client.</p>
   </section>
 
   <!-- SHOWCASE : Experyans peman an (NatCash/MonCash + Cartes) -->
@@ -948,6 +979,7 @@ $payment = $freda->payments-><span class="tok-f">create</span>([
           <a href="mailto:issuing@fredapay.com?subject=Demande%20Business" class="btn btn-outline">Nous contacter</a>
         </div>
       </div>
+      <p class="center" style="margin-top:18px;font-size:.92rem;font-weight:700">Paiement par carte (Visa, Mastercard) : 7 % + 0,50 $ en Standard, 6 % + 0,50 $ en Pro, 5 % + 0,50 $ en Business, par transaction.</p>
       <p class="center" style="margin-top:18px;font-size:.88rem;color:var(--muted)">Le Gateway et l'Issuing sont indépendants : utilisez uniquement l'encaissement, uniquement l'émission de cartes, ou les deux ensemble sur la même plateforme.</p>
 
       <!-- ===== Card Issuing ===== -->

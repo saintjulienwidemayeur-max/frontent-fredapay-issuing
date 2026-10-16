@@ -55,6 +55,8 @@
   .mi-natcash img{width:100%;height:100%;object-fit:cover;border-radius:9px}
   .mi-carte{background:#fff;border:1px solid var(--line)}
   .method-card>div:not(.micon):not(.mcheck){text-align:left;min-width:0}
+  .testcard{margin:12px 0 4px;padding:10px 12px;border:1px dashed #f59e0b;background:#fffbeb;border-radius:10px;font-size:.78rem;color:#92400e;line-height:1.5;text-align:left}
+  .testcard b{font-family:ui-monospace,Menlo,monospace}
   .logos{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
   .lg{display:inline-flex;align-items:center;height:15px;padding:0 5px;border:1px solid var(--line);border-radius:4px;background:#fff;font-size:.5rem;font-weight:800;line-height:1;letter-spacing:.01em;color:#334155}
   .lg-visa{color:#1a1f71;font-style:italic}
@@ -184,6 +186,7 @@
           <input type="tel" id="payerPhone" placeholder="509XXXXXXXX" inputmode="numeric">
         </div>
 
+        <div class="testcard" id="testCardSelect" hidden><strong>Mode test</strong> : payez avec la carte <b>4242 4242 4242 4242</b>, date <b>05/27</b>, CVV <b>088</b>. Aucun argent réel n'est débité.</div>
         <button class="btn" id="payBtn" disabled onclick="startPayment()">
           <span class="btn-label">Payer</span><span class="spinner"></span>
         </button>
@@ -197,6 +200,7 @@
       <!-- Card form view: the card fields are shown by the secure payment widget, never handled by this page -->
       <div class="state-view" id="view-card">
         <div class="pm-title">Mode de paiement</div>
+        <div class="testcard" id="testCardForm" hidden><strong>Mode test</strong> : payez avec la carte <b>4242 4242 4242 4242</b>, date <b>05/27</b>, CVV <b>088</b>. Aucun argent réel n'est débité.</div>
         <div class="pm-box">
           <div class="pm-head">
             <span class="pm-radio"></span>
@@ -283,6 +287,12 @@
     alt.hidden = false;
   }
 
+  /** The test card is shown only in sandbox (a test link / test payment). */
+  function showTestCard(mode){
+    const on = mode === 'sandbox';
+    ['testCardSelect','testCardForm'].forEach(function(id){ const el = document.getElementById(id); if(el) el.hidden = !on; });
+  }
+
   function showState(id){
     document.querySelectorAll('.state-view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -358,6 +368,7 @@
         return;
       }
       linkInfo = data;
+      showTestCard(data.mode);
       // One link, every method: the amount is converted to the currency of the method chosen.
       document.getElementById('openCur').textContent = data.currency === 'USD' ? 'USD' : 'HTG';
       showMethodAmounts();
@@ -497,6 +508,7 @@
         return;
       }
       returnUrl = data.return_url;
+      showTestCard(data.mode);
       document.getElementById('bizName').textContent = data.business_name;
       setHeroAmount(data.amount, data.currency, data.rate_htg_per_usd);
       if(data.reference){ const d = document.getElementById('desc'); d.textContent = 'Référence : ' + data.reference; d.hidden = false; }
