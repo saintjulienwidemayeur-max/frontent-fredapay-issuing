@@ -189,6 +189,7 @@
   .key-row .klabel{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;width:150px;flex-shrink:0}
   .key-row code{flex:1;min-width:0;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .key-row-group{overflow:hidden}
+  .stat-card .value.gw-usd{margin-top:2px}
   .kit-logo{position:relative;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;flex-shrink:0;font-size:.7rem;color:var(--muted)}
   .kit-logo img{position:absolute;inset:6px;width:22px;height:22px;object-fit:contain;background:#fff}
   .key-row-head{flex-wrap:wrap}
@@ -794,11 +795,11 @@
       </div>
       <div class="card">
         <div class="section-title">Résumé Gateway</div>
-        <div class="section-desc" style="margin-bottom:14px">Argent entré et frais payés sur ce compte.</div>
+        <div class="section-desc" style="margin-bottom:14px">Argent entré et frais payés sur ce compte, en HTG (MonCash, Natcash) et en USD (carte).</div>
         <div class="stat-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-          <div class="stat-card"><div class="label">Total encaissé</div><div class="value" id="gwSummaryIn">-</div><div class="sub"><span id="gwSummaryInUsd"></span></div></div>
-          <div class="stat-card"><div class="label">Frais payés</div><div class="value" id="gwSummaryFees">-</div><div class="sub"><span id="gwSummaryFeesUsd"></span></div></div>
-          <div class="stat-card"><div class="label">Net reçu</div><div class="value" id="gwSummaryNet">-</div><div class="sub"><span id="gwSummaryNetUsd"></span></div></div>
+          <div class="stat-card"><div class="label">Total encaissé</div><div class="value" id="gwSummaryIn">-</div><div class="value gw-usd" id="gwSummaryInUsd">-</div></div>
+          <div class="stat-card"><div class="label">Frais payés</div><div class="value" id="gwSummaryFees">-</div><div class="value gw-usd" id="gwSummaryFeesUsd">-</div></div>
+          <div class="stat-card"><div class="label">Net reçu</div><div class="value" id="gwSummaryNet">-</div><div class="value gw-usd" id="gwSummaryNetUsd">-</div></div>
         </div>
       </div>
 
@@ -1824,7 +1825,7 @@
       document.getElementById('gwSummaryFees').textContent = Number(d.total_fees_htg).toLocaleString('fr-FR') + ' HTG';
       document.getElementById('gwSummaryNet').textContent = Number(d.total_net_htg).toLocaleString('fr-FR') + ' HTG';
       if(d.usd){
-        const u = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = ' · ' + fmtUSDFromApi(v); };
+        const u = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = fmtUSDFromApi(v); };
         u('gwSummaryInUsd', d.usd.total_in); u('gwSummaryFeesUsd', d.usd.total_fees); u('gwSummaryNetUsd', d.usd.total_net);
       }
     }catch(err){ /* silent */ }
