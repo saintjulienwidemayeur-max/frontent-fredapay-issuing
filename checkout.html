@@ -36,6 +36,7 @@
   .amount-hero .to{position:relative;font-size:.78rem;color:rgba(255,255,255,.6);margin-bottom:6px}
   .amount-hero .biz{position:relative;font-weight:800;font-size:1.05rem;margin-bottom:18px}
   .amount-hero .amt{position:relative;font-size:2.3rem;font-weight:900;letter-spacing:-.02em}
+  .amount-hero .amt-alt{position:relative;font-size:.95rem;font-weight:700;color:rgba(255,255,255,.75);margin-top:6px}
   .amount-hero .desc{position:relative;font-size:.85rem;color:rgba(255,255,255,.65);margin-top:6px}
 
   .body-pad{padding:26px 28px 30px}
@@ -116,6 +117,7 @@
       <div class="to">Paiement pour</div>
       <div class="biz" id="bizName">-</div>
       <div class="amt" id="amt">-</div>
+      <div class="amt-alt" id="amtAlt" hidden></div>
       <div class="desc" id="desc" hidden></div>
     </div>
 
@@ -251,6 +253,19 @@
     return Number(amount).toLocaleString('fr-FR') + ' ' + (currency || 'HTG');
   }
 
+  /** The top amount is shown in both currencies (HTG and USD) at the platform's fixed rate. */
+  function setHeroAmount(amount, currency, rate){
+    const main = document.getElementById('amt'), alt = document.getElementById('amtAlt');
+    if(amount == null || !(Number(amount) > 0)){ main.textContent = amount == null ? 'Montant libre' : '-'; alt.hidden = true; return; }
+    const r = Number(rate) || (linkInfo && linkInfo.rate_htg_per_usd) || 0;
+    if(!r){ main.textContent = fmtAmount(amount, currency); alt.hidden = true; return; }
+    const usd = currency === 'USD' ? Number(amount) : Math.round(Number(amount) / r * 100) / 100;
+    const htg = currency === 'USD' ? Math.round(Number(amount) * r) : Number(amount);
+    main.textContent = fmtAmount(htg, 'HTG');
+    alt.textContent = '≈ ' + fmtAmount(usd, 'USD');
+    alt.hidden = false;
+  }
+
   function showState(id){
     document.querySelectorAll('.state-view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -277,7 +292,7 @@
     showMethodAmounts();
     if(linkInfo && linkInfo.amount == null){
       const val = parseFloat(document.getElementById('openAmount').value);
-      document.getElementById('amt').textContent = val > 0 ? fmtAmount(val, linkInfo.currency) : 'Montant libre';
+      if(val > 0) setHeroAmount(val, linkInfo.currency); else { document.getElementById('amt').textContent = 'Montant libre'; document.getElementById('amtAlt').hidden = true; }
     }
   }
 
@@ -330,7 +345,7 @@
       document.getElementById('openCur').textContent = data.currency === 'USD' ? 'USD' : 'HTG';
       showMethodAmounts();
       document.getElementById('bizName').textContent = data.business_name;
-      document.getElementById('amt').textContent = fmtAmount(data.amount, data.currency);
+      setHeroAmount(data.amount, data.currency, data.rate_htg_per_usd);
       if(data.description){
         const d = document.getElementById('desc');
         d.textContent = data.description;
@@ -466,7 +481,7 @@
       }
       returnUrl = data.return_url;
       document.getElementById('bizName').textContent = data.business_name;
-      document.getElementById('amt').textContent = fmtAmount(data.amount, data.currency);
+      setHeroAmount(data.amount, data.currency, data.rate_htg_per_usd);
       if(data.reference){ const d = document.getElementById('desc'); d.textContent = 'Référence : ' + data.reference; d.hidden = false; }
       if(data.status === 'succeeded'){ showSuccess(); return; }
       if(data.status === 'failed'){
