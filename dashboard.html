@@ -187,7 +187,10 @@
   .key-row-group .key-row{margin-bottom:8px}
   .key-row-group .key-row:last-child{margin-bottom:0}
   .key-row .klabel{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;width:150px;flex-shrink:0}
-  .key-row code{flex:1;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .key-row code{flex:1;min-width:0;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .key-row-group{overflow:hidden}
+  .key-row-head{flex-wrap:wrap}
+  .key-row-group .key-row code{white-space:normal;overflow-wrap:anywhere;word-break:break-all}
   .key-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 10px;font-size:.74rem;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0}
   .key-btn:hover{background:var(--bg-soft)}
 
@@ -311,7 +314,7 @@
 
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,15,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.open{display:flex}
-  .modal-box{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px 26px 22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);animation:fadeIn .2s ease}
+  .modal-box{overflow-wrap:anywhere;background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px 26px 22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);animation:fadeIn .2s ease}
   /* Side-panel variant: anchored to the left edge, full height, more room
      to breathe than a centered popup - used for the card detail view. */
   .modal-overlay.side-panel{justify-content:flex-start;padding:0}
@@ -1329,7 +1332,7 @@
       <h3 id="confirmTitle">Confirmer</h3>
       <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
     </div>
-    <p id="confirmMessage" style="font-size:.86rem;color:var(--muted);margin-bottom:20px;line-height:1.6"></p>
+    <p id="confirmMessage" style="overflow-wrap:anywhere;word-break:break-word;font-size:.86rem;color:var(--muted);margin-bottom:20px;line-height:1.6"></p>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeConfirmModal()">Annuler</button>
       <button class="btn" style="flex:1" id="confirmActionBtn">Confirmer</button>
@@ -2982,15 +2985,19 @@
   function openPaymentDetail(row){
     const d = row.dataset;
     currentDisputePaymentId = d.id;
+    // A fee only exists once a payment succeeded: say so instead of showing a bare dash.
+    const feeLabel = d.status === 'Réussi'
+      ? (/^[0\s.,]*(HTG|\$)$/.test(String(d.fee).trim()) ? d.fee + ' (aucun frais sur votre plan)' : '- ' + d.fee)
+      : (d.fee === '-' ? 'Aucun frais (paiement non abouti)' : d.fee);
     document.getElementById('txModalTitle').textContent = 'Paiement ' + d.id;
     const rows = [
       ['Statut', d.status],
       ['Date', d.date],
       ['Client', d.client],
       ['Méthode', d.method],
-      ['Montant', d.amount],
-      ['Frais', d.fee],
-      ['Net reçu', d.net]
+      ['Montant payé par le client', d.amount],
+      ['Frais Freda Pay', feeLabel],
+      ['Net crédité sur votre solde', d.net]
     ];
     if(d.reason) rows.push(["Raison de l'échec", d.reason]);
     document.getElementById('txModalBody').innerHTML = rows.map(r =>
