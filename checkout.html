@@ -146,7 +146,7 @@
             <div class="micon mi-carte">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
             </div>
-            <div><div class="mname">Carte de débit/crédit</div><div class="msub" id="sub-carte">Visa, Mastercard · paiement en USD</div></div>
+            <div><div class="mname">Carte de débit/crédit</div><div class="msub" id="sub-carte">Visa, Mastercard, Amazon Pay, Cash App, Link · paiement en USD</div></div>
             <div class="mcheck"></div>
           </div>
         </div>
@@ -306,7 +306,7 @@
   function showMethodAmounts(){
     const amt = currentAmount();
     const ok = amt > 0;
-    [['moncash','Paiement mobile'],['natcash','Paiement mobile'],['carte','Visa, Mastercard']].forEach(function(m){
+    [['moncash','Paiement mobile'],['natcash','Paiement mobile'],['carte','Visa, Mastercard, Amazon Pay, Cash App, Link']].forEach(function(m){
       const el = document.getElementById('sub-' + m[0]);
       if(!el) return;
       if(!ok){ el.textContent = m[0] === 'carte' ? m[1] + ' · paiement en USD' : m[1] + ' en HTG'; return; }
