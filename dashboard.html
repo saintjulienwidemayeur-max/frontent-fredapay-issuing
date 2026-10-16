@@ -1857,7 +1857,7 @@
     const rows = payments.map(p => `
       <tr class="clickable" onclick="openPaymentDetail(this)"
           data-id="${p.id}" data-date="${fmtDate(p.created_at)}" data-client="${p.reference}"
-          data-method="${p.method}" data-amount="${p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount)}"
+          data-method="${p.method}" data-payer="${esc([p.customer_name, p.customer_email, p.customer_phone].filter(Boolean).join(' · '))}" data-amount="${p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount)}"
           data-status="${statusTagLabel(p.status)}" data-fee="${p.fee!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.fee) : fmtHTGFromApi(p.fee)) : '-'}" data-net="${p.net_amount!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.net_amount) : fmtHTGFromApi(p.net_amount)) : '-'}">
         <td>${fmtDate(p.created_at)}</td><td>${p.reference}</td><td>${p.method}</td>
         <td>${p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount)}</td>
@@ -2993,7 +2993,8 @@
     const rows = [
       ['Statut', d.status],
       ['Date', d.date],
-      ['Client', d.client],
+      ['Payé par', d.payer || 'Non renseigné'],
+      ['Référence', d.client],
       ['Méthode', d.method],
       ['Montant payé par le client', d.amount],
       ['Frais Freda Pay', feeLabel],
@@ -3001,7 +3002,7 @@
     ];
     if(d.reason) rows.push(["Raison de l'échec", d.reason]);
     document.getElementById('txModalBody').innerHTML = rows.map(r =>
-      `<div class="modal-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`
+      `<div class="modal-row"><span class="k">${r[0]}</span><span class="v">${esc(r[1])}</span></div>`
     ).join('');
     document.getElementById('disputeFormBody').hidden = true;
     document.getElementById('disputeDetails').value = '';
@@ -3783,7 +3784,8 @@
         : (Number(p.monthlyFeeUSD).toLocaleString('fr-FR') + ' $');
       const features = track === 'gateway'
         ? [
-            pct1(p.pct) + ' + ' + p.fixedHTG + ' HTG / transaction',
+            pct1(p.pct) + ' + ' + p.fixedHTG + ' HTG / transaction (MonCash, Natcash)',
+            ...(p.cardPct != null ? ['Carte : ' + pct1(p.cardPct) + ' + ' + Number(p.cardFixedUSD).toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' $ / transaction'] : []),
             'Versement ' + (p.payoutDelay === 'instant' ? 'instantané' : p.payoutDelay),
             p.volumeLimitHTG ? ("Jusqu'à " + Number(p.volumeLimitHTG).toLocaleString('fr-FR') + ' HTG / mois') : 'Volume illimité',
           ]
