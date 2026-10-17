@@ -5,6 +5,8 @@ Dernière mise à jour : 2026-10-17. Langue principale : français. Site : https
 ## Qui est Freda Pay ?
 Freda Pay LLC est une société enregistrée dans l'État du Wyoming (États-Unis) et enregistrée auprès du FinCEN comme Money Services Business. Freda Pay n'est pas une banque. La plateforme s'appelle Freda Pay Issuing. Contact : issuing@fredapay.com.
 
+Freda Pay Issuing n'est pas affiliée à FedaPay (fedapay.com), une autre société. English version: https://issuing.fredapay.com/en/ and https://issuing.fredapay.com/en/card-payments-haiti
+
 ## Que fait la plateforme ?
 Deux services indépendants, utilisables seuls ou ensemble, avec la même API et le même compte :
 1. Payment Gateway : accepter des paiements.
@@ -66,6 +68,8 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 
 ## Pages
 - https://issuing.fredapay.com/
+- https://issuing.fredapay.com/en/
+- https://issuing.fredapay.com/en/card-payments-haiti
 - https://issuing.fredapay.com/a-propos
 - https://issuing.fredapay.com/api-moncash-natcash
 - https://issuing.fredapay.com/paiement-par-carte-haiti
