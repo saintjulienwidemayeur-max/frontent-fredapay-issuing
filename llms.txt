@@ -16,6 +16,7 @@ Faits clés :
 - [API de paiement par carte, MonCash et Natcash](https://issuing.fredapay.com/api-moncash-natcash): accepter des paiements avec une API.
 - [Paiement par carte en Haïti](https://issuing.fredapay.com/paiement-par-carte-haiti): accepter Visa, Mastercard, MonCash et Natcash, frais, test, FAQ.
 - [Cartes virtuelles Visa et Mastercard](https://issuing.fredapay.com/cartes-virtuelles-haiti): émettre des cartes par API.
+- [À propos de Freda Pay Issuing](https://issuing.fredapay.com/a-propos): faits essentiels, services, tarifs, contact.
 - [Documentation de l'API](https://issuing.fredapay.com/docs): endpoints, webhooks, erreurs, SDK, plugins.
 - [Informations réglementaires](https://issuing.fredapay.com/regulatory-disclosure)
 - [Notre équipe](https://issuing.fredapay.com/notre-equipe)
