@@ -1,10 +1,10 @@
 /*!
- * Freda Pay - bouton de paiement universel
+ * Freda Pay Issuing - bouton de paiement universel
  * Usage :
  *   <div data-freda-link="lnk_XXXX" data-label="Payer" data-theme="dark"></div>
  *   <script src="https://VOTRE-DOMAINE/freda-button.js" async></script>
  * Aucun secret ici : le bouton ouvre simplement la page de paiement publique
- * du lien de paiement créé dans le tableau de bord Freda Pay.
+ * du lien de paiement créé dans le tableau de bord Freda Pay Issuing.
  */
 (function () {
   'use strict';
@@ -40,11 +40,11 @@
     if (el.getAttribute('data-freda-rendered')) return;
     var linkId = (el.getAttribute('data-freda-link') || '').trim();
     if (!/^lnk_[a-z0-9]+$/i.test(linkId)) {
-      el.textContent = 'Freda Pay : identifiant de lien invalide (attendu : lnk_...).';
+      el.textContent = 'Freda Pay Issuing : identifiant de lien invalide (attendu : lnk_...).';
       return;
     }
     var theme = el.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    var label = el.getAttribute('data-label') || 'Payer avec Freda Pay';
+    var label = el.getAttribute('data-label') || 'Payer avec Freda Pay Issuing';
 
     var a = document.createElement('a');
     a.className = 'freda-pay-btn freda-pay-btn--' + theme;

@@ -1053,7 +1053,7 @@
       otpResendCooldownUntil = Date.now() + 60000;
       showOtpView(payload.email);
     }catch(err){
-      showError('signupError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+      showError('signupError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
     }finally{
       setLoading(btn, false);
     }
@@ -1085,7 +1085,7 @@
       document.getElementById('otpView').classList.remove('active');
       document.getElementById('successView').classList.add('active');
     }catch(err){
-      showError('otpError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+      showError('otpError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
     }finally{
       setLoading(btn, false);
     }
@@ -1152,7 +1152,7 @@
       saveSession(data.session_token, data.merchant);
       window.location.href = pageUrl('dashboard');
     }catch(err){
-      showError('loginError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay est démarré (" + API_BASE_URL + ").");
+      showError('loginError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
     }finally{
       setLoading(btn, false);
     }

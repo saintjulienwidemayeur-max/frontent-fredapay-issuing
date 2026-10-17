@@ -226,7 +226,7 @@
 <section class="ai-band" aria-labelledby="ai-title">
   <div class="ai-inner">
     <div>
-      <h1 id="ai-title">Intégrez Freda Pay avec votre assistant IA</h1>
+      <h1 id="ai-title">Intégrez Freda Pay Issuing avec votre assistant IA</h1>
       <p>Ouvre Claude ou ChatGPT avec notre API déjà expliquée. Dites votre langage, il code avec vous.</p>
     </div>
     <div class="ai-actions">
@@ -329,7 +329,7 @@ Content-Type: application/json</pre>
     <!-- ===== Tester ma clé ===== -->
     <section class="doc-section" id="tester">
       <h2>Tester ma clé API et ma configuration</h2>
-      <p class="lead">Avant d'écrire du code, vérifiez que Freda Pay accepte votre clé et que votre compte est bien configuré. L'outil appelle <code class="inline">GET /v1/ping</code> et <code class="inline">POST /v1/webhooks/test</code>, les mêmes appels que vous ferez depuis votre serveur.</p>
+      <p class="lead">Avant d'écrire du code, vérifiez que Freda Pay Issuing accepte votre clé et que votre compte est bien configuré. L'outil appelle <code class="inline">GET /v1/ping</code> et <code class="inline">POST /v1/webhooks/test</code>, les mêmes appels que vous ferez depuis votre serveur.</p>
       <div class="kt-box">
         <label for="ktKey" style="display:block;font-weight:700;font-size:.86rem;margin-bottom:6px">Votre clé API</label>
         <div class="kt-row">
@@ -394,8 +394,8 @@ curl -X POST https://api.fredapay.com/v1/webhooks/test \
           <h3>Réponse</h3>
           <p>Code <code class="inline">201</code> avec le paiement. Gardez son <code class="inline">id</code> pour vérifier le statut, et redirigez le client vers <code class="inline">checkout_url</code> (il vaut <code class="inline">null</code> pour <code class="inline">moncash_ussd</code>).</p>
           <h3 id="payments-card">Paiement par carte (USD)</h3>
-          <p>Avec <code class="inline">method: "carte"</code> et <code class="inline">currency: "USD"</code>, la réponse contient un <code class="inline">checkout_url</code> : une page de paiement sécurisée Freda Pay où le client entre sa carte (Visa, Mastercard). Le formulaire propose aussi Amazon Pay, Cash App et Link selon le pays du client. Redirigez simplement votre client vers cette adresse, comme pour MonCash. Les numéros de carte ne passent jamais par votre serveur.</p>
-          <p><strong>Avec ou sans redirection :</strong> la redirection vers <code class="inline">checkout_url</code> est la méthode standard (page sécurisée Freda Pay, avec votre <code class="inline">return_url</code> pour le retour). Pour un formulaire de carte intégré directement à votre site, sans redirection, contactez le support Freda Pay.</p>
+          <p>Avec <code class="inline">method: "carte"</code> et <code class="inline">currency: "USD"</code>, la réponse contient un <code class="inline">checkout_url</code> : une page de paiement sécurisée Freda Pay Issuing où le client entre sa carte (Visa, Mastercard). Le formulaire propose aussi Amazon Pay, Cash App et Link selon le pays du client. Redirigez simplement votre client vers cette adresse, comme pour MonCash. Les numéros de carte ne passent jamais par votre serveur.</p>
+          <p><strong>Avec ou sans redirection :</strong> la redirection vers <code class="inline">checkout_url</code> est la méthode standard (page sécurisée Freda Pay Issuing, avec votre <code class="inline">return_url</code> pour le retour). Pour un formulaire de carte intégré directement à votre site, sans redirection, contactez le support Freda Pay Issuing.</p>
           <p>Ajoutez <code class="inline">return_url</code> (adresse https de votre site) : après le paiement, la page ramène le client chez vous. Le retour du navigateur ne prouve pas le paiement : confirmez toujours par le webhook <code class="inline">payment.succeeded</code> ou par <code class="inline">GET /v1/payments/:id</code>.</p>
           <p>Un paiement par carte réussi crédite votre <strong>solde Gateway USD</strong>, frais déduits (<code class="inline">fee</code>, <code class="inline">net_amount</code>). Un paiement refusé ou expiré passe à <code class="inline">failed</code> et déclenche <code class="inline">payment.failed</code>. Montant minimum : 0,50 USD. En Live, le paiement par carte demande une activation : sans elle, l'API répond <code class="inline">403 CARD_NOT_AVAILABLE</code>. Les plugins WooCommerce et Wix proposent déjà la carte.</p>
           <h3 id="payments-card-test">Tester en Sandbox</h3>
@@ -494,7 +494,7 @@ payment = r.<span class="c-f">json</span>()
         <div>
           <h2>Vérifier un paiement</h2>
           <div class="endpoint"><span class="verb get">GET</span>/v1/payments/:id</div>
-          <p>Renvoie l'état actuel du paiement. À chaque appel, Freda Pay interroge le réseau MonCash ou Natcash pour obtenir le statut à jour.</p>
+          <p>Renvoie l'état actuel du paiement. À chaque appel, Freda Pay Issuing interroge le réseau MonCash ou Natcash pour obtenir le statut à jour.</p>
           <h3>Statuts possibles</h3>
           <div class="tbl-wrap"><table>
             <tr><th>Statut</th><th>Signification</th><th>Que faire</th></tr>
@@ -558,7 +558,7 @@ $payment = <span class="c-f">json_decode</span>(<span class="c-f">curl_exec</spa
       <div class="two-col">
         <div>
           <h2>Notifications (webhooks)</h2>
-          <p class="lead">Plutôt que d'interroger <code class="inline">GET /v1/payments/:id</code> en boucle, enregistrez une URL sur votre serveur : Freda Pay lui envoie un <code class="inline">POST</code> signé dès qu'un événement se produit.</p>
+          <p class="lead">Plutôt que d'interroger <code class="inline">GET /v1/payments/:id</code> en boucle, enregistrez une URL sur votre serveur : Freda Pay Issuing lui envoie un <code class="inline">POST</code> signé dès qu'un événement se produit.</p>
           <div class="callout">
             <strong>Le polling continue de fonctionner</strong>
             Les webhooks sont un complément, pas une obligation. Sans URL enregistrée, tout fonctionne exactement comme avant (voir <a href="#demarrage">Démarrage rapide</a>).
@@ -1144,7 +1144,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       <div class="two-col">
         <div>
           <h2>Bouton de paiement pour n'importe quel site</h2>
-          <p>Collez deux lignes dans votre site pour afficher un bouton « Payer avec Freda Pay ». Il fonctionne sur Wix, Squarespace, Webflow, Shopify, Blogger ou une simple page HTML.</p>
+          <p>Collez deux lignes dans votre site pour afficher un bouton « Payer avec Freda Pay Issuing ». Il fonctionne sur Wix, Squarespace, Webflow, Shopify, Blogger ou une simple page HTML.</p>
           <p>Le bouton utilise un lien de paiement : il ne contient aucune clé secrète et peut donc être placé sans risque dans une page publique.</p>
           <ol class="plain">
             <li>Créez un lien de paiement et copiez son identifiant (<code class="inline">lnk_…</code>).</li>
@@ -1301,7 +1301,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
         <li><strong>Une référence unique par tentative.</strong> Utilisez par exemple le numéro de commande suivi d'un compteur (<code class="inline">CMD-1001-1</code>, <code class="inline">CMD-1001-2</code>). Réutiliser une référence renvoie l'opération existante.</li>
         <li><strong>Confirmez côté serveur.</strong> Ne livrez qu'après <code class="inline">status: "succeeded"</code> obtenu par votre serveur.</li>
         <li><strong>Gardez la clé secrète dans une variable d'environnement</strong>, jamais dans le code source.</li>
-        <li><strong>Enregistrez l'id Freda Pay</strong> avec votre commande pour pouvoir la vérifier plus tard.</li>
+        <li><strong>Enregistrez l'id Freda Pay Issuing</strong> avec votre commande pour pouvoir la vérifier plus tard.</li>
         <li><strong>Prévoyez les échecs.</strong> Affichez le <code class="inline">message</code> d'erreur et proposez de réessayer.</li>
       </ul>
       <p>Une question ? Écrivez-nous à <a href="mailto:issuing@fredapay.com">issuing@fredapay.com</a>.</p>
@@ -1326,7 +1326,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
   const COMMON = [
     "Tu es un développeur expérimenté et patient. Aide-moi à intégrer l'API de paiement Freda Pay Issuing  dans mon projet. Je suis peut-être débutant : explique chaque étape simplement et donne du code complet, prêt à copier.",
     "",
-    "Freda Pay propose DEUX services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance) et l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards). Je peux n'avoir besoin que de l'un des deux, ou des deux. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
+    "Freda Pay Issuing propose DEUX services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance) et l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards). Je peux n'avoir besoin que de l'un des deux, ou des deux. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
     "",
     "Avant d'écrire du code, pose-moi ces questions : " + SERVICE_QUESTION + "1) quel langage ou quelle plateforme j'utilise (PHP, Node.js, Python, WordPress, Laravel, Django, autre) ; 2) ce que je vends ou encaisse ; 3) si j'ai déjà un serveur ou seulement un site vitrine (dans ce cas propose-moi les liens de paiement ou le bouton de paiement, sans code serveur).",
     "",
@@ -1348,7 +1348,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       "Corps JSON : amount (nombre, HTG, minimum 20, requis) ; method (requis : 'moncash', 'natcash', 'moncash_ussd', 'all' ou 'carte') ; reference (texte unique, requis, ex. numéro de commande) ; currency (optionnel : 'HTG' par défaut pour MonCash/Natcash ; 'USD' obligatoire pour 'carte') ; phone (requis seulement pour moncash_ussd, format 509XXXXXXXX) ; customer_name et customer_email (optionnels, pour 'carte').",
       "RÉPONSE : contient aussi customer_name, customer_email (carte) et customer_phone (MonCash/Natcash) quand ils existent : c'est QUI a payé. Frais du paiement par carte selon le plan Gateway : Standard 7 % + 0,50 $, Pro 6 % + 0,50 $, Business 5 % + 0,50 $ (fee et net_amount sont remplis quand le paiement est confirmé).",
       "TEST SANDBOX (clé sk_test_...) : sur la page de paiement par carte, utilise le numéro 4242 4242 4242 4242, la date 05/27 et le CVV 088. Aucun argent réel n'est débité. Les erreurs possibles pour la carte : AMOUNT_TOO_LOW (minimum 0,50 USD), INVALID_CURRENCY (la carte se paie en USD), CARD_NOT_AVAILABLE (carte pas encore activée en Live).",
-      "PAIEMENT PAR CARTE : method 'carte' + currency 'USD', minimum 0,50 USD. La réponse 201 contient checkout_url : une page de paiement sécurisée Freda Pay où le client entre sa carte ; redirige le client vers cette adresse (comme pour MonCash). Optionnel : return_url (adresse https de ton site, où la page ramène le client après le paiement), customer_name, customer_email. Le retour du navigateur ne prouve rien : confirme avec le webhook payment.succeeded ou GET /v1/payments/:id côté serveur. Un paiement réussi crédite le solde Gateway USD (frais déduits) ; un paiement refusé passe à 'failed' (webhook payment.failed). Erreurs : INVALID_CURRENCY, AMOUNT_TOO_LOW, INVALID_RETURN_URL, CARD_NOT_AVAILABLE (403, carte non activée en Live), PROVIDER_ERROR (502).",
+      "PAIEMENT PAR CARTE : method 'carte' + currency 'USD', minimum 0,50 USD. La réponse 201 contient checkout_url : une page de paiement sécurisée Freda Pay Issuing où le client entre sa carte ; redirige le client vers cette adresse (comme pour MonCash). Optionnel : return_url (adresse https de ton site, où la page ramène le client après le paiement), customer_name, customer_email. Le retour du navigateur ne prouve rien : confirme avec le webhook payment.succeeded ou GET /v1/payments/:id côté serveur. Un paiement réussi crédite le solde Gateway USD (frais déduits) ; un paiement refusé passe à 'failed' (webhook payment.failed). Erreurs : INVALID_CURRENCY, AMOUNT_TOO_LOW, INVALID_RETURN_URL, CARD_NOT_AVAILABLE (403, carte non activée en Live), PROVIDER_ERROR (502).",
       "Réponse 201 : { id, reference, amount, currency, method, status: 'pending', fee, net_amount, checkout_url, provider_transaction_id, created_at, updated_at }.",
       "Après la création, enregistre 'id' avec la commande et redirige le client vers 'checkout_url' (il est null pour moncash_ussd : le client reçoit alors une invite USSD sur son téléphone).",
       "Si la même 'reference' est renvoyée, l'API renvoie le paiement existant (code 200) au lieu d'en créer un nouveau : utilise une référence différente pour chaque nouvelle tentative (ex. CMD-1001-1, CMD-1001-2).",
@@ -1383,7 +1383,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
     cards_profile: [
       "SUJET : les titulaires de carte (holders). Plusieurs par compte ; requis pour chaque carte individuelle, pas pour une carte entreprise.",
       "ENDPOINTS : POST /v1/cards/holders (créer), GET /v1/cards/holders (liste), GET /v1/cards/holders/:id. Mêmes routes sous /dashboard/cards/holders avec un session token. L'ancien POST /cards/holder-profile crée aussi un titulaire.",
-      "Corps JSON requis : firstName, lastName, email, country (2 lettres ISO, ex. 'US'), dob ('YYYY-MM-DD'), identificationNumber, identity (objet : type NIN, PASSPORT, VOTERS_CARD ou DRIVERS_LICENSE, number, imageUrl = image de la pièce en Base64 ('data:image/jpeg;base64,...', png/jpeg/webp, environ 700 Ko max) ou lien https direct vers l'image (converti par Freda Pay), country optionnel), phoneShortCode (ex. '+1'), phoneNumber, address (objet avec street, city, state, postalCode ET country - les 5 sont obligatoires, une adresse incomplète est refusée avec 400 MISSING_FIELDS). Optionnel : photoUrl (data URL png/jpeg/webp < 200 Ko ou URL https), affichée uniquement dans le tableau de bord.",
+      "Corps JSON requis : firstName, lastName, email, country (2 lettres ISO, ex. 'US'), dob ('YYYY-MM-DD'), identificationNumber, identity (objet : type NIN, PASSPORT, VOTERS_CARD ou DRIVERS_LICENSE, number, imageUrl = image de la pièce en Base64 ('data:image/jpeg;base64,...', png/jpeg/webp, environ 700 Ko max) ou lien https direct vers l'image (converti par Freda Pay Issuing), country optionnel), phoneShortCode (ex. '+1'), phoneNumber, address (objet avec street, city, state, postalCode ET country - les 5 sont obligatoires, une adresse incomplète est refusée avec 400 MISSING_FIELDS). Optionnel : photoUrl (data URL png/jpeg/webp < 200 Ko ou URL https), affichée uniquement dans le tableau de bord.",
       "Réponse 201 : { id, already_existed, holder: { id (mpc_..., à envoyer comme holder_id), mode ('sandbox'|'live'), status: 'enrolled' | 'pending' | 'failed', first_name, last_name, email, country, dob, phone, address, identification_number_last4 (4 derniers caractères seulement), photo_url, failure_reason, created_at } }. 'profile' est un ancien alias de 'holder'.",
       "Règles : le titulaire est enrolled dès la réponse 201 (création synchrone, aucune attente ni nouvelle tentative). Si un titulaire enrolled avec le même e-mail existe déjà dans ce mode, POST renvoie 200 avec already_existed=true et l'id existant (pas de doublon). Sandbox et Live sont séparés selon le préfixe de la clé (sk_test_ / sk_live_) ; le titulaire appartient au compte marchand, pas à une clé. Seul un titulaire enrolled peut recevoir une carte ; la photo n'est jamais exigée.",
       "Retrouver un id : GET /v1/cards/holders (liste, du plus récent au plus ancien, dans le mode de la clé) ou GET /v1/cards/holders/:id ({ holder }). Stocke l'id mpc_... côté serveur à la création et envoie-le toujours comme holder_id à POST /v1/cards. Traite les ids comme des chaînes opaques (préfixe mpc_ puis hexadécimal).",
@@ -1497,7 +1497,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
   /* ===== Static preview of the embed button ===== */
   document.querySelectorAll('[data-freda-preview]').forEach(el => {
     el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px;background:#ff4081;color:#fff;font:700 15px Inter,sans-serif;padding:13px 22px;border-radius:12px;box-shadow:0 8px 20px -8px rgba(255,64,129,.6)">'
-      + '<img src="logo.png" alt="" style="width:22px;height:22px;border-radius:6px">Payer avec Freda Pay</span>';
+      + '<img src="logo.png" alt="" style="width:22px;height:22px;border-radius:6px">Payer avec Freda Pay Issuing</span>';
   });
   document.getElementById('baseUrlInline').textContent = API_BASE;
 
