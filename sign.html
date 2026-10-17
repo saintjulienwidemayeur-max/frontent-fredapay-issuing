@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signer un contrat : Freda Pay</title>
+<title>Signer un contrat : Freda Pay Issuing</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" href="favicon-96.png" sizes="96x96">
@@ -44,7 +44,7 @@
 </style>
 </head>
 <body>
-<div class="brand"><img src="logo.png" alt="Freda Pay"><span>FREDA PAY <b>ISSUING</b></span></div>
+<div class="brand"><img src="logo.png" alt="Freda Pay Issuing"><span>FREDA PAY <b>ISSUING</b></span></div>
 <main>
   <div class="card center" id="vLoading"><p class="sub">Chargement du contrat…</p></div>
 
@@ -116,8 +116,8 @@
     var v = c.viewer || { role: 'recipient', name: c.recipient_name, can_sign: c.status === 'PENDING_SIGNATURE' };
     var done = c.status === 'COMPLETED';
     $('cSub').textContent = v.role === 'signer'
-      ? 'Vous êtes invité à signer ce contrat ' + (v.side === 'FREDA' ? 'pour Freda Pay' : 'pour ' + c.recipient_name) + '.'
-      : 'Envoyé par ' + c.admin_name + ' (Freda Pay) à ' + c.recipient_name + '. Freda Pay a déjà signé ce contrat.';
+      ? 'Vous êtes invité à signer ce contrat ' + (v.side === 'FREDA' ? 'pour Freda Pay Issuing' : 'pour ' + c.recipient_name) + '.'
+      : 'Envoyé par ' + c.admin_name + ' (Freda Pay Issuing) à ' + c.recipient_name + '. Freda Pay Issuing a déjà signé ce contrat.';
     doc = FredaESign.renderContract($('doc'), c, { editable: v.can_sign && v.role === 'recipient' });
     $('statusChip').className = 'chip ' + (done ? 'ok' : 'wait');
     $('statusChip').textContent = done ? 'Contrat signé' : v.signed ? 'Votre signature est enregistrée' : v.can_sign ? 'En attente de votre signature' : 'En attente';
