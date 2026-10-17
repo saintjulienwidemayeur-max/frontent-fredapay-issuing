@@ -1027,8 +1027,9 @@
         </div>
         <div class="card" id="ctrDoneCard" hidden>
           <div class="section-title">Signatures</div>
+          <p class="muted" id="ctrDoneText" style="margin-bottom:12px;font-size:.9rem"></p>
           <div id="ctrSigs"></div>
-          <button class="btn btn-sm" style="margin-top:14px" onclick="downloadContractPdf(this)">Télécharger le PDF signé</button>
+          <button class="btn btn-sm" id="ctrPdfBtn" style="margin-top:14px" onclick="downloadContractPdf(this)">Télécharger le PDF signé</button>
         </div>
       </div>
     </section>
@@ -4092,6 +4093,7 @@
   /* ===== Contrats : signature électronique interne ===== */
   let currentContract = null, ctrDoc = null, ctrPad = null;
   const CTR_STATUS = { PENDING_SIGNATURE: ['En attente de signature', 'tag-amber'], COMPLETED: ['Signé', 'tag-green'] };
+  const ctrState = c => c.status === 'COMPLETED' ? CTR_STATUS.COMPLETED : (c.signed_at ? ['En attente des autres signataires', 'tag-amber'] : CTR_STATUS.PENDING_SIGNATURE);
   function setContractsBadge(n){
     const b = document.getElementById('contractsBadge');
     if(!b) return;
@@ -4108,8 +4110,8 @@
       document.getElementById('contractsEmpty').hidden = list.length > 0;
       document.getElementById('contractsTable').innerHTML = list.length
         ? '<tr><th>Contrat</th><th>Reçu le</th><th>Statut</th><th></th></tr>' + list.map(c => {
-            const st = CTR_STATUS[c.status] || [c.status, 'tag-gray'];
-            return `<tr class="clickable" onclick="openContract('${esc(c.id)}')"><td><strong>${esc(c.title)}</strong></td><td>${esc(fmtDate(c.created_at))}</td><td><span class="tag ${st[1]}">${st[0]}</span></td><td style="text-align:right"><button class="key-btn">${c.status === 'PENDING_SIGNATURE' ? 'Lire et signer' : 'Ouvrir'}</button></td></tr>`;
+            const st = ctrState(c);
+            return `<tr class="clickable" onclick="openContract('${esc(c.id)}')"><td><strong>${esc(c.title)}</strong></td><td>${esc(fmtDate(c.created_at))}</td><td><span class="tag ${st[1]}">${st[0]}</span></td><td style="text-align:right"><button class="key-btn">${c.status === 'PENDING_SIGNATURE' && !c.signed_at ? 'Lire et signer' : 'Ouvrir'}</button></td></tr>`;
           }).join('')
         : '';
     }catch(err){ /* silent: a missing table must not break the dashboard */ }
@@ -4131,15 +4133,24 @@
     loadContracts();
   }
   function renderContractDetail(){
-    const c = currentContract, done = c.status === 'COMPLETED';
-    const st = CTR_STATUS[c.status] || [c.status, 'tag-gray'];
+    const c = currentContract, done = c.status === 'COMPLETED', mine = !!c.signed_at;
+    const st = ctrState(c);
     const tag = document.getElementById('ctrStatusTag'); tag.className = 'tag ' + st[1]; tag.textContent = st[0];
     document.getElementById('ctrTitle').textContent = c.title;
     document.getElementById('ctrSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay), qui a déjà signé ce contrat.';
-    ctrDoc = FredaESign.renderContract(document.getElementById('ctrDoc'), c, { editable: !done });
-    document.getElementById('ctrSignCard').hidden = done;
-    document.getElementById('ctrDoneCard').hidden = !done;
-    if(done){ document.getElementById('ctrSigs').innerHTML = FredaESign.signaturesHtml(c); return; }
+    ctrDoc = FredaESign.renderContract(document.getElementById('ctrDoc'), c, { editable: !mine });
+    document.getElementById('ctrSignCard').hidden = mine;
+    document.getElementById('ctrDoneCard').hidden = !mine;
+    if(mine){
+      const left = (c.signers || []).filter(x => x.status !== 'SIGNED').length;
+      const t = document.getElementById('ctrDoneText');
+      if(t) t.textContent = done ? 'Le contrat est signé par toutes les parties. Une copie PDF vous a été envoyée par email.'
+        : 'Votre signature est enregistrée. Le contrat sera finalisé quand ' + (left === 1 ? 'le dernier signataire invité aura signé' : 'les ' + left + ' autres signataires invités auront signé') + '. Vous recevrez le PDF par email.';
+      const pdfBtn = document.getElementById('ctrPdfBtn');
+      if(pdfBtn) pdfBtn.hidden = !done;
+      document.getElementById('ctrSigs').innerHTML = FredaESign.signaturesHtml(c);
+      return;
+    }
     const owner = currentUserRole === 'owner';
     document.getElementById('ctrOwnerOnly').hidden = owner;
     const nameGuess = (currentMerchant && currentMerchant.business_name) || '';
@@ -4167,13 +4178,13 @@
       });
       currentContract = d.contract;
       renderContractDetail();
-      showToast('Contrat signé. Le PDF vous a été envoyé par email.', 'success');
+      showToast(currentContract.status === 'COMPLETED' ? 'Contrat signé. Le PDF vous a été envoyé par email.' : 'Signature enregistrée. En attente des autres signataires.', 'success');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }catch(e){
       err.textContent = e.message; err.hidden = false;
     }finally{
       btn.textContent = 'Signer et confirmer';
-      if(currentContract && currentContract.status === 'PENDING_SIGNATURE') btn.disabled = false;
+      if(currentContract && currentContract.status === 'PENDING_SIGNATURE' && !currentContract.signed_at) btn.disabled = false;
     }
   }
   async function downloadContractPdf(btn){

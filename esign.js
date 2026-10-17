@@ -255,15 +255,23 @@
   }
 
   /** The two signatures of a contract, as HTML (admin first, then the signer). */
+  function sigCard(title, name, png, signedAt) {
+    return '<div class="esg-sig"><div class="t">' + esc(title) + '</div>' +
+      (png ? '<img alt="Signature de ' + esc(name) + '" src="' + esc(png) + '">' : '<div class="wait">En attente de signature</div>') +
+      '<div class="n">' + esc(name) + '</div><div class="d">' + (signedAt ? 'Signé le ' + esc(fmtDate(signedAt)) : 'Pas encore signé') + '</div></div>';
+  }
+  /** Every signature box: Freda Pay people on the left, the other side on the right. */
   function signaturesHtml(c) {
-    var a = '<div class="esg-sig"><div class="t">Pour Freda Pay</div>' +
-      (c.admin_signature_png ? '<img alt="Signature de ' + esc(c.admin_name) + '" src="' + esc(c.admin_signature_png) + '">' : '<div class="wait">—</div>') +
-      '<div class="n">' + esc(c.admin_name) + '</div><div class="d">Signé le ' + esc(fmtDate(c.admin_signed_at)) + '</div></div>';
-    var done = c.status === 'COMPLETED';
-    var s = '<div class="esg-sig"><div class="t">Le signataire</div>' +
-      (done && c.signer_signature_png ? '<img alt="Signature de ' + esc(c.signer_name) + '" src="' + esc(c.signer_signature_png) + '">' : '<div class="wait">En attente de signature</div>') +
-      '<div class="n">' + esc(done ? c.signer_name : c.recipient_name) + '</div><div class="d">' + (done ? 'Signé le ' + esc(fmtDate(c.signed_at)) : 'Pas encore signé') + '</div></div>';
-    return '<div class="esg-sigs">' + a + s + '</div>';
+    var extras = c.signers || [];
+    var left = [sigCard('Pour Freda Pay', c.admin_name, c.admin_signature_png, c.admin_signed_at)];
+    var right = [sigCard('Le signataire', c.signer_name || c.recipient_name, c.signer_signature_png, c.signed_at)];
+    extras.forEach(function (x) {
+      var card = sigCard(x.side === 'FREDA' ? 'Pour Freda Pay' : 'Le signataire', x.name, x.signature_png, x.signed_at);
+      (x.side === 'FREDA' ? left : right).push(card);
+    });
+    var rows = '';
+    for (var i = 0; i < Math.max(left.length, right.length); i++) rows += (left[i] || '<div></div>') + (right[i] || '<div></div>');
+    return '<div class="esg-sigs">' + rows + '</div>';
   }
 
   global.FredaESign = { createSignaturePad: createSignaturePad, renderContract: renderContract, signaturesHtml: signaturesHtml, fmtDate: fmtDate, FONTS: FONTS };
