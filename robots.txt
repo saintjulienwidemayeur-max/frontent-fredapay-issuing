@@ -10,4 +10,33 @@ Disallow: /admin.html
 Disallow: /freda-pay-sandbox
 Disallow: /freda-pay-checkout
 
+# Moteurs de recherche et assistants IA : le contenu public peut être lu, cité et recommandé.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: MistralAI-User
+Allow: /
+
 Sitemap: https://issuing.fredapay.com/sitemap.xml
+# Résumé lisible par les assistants IA : https://issuing.fredapay.com/llms.txt

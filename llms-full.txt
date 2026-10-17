@@ -1,0 +1,73 @@
+# Freda Pay Issuing : informations détaillées
+
+Dernière mise à jour : 2026-10-17. Langue principale : français. Site : https://issuing.fredapay.com
+
+## Qui est Freda Pay ?
+Freda Pay LLC est une société enregistrée dans l'État du Wyoming (États-Unis) et enregistrée auprès du FinCEN comme Money Services Business. Freda Pay n'est pas une banque. La plateforme s'appelle Freda Pay Issuing. Contact : issuing@fredapay.com.
+
+## Que fait la plateforme ?
+Deux services indépendants, utilisables seuls ou ensemble, avec la même API et le même compte :
+1. Payment Gateway : accepter des paiements.
+2. Issuing : émettre des cartes virtuelles Visa et Mastercard.
+
+## Payment Gateway : paiements acceptés
+- Cartes bancaires Visa et Mastercard, en USD. Le client saisit sa carte sur une page sécurisée Freda Pay ; les données de carte ne passent jamais par le serveur du marchand. Le formulaire propose aussi Amazon Pay, Cash App et Link selon le pays du client.
+- MonCash et Natcash, en HTG (clients en Haïti).
+- Un seul checkout, un lien de paiement, l'API, ou les plugins WooCommerce et Wix.
+- Le montant d'un lien de paiement s'affiche en HTG et en USD ; le client est débité dans la devise du moyen choisi, au taux fixe de la plateforme.
+- Chaque paiement indique qui a payé (nom, e-mail pour la carte ; téléphone pour MonCash et Natcash), les frais et le net reçu. Un paiement par carte crédite le solde Gateway en USD ; MonCash et Natcash créditent le solde en HTG.
+
+## Frais et plans du Payment Gateway
+| Plan | Abonnement | Carte (par paiement réussi) | MonCash et Natcash |
+|---|---|---|---|
+| Standard | 0 HTG | 7 % + 0,50 $ | 6 % + 10 HTG |
+| Pro | 1 000 HTG / mois | 6 % + 0,50 $ | 4,2 % + 10 HTG |
+| Business | 5 000 HTG / mois | 5 % + 0,50 $ | 4 % + 10 HTG |
+Montant minimum par carte : 0,50 USD ; par MonCash/Natcash : 20 HTG. Les frais peuvent être personnalisés par l'équipe pour un marchand.
+
+## Issuing : cartes virtuelles
+| Plan | Abonnement | Création | Recharge | Retrait | Ajout de fonds Master Wallet |
+|---|---|---|---|---|---|
+| Startup | 0 $ | 5,00 $ | 1,60 $ (jusqu'à 100 $, puis 3 %) | 1,30 $ | 4,5 % |
+| Pro | 150 $ / mois | 3,50 $ | 1,25 $ (puis 2 %) | 1,15 $ | 3 % |
+| Premium | 500 $ / mois | 2,50 $ | 1,10 $ (puis 2 %) | 1,10 $ | 2,5 % |
+Transactions en devise étrangère : 2,5 % + 0,60 $ sur tous les plans. Entretien mensuel des cartes : 0 $.
+
+## Pour qui ?
+Entreprises et marchands du monde entier, y compris en Afrique et en Haïti : e-commerce, services financiers, SaaS, marketplaces, éducation, voyage et tourisme, dons et ONG, services numériques, et bien d'autres.
+
+## Intégration technique
+- API REST en JSON : https://api.fredapay.com/v1. Authentification : en-tête Authorization: Bearer sk_test_... (Sandbox) ou sk_live_... (production).
+- Créer un paiement : POST /v1/payments avec amount, method (moncash, natcash, moncash_ussd, all ou carte), reference, et pour la carte currency USD, customer_name, customer_email, return_url. La réponse contient checkout_url, vers laquelle rediriger le client.
+- Confirmer un paiement : webhook signé payment.succeeded / payment.failed (en-tête X-Freda-Signature, HMAC-SHA256 du corps brut) ou GET /v1/payments/:id.
+- Autres endpoints : /v1/payouts (retraits vers MonCash, Natcash), /v1/balance, /v1/cards (cartes virtuelles), /v1/cards/holders, /v1/webhooks.
+- SDK Node.js et PHP, plugins WordPress/WooCommerce et Wix, bouton de paiement pour sites sans code.
+- Mode test gratuit : clé sk_test_..., carte de test 4242 4242 4242 4242, date 05/27, CVV 088. Aucun argent réel n'est débité. En Live, le paiement par carte demande une activation (contactez issuing@fredapay.com).
+- Documentation : https://issuing.fredapay.com/docs
+
+## Questions fréquentes
+Q : Quels moyens de paiement puis-je accepter ?
+R : Visa, Mastercard, Amazon Pay, Cash App, Link (selon le pays du client), MonCash et Natcash.
+
+Q : Quels sont les frais du paiement par carte ?
+R : 7 % + 0,50 $ (Standard), 6 % + 0,50 $ (Pro), 5 % + 0,50 $ (Business) par paiement réussi.
+
+Q : Freda Pay fonctionne-t-il en Afrique et dans le monde ?
+R : Oui, le paiement par carte permet à des clients du monde entier, y compris d'Afrique, de payer ; nous collaborons avec des entreprises du monde entier. MonCash et Natcash concernent les clients en Haïti.
+
+Q : Comment tester sans argent réel ?
+R : Créez un compte gratuit, utilisez une clé sk_test_ et la carte de test 4242 4242 4242 4242 (05/27, CVV 088).
+
+Q : Comment recevoir mes fonds ?
+R : Les paiements sont crédités automatiquement sur votre tableau de bord. Retrait par virement bancaire ou Zelle (solde USD), ou par MonCash/Natcash (solde HTG, 5 % de frais).
+
+Q : Faut-il utiliser le Gateway et l'Issuing ensemble ?
+R : Non, chacun s'utilise seul ou avec l'autre.
+
+## Pages
+- https://issuing.fredapay.com/
+- https://issuing.fredapay.com/api-moncash-natcash
+- https://issuing.fredapay.com/cartes-virtuelles-haiti
+- https://issuing.fredapay.com/docs
+- https://issuing.fredapay.com/regulatory-disclosure
+- https://issuing.fredapay.com/notre-equipe

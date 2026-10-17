@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API MonCash et Natcash pour paiements en Haïti | Freda Pay</title>
+<title>API de paiement par carte, MonCash et Natcash pour Haïti | Freda Pay</title>
 <meta name="description" content="API de paiement par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash : créez un paiement en une requête, recevez la confirmation par webhook. Mode test gratuit, SDK Node.js et PHP.">
-<meta name="keywords" content="API MonCash, API Natcash, paiement MonCash, paiement Natcash, MonCash API, Natcash API, passerelle de paiement Haïti, accepter MonCash, payout MonCash, Freda Pay">
+<meta name="keywords" content="API paiement par carte, accepter Visa Mastercard, Amazon Pay, Cash App, API MonCash, API Natcash, paiement MonCash, paiement Natcash, MonCash API, Natcash API, passerelle de paiement Haïti, accepter MonCash, payout MonCash, Freda Pay">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="canonical" href="https://issuing.fredapay.com/api-moncash-natcash">
 <link rel="icon" href="favicon.ico" sizes="48x48">
@@ -13,16 +13,16 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Freda Pay Issuing">
-<meta property="og:title" content="API MonCash et Natcash pour paiements en Haïti | Freda Pay">
+<meta property="og:title" content="API de paiement par carte, MonCash et Natcash pour Haïti | Freda Pay">
 <meta property="og:description" content="API de paiement par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash : créez un paiement en une requête, recevez la confirmation par webhook. Mode test gratuit, SDK Node.js et PHP.">
 <meta property="og:url" content="https://issuing.fredapay.com/api-moncash-natcash">
 <meta property="og:image" content="https://issuing.fredapay.com/og-image.png">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="API MonCash et Natcash pour paiements en Haïti | Freda Pay">
+<meta name="twitter:title" content="API de paiement par carte, MonCash et Natcash pour Haïti | Freda Pay">
 <meta name="twitter:description" content="API de paiement par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash : créez un paiement en une requête, recevez la confirmation par webhook. Mode test gratuit, SDK Node.js et PHP.">
 <meta name="twitter:image" content="https://issuing.fredapay.com/og-image.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/api-moncash-natcash#page", "url": "https://issuing.fredapay.com/api-moncash-natcash", "name": "API MonCash et Natcash pour paiements en Haïti | Freda Pay", "description": "API de paiement par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash : créez un paiement en une requête, recevez la confirmation par webhook. Mode test gratuit, SDK Node.js et PHP.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website"}, "primaryImageOfPage": {"@type": "ImageObject", "url": "https://issuing.fredapay.com/og-image.png", "creator": {"@type": "Organization", "name": "Freda Pay LLC", "url": "https://issuing.fredapay.com/"}, "creditText": "Freda Pay LLC", "copyrightNotice": "© 2026 Freda Pay LLC", "contentUrl": "https://issuing.fredapay.com/og-image.png"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "API MonCash et Natcash", "item": "https://issuing.fredapay.com/api-moncash-natcash"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/api-moncash-natcash#page", "url": "https://issuing.fredapay.com/api-moncash-natcash", "name": "API de paiement par carte, MonCash et Natcash pour Haïti | Freda Pay", "description": "API de paiement par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash : créez un paiement en une requête, recevez la confirmation par webhook. Mode test gratuit, SDK Node.js et PHP.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website"}, "primaryImageOfPage": {"@type": "ImageObject", "url": "https://issuing.fredapay.com/og-image.png", "creator": {"@type": "Organization", "name": "Freda Pay LLC", "url": "https://issuing.fredapay.com/"}, "creditText": "Freda Pay LLC", "copyrightNotice": "© 2026 Freda Pay LLC", "contentUrl": "https://issuing.fredapay.com/og-image.png"}, "dateModified": "2026-10-17"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "API MonCash et Natcash", "item": "https://issuing.fredapay.com/api-moncash-natcash"}]}, {"@type": "FAQPage", "@id": "https://issuing.fredapay.com/api-moncash-natcash#faq", "mainEntity": [{"@type": "Question", "name": "Comment tester l'API sans argent réel ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque compte dispose d'un mode test avec des clés sk_test_... et d'un solde de démonstration. Vous pouvez créer des paiements de test et vérifier votre intégration avant de passer en production."}}, {"@type": "Question", "name": "Comment savoir qu'un paiement MonCash ou Natcash a réussi ?", "acceptedAnswer": {"@type": "Answer", "text": "Enregistrez une URL de webhook : vous recevez un événement signé payment.succeeded. Vous pouvez aussi interroger l'API avec l'identifiant du paiement. Vérifiez toujours la signature du webhook avant de livrer une commande."}}, {"@type": "Question", "name": "Puis-je envoyer de l'argent vers MonCash et Natcash ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, avec l'API de retrait (POST /v1/payouts), depuis votre solde Gateway. Le statut se suit par webhook (payout.succeeded, payout.failed) ou par vérification."}}, {"@type": "Question", "name": "Dans quels langages puis-je l'intégrer ?", "acceptedAnswer": {"@type": "Answer", "text": "L'API est une API REST en JSON, utilisable avec tout langage. Nous fournissons des SDK pour Node.js et PHP, une spécification OpenAPI, et des plugins pour WordPress et WooCommerce."}}, {"@type": "Question", "name": "Puis-je aussi accepter les cartes Visa et Mastercard ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui. Le paiement par carte est disponible : Visa et Mastercard en USD, avec Amazon Pay, Cash App et Link selon le pays du client. Frais : 7 % + 0,50 $ (Standard), 6 % + 0,50 $ (Pro), 5 % + 0,50 $ (Business). Testez en mode Sandbox avec la carte 4242 4242 4242 4242, date 05/27, CVV 088. Vous pouvez aussi émettre vos propres cartes virtuelles depuis le même compte. Voir les cartes virtuelles."}}]}]}</script>
 <style>
 :root{--ink:#111;--pink:#ff4081;--muted:#5f5560;--line:#ece4e8;--soft:#faf6f8}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -85,9 +85,9 @@ footer{border-top:1px solid var(--line);padding:32px 0;font-size:.88rem;color:va
 <main>
 <div class="wrap crumbs"><a href="/">Accueil</a> / API MonCash et Natcash</div>
 <div class="wrap hero">
-  <span class="eyebrow">API de paiement · MonCash · Natcash</span>
-  <h1>API MonCash et Natcash : acceptez les paiements mobiles en Haïti</h1>
-  <p class="lead">Intégrez MonCash et Natcash à votre site ou application avec une seule API REST. Créez un paiement, redirigez le client, recevez la confirmation signée. Testez gratuitement avant la production.</p>
+  <span class="eyebrow">API de paiement · Carte · MonCash · Natcash</span>
+  <h1>API de paiement : acceptez les cartes Visa et Mastercard, MonCash et Natcash</h1>
+  <p class="lead">Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash à votre site ou application avec une seule API REST. Créez un paiement, redirigez le client, recevez la confirmation signée. Testez gratuitement avant la production.</p>
   <div class="cta"><a class="btn" href="/signup">Créer un compte gratuit</a><a class="btn ghost" href="/docs">Lire la documentation</a></div>
 </div>
 
@@ -136,12 +136,12 @@ const payment = await freda.payments.create({
 
 <div class="wrap"><section>
   <h2>Tarifs de l'API MonCash et Natcash</h2>
-  <p>Les mêmes frais s'appliquent à MonCash, à Natcash et aux paiements par carte. Pas d'engagement, vous changez de plan quand vous voulez.</p>
+  <p>MonCash et Natcash se paient en HTG ; la carte (Visa, Mastercard) se paie en USD avec ses propres frais, indiqués entre parenthèses. Pas d'engagement, vous changez de plan quand vous voulez.</p>
   <div class="tbl"><table>
     <tr><th>Plan</th><th>Abonnement</th><th>Frais par paiement</th><th>Versement des fonds</th><th>Volume mensuel</th></tr>
-    <tr><td>Standard</td><td>0 HTG</td><td>6,0 % + 10 HTG</td><td>48 à 72 h</td><td>Jusqu'à 150 000 HTG</td></tr>
-    <tr><td>Pro</td><td>1 000 HTG / mois</td><td>4,2 % + 10 HTG</td><td>24 h</td><td>Jusqu'à 1 500 000 HTG</td></tr>
-    <tr><td>Business</td><td>5 000 HTG / mois</td><td>4,0 % + 10 HTG</td><td>Instantané</td><td>Illimité</td></tr>
+    <tr><td>Standard</td><td>0 HTG</td><td>6,0 % + 10 HTG (carte : 7 % + 0,50 $)</td><td>48 à 72 h</td><td>Jusqu'à 150 000 HTG</td></tr>
+    <tr><td>Pro</td><td>1 000 HTG / mois</td><td>4,2 % + 10 HTG (carte : 6 % + 0,50 $)</td><td>24 h</td><td>Jusqu'à 1 500 000 HTG</td></tr>
+    <tr><td>Business</td><td>5 000 HTG / mois</td><td>4,0 % + 10 HTG (carte : 5 % + 0,50 $)</td><td>Instantané</td><td>Illimité</td></tr>
   </table></div>
 </section></div>
 
@@ -151,7 +151,7 @@ const payment = await freda.payments.create({
   <details><summary>Comment savoir qu'un paiement MonCash ou Natcash a réussi ?</summary><p>Enregistrez une URL de webhook : vous recevez un événement signé <code>payment.succeeded</code>. Vous pouvez aussi interroger l'API avec l'identifiant du paiement. Vérifiez toujours la signature du webhook avant de livrer une commande.</p></details>
   <details><summary>Puis-je envoyer de l'argent vers MonCash et Natcash ?</summary><p>Oui, avec l'API de retrait (<code>POST /v1/payouts</code>), depuis votre solde Gateway. Le statut se suit par webhook (<code>payout.succeeded</code>, <code>payout.failed</code>) ou par vérification.</p></details>
   <details><summary>Dans quels langages puis-je l'intégrer ?</summary><p>L'API est une API REST en JSON, utilisable avec tout langage. Nous fournissons des SDK pour Node.js et PHP, une spécification OpenAPI, et des plugins pour WordPress et WooCommerce.</p></details>
-  <details><summary>Puis-je aussi accepter les cartes Visa et Mastercard ?</summary><p>Pas encore : le paiement par carte bancaire (Visa, Mastercard) est en préparation et n'est pas disponible aujourd'hui. En revanche, vous pouvez dès maintenant <a href="/cartes-virtuelles-haiti">émettre vos propres cartes virtuelles</a> depuis le même compte.</p></details>
+  <details><summary>Puis-je aussi accepter les cartes Visa et Mastercard ?</summary><p>Oui. Le paiement par carte est disponible : Visa et Mastercard en USD, avec Amazon Pay, Cash App et Link selon le pays du client. Frais : 7 % + 0,50 $ (Standard), 6 % + 0,50 $ (Pro), 5 % + 0,50 $ (Business). Testez en mode Sandbox avec la carte 4242 4242 4242 4242, date 05/27, CVV 088. Vous pouvez aussi émettre vos propres cartes virtuelles depuis le même compte. Voir <a href="/cartes-virtuelles-haiti">les cartes virtuelles</a>.</p></details>
   <div class="note">Freda Pay LLC est une société enregistrée dans l'État du Wyoming (États-Unis) et n'est pas une banque. Les paiements MonCash et Natcash sont traités par Pay'm PlopPlop, prestataire réglementé en Haïti.</div>
 </section></div>
 
