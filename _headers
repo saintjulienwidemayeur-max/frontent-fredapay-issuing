@@ -12,6 +12,12 @@
 /checkout
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
+/sign
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/sign.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
 
 # Anti-cache : le navigateur doit TOUJOURS revalider aupres du serveur avant de reutiliser un fichier
 # (HTML, JS, images...). Si rien n'a change, le serveur repond 304 (rapide) ; sinon la derniere version est servie.
