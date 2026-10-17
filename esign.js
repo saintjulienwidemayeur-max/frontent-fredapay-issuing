@@ -1,5 +1,5 @@
 /*!
- * Freda Pay : signature électronique interne (composants du navigateur).
+ * Freda Pay Issuing : signature électronique interne (composants du navigateur).
  * Aucune bibliothèque externe : un bloc de signature (taper son nom dans une police cursive, ou dessiner à la
  * souris / au doigt) et l'affichage d'un contrat avec ses champs à remplir. La signature est envoyée au serveur
  * comme un masque 8 bits (une image en niveaux de transparence), que le serveur dessine dans le PDF.
@@ -260,13 +260,13 @@
       (png ? '<img alt="Signature de ' + esc(name) + '" src="' + esc(png) + '">' : '<div class="wait">En attente de signature</div>') +
       '<div class="n">' + esc(name) + '</div><div class="d">' + (signedAt ? 'Signé le ' + esc(fmtDate(signedAt)) : 'Pas encore signé') + '</div></div>';
   }
-  /** Every signature box: Freda Pay people on the left, the other side on the right. */
+  /** Every signature box: Freda Pay Issuing people on the left, the other side on the right. */
   function signaturesHtml(c) {
     var extras = c.signers || [];
-    var left = [sigCard('Pour Freda Pay', c.admin_name, c.admin_signature_png, c.admin_signed_at)];
+    var left = [sigCard('Pour Freda Pay Issuing', c.admin_name, c.admin_signature_png, c.admin_signed_at)];
     var right = [sigCard('Le signataire', c.signer_name || c.recipient_name, c.signer_signature_png, c.signed_at)];
     extras.forEach(function (x) {
-      var card = sigCard(x.side === 'FREDA' ? 'Pour Freda Pay' : 'Le signataire', x.name, x.signature_png, x.signed_at);
+      var card = sigCard(x.side === 'FREDA' ? 'Pour Freda Pay Issuing' : 'Le signataire', x.name, x.signature_png, x.signed_at);
       (x.side === 'FREDA' ? left : right).push(card);
     });
     var rows = '';

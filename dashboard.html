@@ -1003,7 +1003,7 @@
     <section class="section" id="sec-contracts">
       <div class="card" id="ctrListCard">
         <div class="section-title">Contrats</div>
-        <div class="section-desc">Les contrats que Freda Pay vous envoie. Lisez-les, remplissez les champs demandés et signez directement ici. Le PDF signé est ensuite disponible au téléchargement.</div>
+        <div class="section-desc">Les contrats que Freda Pay Issuing vous envoie. Lisez-les, remplissez les champs demandés et signez directement ici. Le PDF signé est ensuite disponible au téléchargement.</div>
         <div class="note note-pink" id="ctrPendingBanner" hidden></div>
         <table class="datatable" id="contractsTable"></table>
         <div class="empty-state" id="contractsEmpty" hidden>Aucun contrat pour le moment.</div>
@@ -4137,7 +4137,7 @@
     const st = ctrState(c);
     const tag = document.getElementById('ctrStatusTag'); tag.className = 'tag ' + st[1]; tag.textContent = st[0];
     document.getElementById('ctrTitle').textContent = c.title;
-    document.getElementById('ctrSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay), qui a déjà signé ce contrat.';
+    document.getElementById('ctrSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay Issuing), qui a déjà signé ce contrat.';
     ctrDoc = FredaESign.renderContract(document.getElementById('ctrDoc'), c, { editable: !mine });
     document.getElementById('ctrSignCard').hidden = mine;
     document.getElementById('ctrDoneCard').hidden = !mine;
