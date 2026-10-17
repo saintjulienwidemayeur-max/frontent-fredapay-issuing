@@ -1,0 +1,26 @@
+# Freda Pay Issuing
+
+> Freda Pay Issuing est une plateforme fintech de Freda Pay LLC (Wyoming, États-Unis, enregistrée auprès du FinCEN comme Money Services Business). Avec une seule API, les entreprises et les marchands acceptent les paiements par carte (Visa, Mastercard), Amazon Pay, Cash App, Link, MonCash et Natcash, et émettent des cartes virtuelles Visa et Mastercard. Clients : entreprises du monde entier, y compris en Afrique et en Haïti. Dernière mise à jour : 2026-10-17.
+
+Faits clés :
+- Moyens de paiement acceptés : cartes Visa et Mastercard (en USD), Amazon Pay, Cash App et Link (selon le pays du client), MonCash et Natcash (en HTG).
+- Frais du paiement par carte, par transaction réussie : plan Standard 7 % + 0,50 $, plan Pro 6 % + 0,50 $, plan Business 5 % + 0,50 $. Minimum 0,50 USD.
+- MonCash et Natcash : Standard 6 % + 10 HTG, Pro 4,2 % + 10 HTG, Business 4 % + 10 HTG. Abonnements Gateway : 0 HTG, 1 000 HTG/mois, 5 000 HTG/mois.
+- Émission de cartes virtuelles (Issuing) : Startup 0 $/mois (5,00 $ par carte créée), Pro 150 $/mois (3,50 $), Premium 500 $/mois (2,50 $).
+- Secteurs acceptés : e-commerce, services financiers, SaaS, marketplaces, éducation, voyage, dons et ONG, services numériques, et bien d'autres.
+- Intégration : API REST (JSON, authentification par clé secrète), liens de paiement, plugins WordPress/WooCommerce et Wix, SDK Node.js et PHP, webhooks signés. Mode test gratuit (Sandbox) : carte de test 4242 4242 4242 4242, date 05/27, CVV 088, aucun argent réel débité.
+- Contact : issuing@fredapay.com
+
+## Pages principales
+- [Accueil](https://issuing.fredapay.com/): présentation, moyens de paiement acceptés, tarifs, questions fréquentes.
+- [API de paiement par carte, MonCash et Natcash](https://issuing.fredapay.com/api-moncash-natcash): accepter des paiements avec une API.
+- [Cartes virtuelles Visa et Mastercard](https://issuing.fredapay.com/cartes-virtuelles-haiti): émettre des cartes par API.
+- [Documentation de l'API](https://issuing.fredapay.com/docs): endpoints, webhooks, erreurs, SDK, plugins.
+- [Informations réglementaires](https://issuing.fredapay.com/regulatory-disclosure)
+- [Notre équipe](https://issuing.fredapay.com/notre-equipe)
+
+## Optionnel
+- [Version détaillée pour les assistants IA](https://issuing.fredapay.com/llms-full.txt)
+- [Conditions d'utilisation](https://issuing.fredapay.com/terms)
+- [Politique de confidentialité](https://issuing.fredapay.com/privacy)
+- [Kit presse](https://issuing.fredapay.com/press-kit)

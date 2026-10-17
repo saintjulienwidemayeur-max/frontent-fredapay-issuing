@@ -20,3 +20,11 @@
   Cache-Control: no-cache, must-revalidate
   CDN-Cache-Control: no-cache
   Cloudflare-CDN-Cache-Control: no-cache
+
+# Fichiers pour les assistants IA (GEO) : texte brut UTF-8, mis à jour souvent.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
