@@ -1047,7 +1047,7 @@
       <div class="card" style="margin-bottom:20px">
         <div class="section-title">Plan Payment Gateway</div>
         <div class="section-desc">Frais appliqués sur chaque paiement encaissé (MonCash, Natcash, carte).</div>
-        <div class="note note-pink" id="gatewayFreeNote" hidden>Votre plan est offert par l'équipe Freda Pay : aucun frais ne s'applique. Les plans ci-dessous restent disponibles si vous préférez en changer.</div>
+        <div class="note note-pink" id="gatewayFreeNote" hidden>Votre plan est offert par l'équipe Freda Pay Issuing : aucun frais ne s'applique. Les plans ci-dessous restent disponibles si vous préférez en changer.</div>
         <div class="note note-pink" id="gatewayRenewNote" hidden></div>
           <div class="plan-grid" id="gatewayPlanGrid"></div>
         <p class="topup-preview" id="gatewayPlanChargeNote" style="margin-top:16px"></p>
@@ -1057,7 +1057,7 @@
       <div class="card">
         <div class="section-title">Plan Card Issuing</div>
         <div class="section-desc">Frais de création, recharge, retrait de carte, et d'ajout de fonds au Master Wallet.</div>
-        <div class="note note-pink" id="issuingFreeNote" hidden>Votre plan est offert par l'équipe Freda Pay : aucun frais ne s'applique. Les plans ci-dessous restent disponibles si vous préférez en changer.</div>
+        <div class="note note-pink" id="issuingFreeNote" hidden>Votre plan est offert par l'équipe Freda Pay Issuing : aucun frais ne s'applique. Les plans ci-dessous restent disponibles si vous préférez en changer.</div>
         <div class="note note-pink" id="issuingRenewNote" hidden></div>
           <div class="plan-grid" id="issuingPlanGrid"></div>
         <p class="topup-preview" id="issuingPlanChargeNote" style="margin-top:16px"></p>
@@ -1602,7 +1602,7 @@
 
     <div class="virtual-card" id="cdCardVisual">
       <div class="vc-top">
-        <span class="vc-brand">FREDA PAY</span>
+        <span class="vc-brand">FREDA PAY ISSUING</span>
         <span class="vc-network" id="cdNetworkBadge">VISA</span>
       </div>
       <div class="vc-chip">
@@ -2327,7 +2327,7 @@
   function deleteWebhookConfirm(){
     openConfirm(
       'Supprimer ce webhook ?',
-      "Freda Pay arrêtera immédiatement d'envoyer des événements à cette URL. Vous pourrez toujours interroger l'API directement (polling).",
+      "Freda Pay Issuing arrêtera immédiatement d'envoyer des événements à cette URL. Vous pourrez toujours interroger l'API directement (polling).",
       async () => {
         try{
           await apiFetch('/dashboard/webhooks', { method: 'DELETE' });
@@ -2938,7 +2938,7 @@
       try{
         const q = await apiFetch('/dashboard/wallet/topups/quote?amount_htg=' + encodeURIComponent(amt), { method: 'GET' });
         if(parseFloat(document.getElementById(method+'Amount').value) !== amt) return; // the visitor kept typing
-        el.innerHTML = 'Frais Freda Pay : <strong>' + q.freda_fee_htg.toLocaleString('fr-FR') + ' HTG</strong> + frais du paiement mobile : <strong>' + q.payment_partner_fee_htg.toLocaleString('fr-FR') + ' HTG</strong> (total ' + String(q.fee_percent).replace('.', ',') + ' %) · '
+        el.innerHTML = 'Frais Freda Pay Issuing : <strong>' + q.freda_fee_htg.toLocaleString('fr-FR') + ' HTG</strong> + frais du paiement mobile : <strong>' + q.payment_partner_fee_htg.toLocaleString('fr-FR') + ' HTG</strong> (total ' + String(q.fee_percent).replace('.', ',') + ' %) · '
           + 'Crédité sur le Master Wallet : <strong>' + q.credited_usd.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' $</strong> (taux ' + q.exchange_rate_htg_per_usd + ' HTG/$)';
       }catch(err){ el.textContent = 'Estimation indisponible : ' + err.message; }
     }, 250);
@@ -3042,7 +3042,7 @@
       ['Référence', d.client],
       ['Méthode', d.method],
       ['Montant payé par le client', d.amount],
-      ['Frais Freda Pay', feeLabel],
+      ['Frais Freda Pay Issuing', feeLabel],
       ['Net crédité sur votre solde', d.net]
     ];
     if(d.reason) rows.push(["Raison de l'échec", d.reason]);
@@ -3815,7 +3815,7 @@
     const current = track === 'gateway' ? currentGatewayPlan() : currentIssuingPlan();
     const grid = document.getElementById(track + 'PlanGrid');
     if(!grid || !data || !Object.keys(data).length) return;
-    // A complimentary plan is granted by the Freda Pay team and is not one of the cards below.
+    // A complimentary plan is granted by the Freda Pay Issuing team and is not one of the cards below.
     const note = document.getElementById(track + 'FreeNote');
     if(note) note.hidden = current !== 'free';
     renderRenewalNote(track, data[current]);

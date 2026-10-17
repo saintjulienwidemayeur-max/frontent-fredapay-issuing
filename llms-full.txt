@@ -2,8 +2,8 @@
 
 Dernière mise à jour : 2026-10-17. Langue principale : français. Site : https://issuing.fredapay.com
 
-## Qui est Freda Pay ?
-Freda Pay LLC est une société enregistrée dans l'État du Wyoming (États-Unis) et enregistrée auprès du FinCEN comme Money Services Business. Freda Pay n'est pas une banque. La plateforme s'appelle Freda Pay Issuing. Contact : issuing@fredapay.com.
+## Qui est Freda Pay Issuing ?
+Freda Pay LLC est une société enregistrée dans l'État du Wyoming (États-Unis) et enregistrée auprès du FinCEN comme Money Services Business. Freda Pay Issuing n'est pas une banque. La plateforme s'appelle Freda Pay Issuing. Contact : issuing@fredapay.com.
 
 Freda Pay Issuing n'est pas affiliée à FedaPay (fedapay.com), une autre société. English version: https://issuing.fredapay.com/en/ and https://issuing.fredapay.com/en/card-payments-haiti
 
@@ -13,7 +13,7 @@ Deux services indépendants, utilisables seuls ou ensemble, avec la même API et
 2. Issuing : émettre des cartes virtuelles Visa et Mastercard.
 
 ## Payment Gateway : paiements acceptés
-- Cartes bancaires Visa et Mastercard, en USD. Le client saisit sa carte sur une page sécurisée Freda Pay ; les données de carte ne passent jamais par le serveur du marchand. Le formulaire propose aussi Amazon Pay, Cash App et Link selon le pays du client.
+- Cartes bancaires Visa et Mastercard, en USD. Le client saisit sa carte sur une page sécurisée Freda Pay Issuing ; les données de carte ne passent jamais par le serveur du marchand. Le formulaire propose aussi Amazon Pay, Cash App et Link selon le pays du client.
 - MonCash et Natcash, en HTG (clients en Haïti).
 - Un seul checkout, un lien de paiement, l'API, ou les plugins WooCommerce et Wix.
 - Le montant d'un lien de paiement s'affiche en HTG et en USD ; le client est débité dans la devise du moyen choisi, au taux fixe de la plateforme.
@@ -54,7 +54,7 @@ R : Visa, Mastercard, Amazon Pay, Cash App, Link (selon le pays du client), MonC
 Q : Quels sont les frais du paiement par carte ?
 R : 7 % + 0,50 $ (Standard), 6 % + 0,50 $ (Pro), 5 % + 0,50 $ (Business) par paiement réussi.
 
-Q : Freda Pay fonctionne-t-il en Afrique et dans le monde ?
+Q : Freda Pay Issuing fonctionne-t-il en Afrique et dans le monde ?
 R : Oui, le paiement par carte permet à des clients du monde entier, y compris d'Afrique, de payer ; nous collaborons avec des entreprises du monde entier. MonCash et Natcash concernent les clients en Haïti.
 
 Q : Comment tester sans argent réel ?
