@@ -66,6 +66,7 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 
 ## Pages
 - https://issuing.fredapay.com/
+- https://issuing.fredapay.com/a-propos
 - https://issuing.fredapay.com/api-moncash-natcash
 - https://issuing.fredapay.com/paiement-par-carte-haiti
 - https://issuing.fredapay.com/cartes-virtuelles-haiti
