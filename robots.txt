@@ -1,42 +1,40 @@
 User-agent: *
 Allow: /
 
-# Espaces privés (connexion requise) : jamais indexés.
+# Private areas (login required): never indexed.
 Disallow: /dashboard
 Disallow: /checkout
 Disallow: /admin
 Disallow: /admin.html
-# Anciens noms, au cas où un vieux lien serait encore exploré
+# Old names, in case an old link is still crawled
 Disallow: /freda-pay-sandbox
 Disallow: /freda-pay-checkout
 
-# Moteurs de recherche et assistants IA : le contenu public peut être lu, cité et recommandé.
+# Search engines and AI assistants: public content may be read, cited and recommended.
+# A crawler follows only its own group, so the private-area rules are repeated here.
 User-agent: GPTBot
-Allow: /
 User-agent: OAI-SearchBot
-Allow: /
 User-agent: ChatGPT-User
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: Claude-SearchBot
-Allow: /
 User-agent: Claude-User
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: Perplexity-User
-Allow: /
 User-agent: Google-Extended
-Allow: /
 User-agent: Applebot-Extended
-Allow: /
 User-agent: Bingbot
-Allow: /
 User-agent: DuckAssistBot
-Allow: /
 User-agent: MistralAI-User
 Allow: /
 
+# Private areas (login required): never indexed.
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /admin
+Disallow: /admin.html
+# Old names, in case an old link is still crawled
+Disallow: /freda-pay-sandbox
+Disallow: /freda-pay-checkout
+
 Sitemap: https://issuing.fredapay.com/sitemap.xml
-# Résumé lisible par les assistants IA : https://issuing.fredapay.com/llms.txt
+# AI-readable summary: https://issuing.fredapay.com/llms.txt
