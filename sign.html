@@ -113,16 +113,19 @@
     var c = contract;
     show('vContract');
     $('cTitle').textContent = c.title;
-    $('cSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay) à ' + c.recipient_name + '. Freda Pay a déjà signé ce contrat.';
+    var v = c.viewer || { role: 'recipient', name: c.recipient_name, can_sign: c.status === 'PENDING_SIGNATURE' };
     var done = c.status === 'COMPLETED';
-    doc = FredaESign.renderContract($('doc'), c, { editable: !done });
+    $('cSub').textContent = v.role === 'signer'
+      ? 'Vous êtes invité à signer ce contrat ' + (v.side === 'FREDA' ? 'pour Freda Pay' : 'pour ' + c.recipient_name) + '.'
+      : 'Envoyé par ' + c.admin_name + ' (Freda Pay) à ' + c.recipient_name + '. Freda Pay a déjà signé ce contrat.';
+    doc = FredaESign.renderContract($('doc'), c, { editable: v.can_sign && v.role === 'recipient' });
     $('statusChip').className = 'chip ' + (done ? 'ok' : 'wait');
-    $('statusChip').textContent = done ? 'Contrat signé' : 'En attente de votre signature';
-    $('signCard').hidden = done;
-    $('doneCard').hidden = !done;
-    if (done) { showDone(c, true); return; }
-    $('signerName').value = c.recipient_name || '';
-    pad = FredaESign.createSignaturePad($('pad'), { name: c.recipient_name });
+    $('statusChip').textContent = done ? 'Contrat signé' : v.signed ? 'Votre signature est enregistrée' : v.can_sign ? 'En attente de votre signature' : 'En attente';
+    $('signCard').hidden = !v.can_sign;
+    $('doneCard').hidden = v.can_sign;
+    if (!v.can_sign) { showDone(c, true); return; }
+    $('signerName').value = v.name || '';
+    pad = FredaESign.createSignaturePad($('pad'), { name: v.name });
     pad.onChange(check);
     $('signerName').addEventListener('input', check);
     $('consent').addEventListener('change', check);
@@ -136,7 +139,13 @@
   function showDone(c, already) {
     $('signCard').hidden = true; $('doneCard').hidden = false;
     $('statusChip').className = 'chip ok'; $('statusChip').textContent = 'Contrat signé';
-    $('doneTitle').textContent = already ? 'Ce contrat est déjà signé' : 'Contrat signé';
+    var v = c.viewer || {}, done = c.status === 'COMPLETED';
+    $('statusChip').textContent = done ? 'Contrat signé' : v.signed ? 'Votre signature est enregistrée' : 'En attente';
+    $('doneTitle').textContent = done ? (already ? 'Ce contrat est déjà signé' : 'Contrat signé') : v.signed ? 'Signature enregistrée' : 'Pas encore prêt à signer';
+    $('doneText').textContent = done ? 'Le contrat est signé par toutes les parties. Une copie PDF vous a été envoyée par email.'
+      : v.signed ? 'Merci ! Le contrat sera finalisé quand tous les signataires auront signé. Vous recevrez le PDF par email.'
+      : 'Ce contrat sera prêt à signer dès que ' + c.recipient_name + ' l\'aura signé. Vous recevrez alors un email avec votre lien de signature.';
+    $('pdfBtn').hidden = !done;
     $('sigs').innerHTML = FredaESign.signaturesHtml(c);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -158,6 +167,7 @@
       contract = data.contract;
       doc = FredaESign.renderContract($('doc'), contract, { editable: false });
       showDone(contract, false);
+      if (contract.status !== 'COMPLETED') $('doneCard').hidden = false;
     } catch (e) {
       $('signErr').textContent = e.message; $('signErr').hidden = false;
       btn.textContent = 'Signer et confirmer'; check();
