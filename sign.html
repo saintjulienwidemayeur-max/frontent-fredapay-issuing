@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signer un contrat : Freda Pay</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="favicon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#111;--gold:#ff4081;--gold-soft:rgba(255,64,129,.08);--muted:#666;--line:#e5e5e5;--green:#16a34a;--red:#dc2626}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:#f4f1f3;min-height:100vh;-webkit-font-smoothing:antialiased}
+  [hidden]{display:none !important}
+  .brand{display:flex;align-items:center;justify-content:center;gap:10px;padding:24px 16px 8px;font-weight:800}
+  .brand img{width:34px;height:34px;border-radius:9px}
+  .brand b{color:var(--gold)}
+  main{max-width:860px;margin:0 auto;padding:12px 16px 50px}
+  .card{background:#fff;border-radius:18px;box-shadow:0 24px 60px -30px rgba(0,0,0,.25);padding:26px 24px;margin-bottom:18px}
+  h1{font-size:1.45rem;letter-spacing:-.01em;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:.9rem;line-height:1.55}
+  .chip{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:99px;margin-bottom:10px}
+  .chip.wait{background:#fef3c7;color:#92400e}.chip.ok{background:#dcfce7;color:#166534}
+  h2{font-size:1.05rem;margin:0 0 10px}
+  label.l{display:block;font-size:.82rem;font-weight:700;margin:14px 0 7px}
+  input.t{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);font:inherit;font-size:.95rem}
+  input.t:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:.86rem;color:#333;line-height:1.5;margin:16px 0}
+  .consent input{margin-top:3px;width:18px;height:18px;accent-color:var(--gold);flex-shrink:0}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border-radius:12px;font-weight:800;font-size:.98rem;border:0;cursor:pointer;background:var(--ink);color:#fff;font-family:inherit}
+  .btn:hover{background:#2a2a2a}.btn:disabled{background:#d8d8d8;color:#999;cursor:not-allowed}
+  .btn.pink{background:var(--gold)}.btn.pink:hover{background:#e0336f}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .err{color:#b91c1c;font-size:.88rem;margin-top:10px;font-weight:600}
+  .legal{font-size:.76rem;color:var(--muted);line-height:1.5;margin-top:14px}
+  footer{text-align:center;color:#999;font-size:.76rem;padding:0 16px 30px}
+  .center{text-align:center;padding:40px 20px}
+  .big{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px}
+  .big.ok{background:#dcfce7;color:var(--green)}.big.bad{background:#fee2e2;color:var(--red)}
+</style>
+</head>
+<body>
+<div class="brand"><img src="logo.png" alt="Freda Pay"><span>FREDA PAY <b>ISSUING</b></span></div>
+<main>
+  <div class="card center" id="vLoading"><p class="sub">Chargement du contrat…</p></div>
+
+  <div class="card center" id="vError" hidden>
+    <div class="big bad"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></div>
+    <h1 id="errTitle">Lien invalide ou expiré</h1>
+    <p class="sub" id="errText">Ce lien de signature n'est plus valable. Demandez un nouveau lien à la personne qui vous a envoyé le contrat.</p>
+  </div>
+
+  <div id="vContract" hidden>
+    <div class="card">
+      <span class="chip wait" id="statusChip">En attente de votre signature</span>
+      <h1 id="cTitle"></h1>
+      <p class="sub" id="cSub"></p>
+    </div>
+    <div class="card" style="padding:14px"><div id="doc"></div></div>
+
+    <div class="card" id="signCard">
+      <h2>Votre signature</h2>
+      <label class="l" for="signerName">Votre nom complet</label>
+      <input class="t" id="signerName" type="text" maxlength="120" autocomplete="name" placeholder="Prénom Nom">
+      <label class="l">Signez ci-dessous</label>
+      <div id="pad"></div>
+      <label class="consent"><input type="checkbox" id="consent"><span>J'ai lu ce contrat en entier et j'accepte d'être lié par ses termes. Je comprends que ma signature électronique, avec la date, l'heure et mon adresse IP, a la même valeur qu'une signature manuscrite pour cet accord.</span></label>
+      <div class="err" id="signErr" hidden></div>
+      <button class="btn pink" id="signBtn" disabled>Signer et confirmer</button>
+      <p class="legal">Votre signature, la date, l'heure et votre adresse IP sont enregistrées dans le journal d'audit du document. Une copie PDF signée vous sera envoyée par email.</p>
+    </div>
+
+    <div class="card" id="doneCard" hidden>
+      <div class="center" style="padding:10px 0 4px">
+        <div class="big ok"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h1 id="doneTitle">Contrat signé</h1>
+        <p class="sub" id="doneText">Merci ! Le contrat est signé par les deux parties. Une copie PDF vous a été envoyée par email.</p>
+      </div>
+      <div id="sigs"></div>
+      <button class="btn" id="pdfBtn" style="margin-top:16px">Télécharger le PDF signé</button>
+    </div>
+  </div>
+</main>
+<footer>© <span id="year"></span> Freda Pay LLC · Signature électronique sécurisée</footer>
+
+<script src="esign.js"></script>
+<script>
+  var API = window.FREDA_API_BASE_URL || 'https://api.fredapay.com';
+  document.getElementById('year').textContent = new Date().getFullYear();
+  var token = new URLSearchParams(location.search).get('token') || '';
+  var $ = function (id) { return document.getElementById(id); };
+  var doc = null, pad = null, contract = null;
+
+  function show(id) { ['vLoading', 'vError', 'vContract'].forEach(function (v) { $(v).hidden = v !== id; }); }
+  function fail(title, text) { if (title) $('errTitle').textContent = title; if (text) $('errText').textContent = text; show('vError'); }
+
+  async function load() {
+    if (!/^[a-f0-9]{48}$/.test(token)) return fail();
+    try {
+      var res = await fetch(API + '/public/contracts/' + token);
+      var data = await res.json().catch(function () { return null; });
+      if (!res.ok) return fail(res.status === 429 ? 'Trop de tentatives' : null, res.status === 429 ? 'Réessayez dans quelques minutes.' : null);
+      contract = data.contract;
+      render();
+    } catch (e) { fail('Connexion impossible', "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez."); }
+  }
+
+  function render() {
+    var c = contract;
+    show('vContract');
+    $('cTitle').textContent = c.title;
+    $('cSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay) à ' + c.recipient_name + '. Freda Pay a déjà signé ce contrat.';
+    var done = c.status === 'COMPLETED';
+    doc = FredaESign.renderContract($('doc'), c, { editable: !done });
+    $('statusChip').className = 'chip ' + (done ? 'ok' : 'wait');
+    $('statusChip').textContent = done ? 'Contrat signé' : 'En attente de votre signature';
+    $('signCard').hidden = done;
+    $('doneCard').hidden = !done;
+    if (done) { showDone(c, true); return; }
+    $('signerName').value = c.recipient_name || '';
+    pad = FredaESign.createSignaturePad($('pad'), { name: c.recipient_name });
+    pad.onChange(check);
+    $('signerName').addEventListener('input', check);
+    $('consent').addEventListener('change', check);
+    check();
+  }
+
+  function check() {
+    $('signBtn').disabled = !(pad && pad.isReady() && $('consent').checked && $('signerName').value.trim().length >= 2);
+  }
+
+  function showDone(c, already) {
+    $('signCard').hidden = true; $('doneCard').hidden = false;
+    $('statusChip').className = 'chip ok'; $('statusChip').textContent = 'Contrat signé';
+    $('doneTitle').textContent = already ? 'Ce contrat est déjà signé' : 'Contrat signé';
+    $('sigs').innerHTML = FredaESign.signaturesHtml(c);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('signBtn').addEventListener('click', async function () {
+    var btn = $('signBtn'); $('signErr').hidden = true;
+    var missing = doc.firstMissing();
+    if (missing) { $('signErr').textContent = 'Veuillez remplir le champ « ' + missing + ' » dans le contrat.'; $('signErr').hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Signature en cours…';
+    try {
+      var signature = await pad.getSignature();
+      if (!signature) throw new Error('Ajoutez votre signature.');
+      var res = await fetch(API + '/public/contracts/' + token + '/sign', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signer_name: $('signerName').value.trim(), fields: doc.getFields(), signature: signature })
+      });
+      var data = await res.json().catch(function () { return null; });
+      if (!res.ok) throw new Error((data && data.error && data.error.message) || 'La signature a échoué.');
+      contract = data.contract;
+      doc = FredaESign.renderContract($('doc'), contract, { editable: false });
+      showDone(contract, false);
+    } catch (e) {
+      $('signErr').textContent = e.message; $('signErr').hidden = false;
+      btn.textContent = 'Signer et confirmer'; check();
+    }
+  });
+
+  $('pdfBtn').addEventListener('click', async function () {
+    var btn = $('pdfBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Téléchargement…';
+    try {
+      var res = await fetch(API + '/public/contracts/' + token + '/pdf');
+      if (!res.ok) throw new Error('Le PDF n\'est pas disponible pour le moment.');
+      var url = URL.createObjectURL(await res.blob());
+      var a = document.createElement('a'); a.href = url; a.download = 'contrat-' + contract.id + '.pdf'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    } catch (e) { alert(e.message); }
+    btn.disabled = false; btn.textContent = label;
+  });
+
+  load();
+</script>
+</body>
+</html>

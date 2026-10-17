@@ -403,6 +403,11 @@
 
     <div class="sb-group-label">Compte</div>
     <nav class="sb-nav">
+      <div class="sb-link" data-section="contracts" onclick="showSection('contracts')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M8 17c1.5-2.5 2.5-3 3.2-1.6.6 1.1 1.2 1.2 2.3-.4"/></svg>
+        Contrats
+        <span class="pill pill-amber" id="contractsBadge" hidden>0</span>
+      </div>
       <div class="sb-link" data-section="billing" onclick="showSection('billing')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 2h10l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M16 2v4h4M8 12h8M8 16h5"/></svg>
         Facturation
@@ -994,6 +999,40 @@
     </section>
 
     <!-- ===== Billing / Subscription ===== -->
+    <!-- ===== Contrats (signature électronique) ===== -->
+    <section class="section" id="sec-contracts">
+      <div class="card" id="ctrListCard">
+        <div class="section-title">Contrats</div>
+        <div class="section-desc">Les contrats que Freda Pay vous envoie. Lisez-les, remplissez les champs demandés et signez directement ici. Le PDF signé est ensuite disponible au téléchargement.</div>
+        <div class="note note-pink" id="ctrPendingBanner" hidden></div>
+        <table class="datatable" id="contractsTable"></table>
+        <div class="empty-state" id="contractsEmpty" hidden>Aucun contrat pour le moment.</div>
+      </div>
+      <div id="ctrDetail" hidden>
+        <div class="card">
+          <button class="key-btn" onclick="closeContract()" style="margin-bottom:14px">← Retour aux contrats</button>
+          <span class="tag" id="ctrStatusTag"></span>
+          <div class="section-title" id="ctrTitle" style="margin-top:8px"></div>
+          <div class="section-desc" id="ctrSub"></div>
+        </div>
+        <div class="card" style="padding:14px"><div id="ctrDoc"></div></div>
+        <div class="card" id="ctrSignCard" hidden>
+          <div class="section-title">Votre signature</div>
+          <div class="field"><label>Votre nom complet</label><input type="text" id="ctrSignerName" maxlength="120" placeholder="Prénom Nom"></div>
+          <div id="ctrPad" style="margin:10px 0 14px"></div>
+          <label style="display:flex;gap:10px;align-items:flex-start;font-size:.86rem;line-height:1.5;margin:6px 0 14px"><input type="checkbox" id="ctrConsent" style="margin-top:3px;width:18px;height:18px"><span>J'ai lu ce contrat en entier et j'accepte d'être lié par ses termes. Ma signature électronique, avec la date, l'heure et mon adresse IP, est enregistrée dans le journal d'audit du document.</span></label>
+          <div class="hint-text" id="ctrSignErr" style="color:#b91c1c;font-weight:600" hidden></div>
+          <button class="btn" id="ctrSignBtn" disabled onclick="signContract()">Signer et confirmer</button>
+          <div class="hint-text" id="ctrOwnerOnly" style="margin-top:10px" hidden>Seul le propriétaire du compte peut signer un contrat.</div>
+        </div>
+        <div class="card" id="ctrDoneCard" hidden>
+          <div class="section-title">Signatures</div>
+          <div id="ctrSigs"></div>
+          <button class="btn btn-sm" style="margin-top:14px" onclick="downloadContractPdf(this)">Télécharger le PDF signé</button>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="sec-billing">
       <div class="card" style="margin-bottom:20px">
         <div class="key-row">
@@ -1625,6 +1664,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="countries.js"></script>
+<script src="esign.js"></script>
 <script>
   /* ===== Backend connection ===== */
   // Change this to your deployed backend URL when you host it for real
@@ -1992,7 +2032,7 @@
     document.querySelectorAll('.sb-link').forEach(l => l.classList.toggle('active', l.dataset.section===name));
     const titles = {
       overview:"Vue d'ensemble", verification:"Vérification", balances:"Soldes & Wallet",
-      payments:"Paiements", transactions:"Transactions", performance:"Performance du mois", links:"Liens de paiement", 'cards-business':"Cartes business", 'cards-individual':"Cartes utilisateurs", billing:"Facturation", settings:"Paramètres",
+      contracts:"Contrats", payments:"Paiements", transactions:"Transactions", performance:"Performance du mois", links:"Liens de paiement", 'cards-business':"Cartes business", 'cards-individual':"Cartes utilisateurs", billing:"Facturation", settings:"Paramètres",
       keys:"Clés API", plugins:"Plugins et SDK", quickstart:"Démarrage rapide",
       testdata:"Données de test", webhooks:"Webhooks"
     };
@@ -2010,6 +2050,7 @@
     transactions: () => [loadTransactions, loadTransactionsSummary],
     performance: () => [loadTransactionsSummary],
     links: () => [loadPaymentLinks],
+    contracts: () => [loadContracts],
     'cards-business': () => [loadCards, loadIssuingAccessStatus, loadBillingPlans],
     'cards-individual': () => [loadCards, loadHolderProfile, loadIssuingAccessStatus, loadBillingPlans],
     billing: () => [refreshBalances, loadBillingPlans],
@@ -4048,8 +4089,121 @@
     });
   })();
 
+  /* ===== Contrats : signature électronique interne ===== */
+  let currentContract = null, ctrDoc = null, ctrPad = null;
+  const CTR_STATUS = { PENDING_SIGNATURE: ['En attente de signature', 'tag-amber'], COMPLETED: ['Signé', 'tag-green'] };
+  function setContractsBadge(n){
+    const b = document.getElementById('contractsBadge');
+    if(!b) return;
+    b.textContent = n; b.hidden = !n;
+  }
+  async function loadContracts(){
+    try{
+      const d = await apiFetch('/dashboard/contracts', { method: 'GET' });
+      const list = d.contracts || [];
+      setContractsBadge(d.pending || 0);
+      const banner = document.getElementById('ctrPendingBanner');
+      banner.hidden = !d.pending;
+      if(d.pending) banner.textContent = d.pending === 1 ? 'Vous avez 1 contrat à signer.' : 'Vous avez ' + d.pending + ' contrats à signer.';
+      document.getElementById('contractsEmpty').hidden = list.length > 0;
+      document.getElementById('contractsTable').innerHTML = list.length
+        ? '<tr><th>Contrat</th><th>Reçu le</th><th>Statut</th><th></th></tr>' + list.map(c => {
+            const st = CTR_STATUS[c.status] || [c.status, 'tag-gray'];
+            return `<tr class="clickable" onclick="openContract('${esc(c.id)}')"><td><strong>${esc(c.title)}</strong></td><td>${esc(fmtDate(c.created_at))}</td><td><span class="tag ${st[1]}">${st[0]}</span></td><td style="text-align:right"><button class="key-btn">${c.status === 'PENDING_SIGNATURE' ? 'Lire et signer' : 'Ouvrir'}</button></td></tr>`;
+          }).join('')
+        : '';
+    }catch(err){ /* silent: a missing table must not break the dashboard */ }
+  }
+  async function openContract(id){
+    try{
+      const d = await apiFetch('/dashboard/contracts/' + encodeURIComponent(id), { method: 'GET' });
+      currentContract = d.contract;
+      renderContractDetail();
+      document.getElementById('ctrListCard').hidden = true;
+      document.getElementById('ctrDetail').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }catch(err){ showToast(err.message, 'error'); }
+  }
+  function closeContract(){
+    currentContract = null;
+    document.getElementById('ctrDetail').hidden = true;
+    document.getElementById('ctrListCard').hidden = false;
+    loadContracts();
+  }
+  function renderContractDetail(){
+    const c = currentContract, done = c.status === 'COMPLETED';
+    const st = CTR_STATUS[c.status] || [c.status, 'tag-gray'];
+    const tag = document.getElementById('ctrStatusTag'); tag.className = 'tag ' + st[1]; tag.textContent = st[0];
+    document.getElementById('ctrTitle').textContent = c.title;
+    document.getElementById('ctrSub').textContent = 'Envoyé par ' + c.admin_name + ' (Freda Pay), qui a déjà signé ce contrat.';
+    ctrDoc = FredaESign.renderContract(document.getElementById('ctrDoc'), c, { editable: !done });
+    document.getElementById('ctrSignCard').hidden = done;
+    document.getElementById('ctrDoneCard').hidden = !done;
+    if(done){ document.getElementById('ctrSigs').innerHTML = FredaESign.signaturesHtml(c); return; }
+    const owner = currentUserRole === 'owner';
+    document.getElementById('ctrOwnerOnly').hidden = owner;
+    const nameGuess = (currentMerchant && currentMerchant.business_name) || '';
+    document.getElementById('ctrSignerName').value = nameGuess;
+    ctrPad = FredaESign.createSignaturePad(document.getElementById('ctrPad'), { name: nameGuess });
+    const check = () => { document.getElementById('ctrSignBtn').disabled = !(owner && ctrPad.isReady() && document.getElementById('ctrConsent').checked && document.getElementById('ctrSignerName').value.trim().length >= 2); };
+    ctrPad.onChange(check);
+    document.getElementById('ctrConsent').checked = false;
+    document.getElementById('ctrSignerName').oninput = check;
+    document.getElementById('ctrConsent').onchange = check;
+    check();
+  }
+  async function signContract(){
+    const btn = document.getElementById('ctrSignBtn'), err = document.getElementById('ctrSignErr');
+    err.hidden = true;
+    const missing = ctrDoc.firstMissing();
+    if(missing){ err.textContent = 'Veuillez remplir le champ « ' + missing + ' » dans le contrat.'; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Signature en cours…';
+    try{
+      const signature = await ctrPad.getSignature();
+      if(!signature) throw new Error('Ajoutez votre signature.');
+      const d = await apiFetch('/dashboard/contracts/' + encodeURIComponent(currentContract.id) + '/sign', {
+        method: 'POST',
+        body: { signer_name: document.getElementById('ctrSignerName').value.trim(), fields: ctrDoc.getFields(), signature },
+      });
+      currentContract = d.contract;
+      renderContractDetail();
+      showToast('Contrat signé. Le PDF vous a été envoyé par email.', 'success');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }catch(e){
+      err.textContent = e.message; err.hidden = false;
+    }finally{
+      btn.textContent = 'Signer et confirmer';
+      if(currentContract && currentContract.status === 'PENDING_SIGNATURE') btn.disabled = false;
+    }
+  }
+  async function downloadContractPdf(btn){
+    const token = getSessionToken();
+    if(!token || !currentContract){ return; }
+    const label = btn.textContent; btn.disabled = true; btn.textContent = 'Téléchargement…';
+    try{
+      const res = await fetch(API_BASE_URL + '/dashboard/contracts/' + encodeURIComponent(currentContract.id) + '/pdf', { headers: { Authorization: 'Bearer ' + token } });
+      if(!res.ok) throw new Error('Erreur HTTP ' + res.status);
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement('a'); a.href = url; a.download = 'contrat-' + currentContract.id + '.pdf'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }catch(e){ showToast('Échec du téléchargement : ' + e.message, 'error'); }
+    finally{ btn.disabled = false; btn.textContent = label; }
+  }
+  /** The sidebar badge and one reminder at login: a contract is waiting for a signature. */
+  async function checkPendingContracts(){
+    try{
+      const d = await apiFetch('/dashboard/contracts', { method: 'GET' });
+      setContractsBadge(d.pending || 0);
+      if(d.pending){
+        let seen = null; try{ seen = sessionStorage.getItem('freda_contract_toast'); }catch(e){}
+        if(!seen){ try{ sessionStorage.setItem('freda_contract_toast', '1'); }catch(e){} showToast(d.pending === 1 ? 'Vous avez 1 contrat à signer (rubrique Contrats).' : 'Vous avez ' + d.pending + ' contrats à signer (rubrique Contrats).', 'success'); }
+      }
+    }catch(e){ /* ignore */ }
+  }
+
   /* ===== Boot ===== */
-  initDashboard();
+  initDashboard().then(checkPendingContracts);
+  if(location.hash === '#contrats'){ setTimeout(() => showSection('contracts'), 700); }
 </script>
 
 </body>
