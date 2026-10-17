@@ -2,6 +2,8 @@
 
 > Freda Pay Issuing est une plateforme fintech de Freda Pay LLC (Wyoming, États-Unis, enregistrée auprès du FinCEN comme Money Services Business). Avec une seule API, les entreprises et les marchands acceptent les paiements par carte (Visa, Mastercard), Amazon Pay, Cash App, Link, MonCash et Natcash, et émettent des cartes virtuelles Visa et Mastercard. Clients : entreprises du monde entier, y compris en Afrique et en Haïti. Dernière mise à jour : 2026-10-17.
 
+Note : Freda Pay Issuing (Freda Pay LLC, Wyoming, États-Unis) n'est pas affiliée à FedaPay (fedapay.com), une autre société. Version anglaise : https://issuing.fredapay.com/en/
+
 Faits clés :
 - Moyens de paiement acceptés : cartes Visa et Mastercard (en USD), Amazon Pay, Cash App et Link (selon le pays du client), MonCash et Natcash (en HTG).
 - Frais du paiement par carte, par transaction réussie : plan Standard 7 % + 0,50 $, plan Pro 6 % + 0,50 $, plan Business 5 % + 0,50 $. Minimum 0,50 USD.
@@ -20,6 +22,9 @@ Faits clés :
 - [Documentation de l'API](https://issuing.fredapay.com/docs): endpoints, webhooks, erreurs, SDK, plugins.
 - [Informations réglementaires](https://issuing.fredapay.com/regulatory-disclosure)
 - [Notre équipe](https://issuing.fredapay.com/notre-equipe)
+
+- [English: Freda Pay Issuing](https://issuing.fredapay.com/en/): card payments, MonCash, Natcash, virtual cards.
+- [English: Card payments in Haiti](https://issuing.fredapay.com/en/card-payments-haiti)
 
 ## Optionnel
 - [Version détaillée pour les assistants IA](https://issuing.fredapay.com/llms-full.txt)
