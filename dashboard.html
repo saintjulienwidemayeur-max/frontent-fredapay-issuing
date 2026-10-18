@@ -1277,7 +1277,7 @@
         <div class="section-desc">Ce que vous devez savoir pour tester sans engager de vrais fonds.</div>
         <ul style="margin:6px 0 0 18px;display:grid;gap:10px;font-size:.92rem;color:var(--ink);line-height:1.55">
           <li>Vos soldes Sandbox sont fictifs (5 000 $ de bienvenue sur le Master Wallet). Ils n'ont aucun lien avec vos soldes Live.</li>
-          <li>Les cartes Sandbox sont créées sur l'environnement de test de notre partenaire d'émission. Ouvrez une carte puis utilisez « Simuler un achat » ou « Simuler un crédit » pour générer des transactions.</li>
+          <li>Les cartes Sandbox sont créées sur notre environnement de test. Ouvrez une carte puis utilisez « Simuler un achat » ou « Simuler un crédit » pour générer des transactions.</li>
           <li>Une clé <code>sk_test_</code> ne voit que les données Sandbox, et une clé <code>sk_live_</code> que les données Live.</li>
           <li>Rien du Sandbox n'est repris en Live : titulaires, cartes, plan, soldes et clés repartent de zéro.</li>
         </ul>
@@ -3747,7 +3747,7 @@
   function cardTerminateConfirm(cardId){
     openConfirm(
       'Supprimer cette carte ?',
-      'La carte sera définitivement supprimée : fermée chez notre partenaire, et son solde restant sera reversé sur votre Master Wallet. Cette action est irréversible.',
+      'La carte sera définitivement fermée et supprimée, et son solde restant sera reversé sur votre Master Wallet. Cette action est irréversible.',
       () => cardAction('terminate', cardId),
       'Supprimer la carte'
     );
