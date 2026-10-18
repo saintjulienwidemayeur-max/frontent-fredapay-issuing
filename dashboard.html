@@ -4037,7 +4037,9 @@
     if(!current){ showToast('Entrez votre mot de passe actuel.', 'error'); return; }
     if(pw.length<8 || pw!==pw2){ showToast('Le nouveau mot de passe doit faire au moins 8 caractères et correspondre à la confirmation.', 'error'); return; }
     try{
-      await apiFetch('/dashboard/account/password', { method: 'POST', body: { current_password: current, new_password: pw } });
+      const changed = await apiFetch('/dashboard/account/password', { method: 'POST', body: { current_password: current, new_password: pw } });
+      // A password change ends older sessions: keep this one open with the fresh token the server returns.
+      if(changed && changed.session_token){ try{ localStorage.setItem('freda_session_token', changed.session_token); }catch(e){} }
       showToast('Mot de passe mis à jour.', 'success');
       ['currentPasswordSettings','newPasswordSettings','confirmPasswordSettings'].forEach(id => { document.getElementById(id).value = ''; });
     }catch(err){
