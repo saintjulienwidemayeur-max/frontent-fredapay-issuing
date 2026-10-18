@@ -11,17 +11,17 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Freda Pay Issuing">
 <meta property="og:title" content="Documentation API : Freda Pay Issuing">
-<meta property="og:description" content="Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash dans votre site ou application avec l&#x27;API Freda Pay Issuing : paiements, retraits, soldes, liens de paiement et plugins.">
+<meta property="og:description" content="Documentation de l&#x27;API Freda Pay Issuing : paiements par carte, MonCash et Natcash, retraits, cartes virtuelles, webhooks et SDK.">
 <meta property="og:url" content="https://issuing.fredapay.com/docs">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:image" content="https://issuing.fredapay.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Documentation API : Freda Pay Issuing">
-<meta name="twitter:description" content="Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash dans votre site ou application avec l&#x27;API Freda Pay Issuing : paiements, retraits, soldes, liens de paiement et plugins.">
+<meta name="twitter:description" content="Documentation de l&#x27;API Freda Pay Issuing : paiements par carte, MonCash et Natcash, retraits, cartes virtuelles, webhooks et SDK.">
 <meta name="twitter:image" content="https://issuing.fredapay.com/og-image.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/docs#page", "url": "https://issuing.fredapay.com/docs", "name": "Documentation API : Freda Pay Issuing", "description": "Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash dans votre site ou application avec l'API Freda Pay Issuing : paiements, retraits, soldes, liens de paiement et plugins.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "Documentation API", "item": "https://issuing.fredapay.com/docs"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/docs#page", "url": "https://issuing.fredapay.com/docs", "name": "Documentation API : Freda Pay Issuing", "description": "Documentation de l'API Freda Pay Issuing : paiements par carte, MonCash et Natcash, retraits, cartes virtuelles, webhooks et SDK.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "Documentation API", "item": "https://issuing.fredapay.com/docs"}]}]}</script>
 <meta name="robots" content="index, follow">
-<meta name="description" content="Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash dans votre site ou application avec l'API Freda Pay Issuing : paiements, retraits, soldes, liens de paiement et plugins.">
+<meta name="description" content="Documentation de l'API Freda Pay Issuing : paiements par carte, MonCash et Natcash, retraits, cartes virtuelles, webhooks et SDK.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
@@ -73,8 +73,8 @@
   /* ===== Layout ===== */
   .layout{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:0}
   .sidenav{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow-y:auto;padding:26px 18px 40px 24px;border-right:1px solid var(--line)}
-  .sidenav h4{font-size:.78rem;font-weight:700;color:var(--muted);margin:18px 0 6px 10px}
-  .sidenav h4:first-child{margin-top:0}
+  .sidenav .sn-h{font-size:.78rem;font-weight:700;color:var(--muted);margin:18px 0 6px 10px}
+  .sidenav .sn-h:first-child{margin-top:0}
   .sidenav a{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:7px;font-size:.87rem;color:var(--ink);text-decoration:none}
   .sidenav a:hover{background:var(--mist)}
   .sidenav a.active{background:var(--pink-soft);color:var(--pink-deep);font-weight:600}
@@ -233,10 +233,10 @@
     </div>
     <div class="ai-actions">
       <button class="ai-btn" onclick="askAI('claude','global')">
-        <span class="logo-chip"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt=""></span>Ouvrir dans Claude
+        <span class="logo-chip"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="20" height="20" loading="lazy" decoding="async"></span>Ouvrir dans Claude
       </button>
       <button class="ai-btn" onclick="askAI('chatgpt','global')">
-        <span class="logo-chip"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt=""></span>Ouvrir dans ChatGPT
+        <span class="logo-chip"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="20" height="20" loading="lazy" decoding="async"></span>Ouvrir dans ChatGPT
       </button>
       <button class="ai-btn copy" onclick="askAI('copy','global')">Copier le prompt</button>
     </div>
@@ -245,31 +245,31 @@
 
 <div class="layout">
   <aside class="sidenav" id="sidenav">
-    <h4>Pour commencer</h4>
+    <div class="sn-h">Pour commencer</div>
     <a href="#demarrage">Démarrage rapide</a>
     <a href="#authentification">Authentification</a>
-    <h4>Encaisser</h4>
+    <div class="sn-h">Encaisser</div>
     <a href="#tester">Tester ma clé API</a>
     <a href="#payments-create"><span class="verb post">POST</span>Créer un paiement</a>
     <a href="#payments-get"><span class="verb get">GET</span>Vérifier un paiement</a>
     <a href="#webhooks">Notifications (webhooks)</a>
-    <h4>Envoyer de l'argent</h4>
+    <div class="sn-h">Envoyer de l'argent</div>
     <a href="#payouts-create"><span class="verb post">POST</span>Créer un retrait</a>
     <a href="#payouts-get"><span class="verb get">GET</span>Vérifier un retrait</a>
-    <h4>Compte</h4>
+    <div class="sn-h">Compte</div>
     <a href="#balance"><span class="verb get">GET</span>Consulter le solde</a>
-    <h4>Cartes</h4>
+    <div class="sn-h">Cartes</div>
     <a href="#cards-profile"><span class="verb post">POST</span>Profil du titulaire</a>
     <a href="#cards-create"><span class="verb post">POST</span>Créer une carte</a>
     <a href="#cards-manage">Gérer une carte</a>
     <a href="#cards-restrictions">Où la carte fonctionne</a>
     <a href="#cards-webhooks">Webhooks de carte</a>
-    <h4>Sans code</h4>
+    <div class="sn-h">Sans code</div>
     <a href="#liens">Liens de paiement</a>
     <a href="#bouton">Bouton de paiement</a>
     <a href="#plugins">Plugins (WordPress, Wix…)</a>
     <a href="#sdks">SDKs (Node.js, PHP)</a>
-    <h4>Référence</h4>
+    <div class="sn-h">Référence</div>
     <a href="#pagination">Pagination</a>
     <a href="#rate-limits">Limites de requêtes</a>
     <a href="#versioning">Versions de l'API</a>
@@ -314,8 +314,8 @@
             Aucune clé secrète dans le navigateur, une app mobile ou un dépôt public. Uniquement depuis votre serveur.
           </div>
           <div class="ask-ai">Besoin d'aide ?
-            <button class="ask-btn" onclick="askAI('claude','auth')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','auth')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','auth')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','auth')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
           </div>
         </div>
         <div class="sticky-col">
@@ -414,8 +414,8 @@ curl -X POST https://api.fredapay.com/v1/webhooks/test \
           <p>Le paiement renvoie aussi <code class="inline">customer_name</code> et <code class="inline">customer_email</code> (saisis par le client, ou envoyés à la création) et <code class="inline">customer_phone</code> pour MonCash et Natcash. Ces champs sont absents quand l'information n'existe pas.</p>
           <p>Un lien de paiement unique accepte MonCash, Natcash et carte : le prix est dans la devise du lien, et le client est débité dans la devise du moyen choisi (USD pour la carte, HTG pour MonCash et Natcash), converti au taux fixe de la plateforme.</p>
           <div class="ask-ai">Intégrer cet appel avec
-            <button class="ask-btn" onclick="askAI('claude','payments_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','payments_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','payments_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','payments_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
             <button class="ask-btn" onclick="askAI('copy','payments_create')">Copier le prompt</button>
           </div>
         </div>
@@ -506,8 +506,8 @@ payment = r.<span class="c-f">json</span>()
           </table></div>
           <p>Arrêtez de vérifier après environ 10 minutes sans confirmation : le client a probablement abandonné.</p>
           <div class="ask-ai">Intégrer cet appel avec
-            <button class="ask-btn" onclick="askAI('claude','payments_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','payments_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','payments_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','payments_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
             <button class="ask-btn" onclick="askAI('copy','payments_get')">Copier le prompt</button>
           </div>
         </div>
@@ -597,8 +597,8 @@ $payment = <span class="c-f">json_decode</span>(<span class="c-f">curl_exec</spa
           <p>Chaque livraison inclut <code class="inline">X-Freda-Signature: sha256=…</code>, un HMAC-SHA256 du corps brut signé avec votre <code class="inline">secret</code>. Recalculez-le et comparez en temps constant.</p>
 
           <div class="ask-ai">Intégrer avec
-            <button class="ask-btn" onclick="askAI('claude','webhooks')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','webhooks')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','webhooks')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','webhooks')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
           </div>
         </div>
         <div class="sticky-col">
@@ -675,8 +675,8 @@ $payment = <span class="c-f">json_decode</span>(<span class="c-f">curl_exec</spa
             Si votre solde Gateway ne couvre pas le montant, l'API répond <code class="inline">400 INSUFFICIENT_BALANCE</code> et rien n'est envoyé. Les frais de retrait (5 % du montant pour MonCash et Natcash) sont ajoutés au montant débité : il faut donc <code>montant + frais</code> sur le solde. Cette somme est mise de côté dès l'acceptation de la demande ; si le retrait échoue, elle vous est rendue en entier.
           </div>
           <div class="ask-ai">Intégrer cet appel avec
-            <button class="ask-btn" onclick="askAI('claude','payouts_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','payouts_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','payouts_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','payouts_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
             <button class="ask-btn" onclick="askAI('copy','payouts_create')">Copier le prompt</button>
           </div>
         </div>
@@ -758,8 +758,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
             <tr><td><code>failed</code></td><td>L'envoi a échoué et votre solde n'a pas été débité. <code>failure_reason</code> explique pourquoi, par exemple un numéro invalide.</td></tr>
           </table></div>
           <div class="ask-ai">Intégrer cet appel avec
-            <button class="ask-btn" onclick="askAI('claude','payouts_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','payouts_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','payouts_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','payouts_get')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
             <button class="ask-btn" onclick="askAI('copy','payouts_get')">Copier le prompt</button>
           </div>
         </div>
@@ -800,8 +800,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
             <li><strong>master_wallet</strong> (USD) : les fonds que vous avez déposés pour émettre des cartes et payer votre abonnement.</li>
           </ul>
           <div class="ask-ai">Intégrer cet appel avec
-            <button class="ask-btn" onclick="askAI('claude','balance')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','balance')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','balance')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','balance')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
           </div>
         </div>
         <div class="sticky-col">
@@ -867,8 +867,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
             <tr><td><code>photoUrl</code> <span style="font-size:.72rem;color:var(--muted)">optionnel</span></td><td>Photo ou logo pour votre tableau de bord (data URL png/jpeg/webp de moins de 200 Ko, ou URL https).</td></tr>
           </table></div>
           <div class="ask-ai">Intégrer avec
-            <button class="ask-btn" onclick="askAI('claude','cards_profile')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','cards_profile')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','cards_profile')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','cards_profile')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
           </div>
         </div>
         <div class="sticky-col">
@@ -983,8 +983,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
           </table></div>
           <p style="font-size:.85rem;color:var(--muted)">Spécification complète et publique : <a href="https://api.fredapay.com/openapi.yaml" target="_blank" rel="noopener">https://api.fredapay.com/openapi.yaml</a>.</p>
           <div class="ask-ai">Intégrer avec
-            <button class="ask-btn" onclick="askAI('claude','cards_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-            <button class="ask-btn" onclick="askAI('chatgpt','cards_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+            <button class="ask-btn" onclick="askAI('claude','cards_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+            <button class="ask-btn" onclick="askAI('chatgpt','cards_create')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
             <button class="ask-btn" onclick="askAI('copy','cards_create')">Copier le prompt</button>
           </div>
         </div>
@@ -1054,8 +1054,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
         <code class="inline">pending</code> (création en cours) → <code class="inline">active</code> ou <code class="inline">failed</code>. Une carte active peut passer à <code class="inline">disabled</code> (gelée) puis revenir à <code class="inline">active</code>, ou à <code class="inline">terminated</code> (définitif).
       </div>
       <div class="ask-ai">Intégrer avec
-        <button class="ask-btn" onclick="askAI('claude','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="">Claude</button>
-        <button class="ask-btn" onclick="askAI('chatgpt','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="">ChatGPT</button>
+        <button class="ask-btn" onclick="askAI('claude','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
+        <button class="ask-btn" onclick="askAI('chatgpt','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
       </div>
       <div class="callout warn">
         <strong>Carte gelée</strong>
@@ -1173,22 +1173,22 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       <p>Choisissez l'outil avec lequel votre site est construit.</p>
       <div class="plugin-grid">
         <div class="plugin">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/woocommerce/96588A" alt="">WordPress / WooCommerce</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/woocommerce/96588A" alt="" width="22" height="22" loading="lazy" decoding="async">WordPress / WooCommerce</h3>
           <p>MonCash et Natcash à la page de paiement. Commandes confirmées automatiquement. Instructions dans le fichier du plugin.</p>
           <a class="dl" href="/dashboard#plugins">Dans votre tableau de bord</a>
         </div>
         <div class="plugin">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/wix/0C6EFC" alt="">Wix</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/wix/0C6EFC" alt="" width="22" height="22" loading="lazy" decoding="async">Wix</h3>
           <p>Bouton sans code, ou intégration Velo pour un montant par commande. Voir LISEZMOI.md dans le kit.</p>
           <a class="dl" href="/dashboard#plugins">Dans votre tableau de bord</a>
         </div>
         <div class="plugin">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/squarespace/000000" alt="">Squarespace, Webflow, Blogger</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/squarespace/000000" alt="" width="22" height="22" loading="lazy" decoding="async">Squarespace, Webflow, Blogger</h3>
           <p>Collez le bouton de paiement dans un bloc HTML/Embed.</p>
           <a class="dl" href="#bouton">Voir le bouton</a>
         </div>
         <div class="plugin muted">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/shopify/7AB55C" alt="">Shopify</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/shopify/7AB55C" alt="" width="22" height="22" loading="lazy" decoding="async">Shopify</h3>
           <p>Page de paiement réservée aux prestataires agréés Shopify. Utilisez le bouton sur vos pages produit en attendant.</p>
           <a class="dl" href="#bouton">Voir le bouton</a>
         </div>
@@ -1201,12 +1201,12 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       <p>Client typé pour votre langage : mêmes endpoints que ci-dessus, sans écrire les appels HTTP vous-même.</p>
       <div class="plugin-grid">
         <div class="plugin">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/npm/CB3837" alt="">Node.js</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/npm/CB3837" alt="" width="22" height="22" loading="lazy" decoding="async">Node.js</h3>
           <p><code class="inline">npm install @fredapay/issuing</code>. Node 18+, zéro dépendance. Inclut la vérification de signature webhook.</p>
           <a class="dl" href="/dashboard#plugins">Dans votre tableau de bord</a>
         </div>
         <div class="plugin">
-          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/php/777BB4" alt="">PHP</h3>
+          <h3><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/php/777BB4" alt="" width="22" height="22" loading="lazy" decoding="async">PHP</h3>
           <p><code class="inline">composer require freda-pay/issuing</code>. PHP 7.4+, extensions json et curl. Inclut la vérification de signature webhook.</p>
           <a class="dl" href="/dashboard#plugins">Dans votre tableau de bord</a>
         </div>
