@@ -1677,6 +1677,7 @@
 <!-- ===== Toasts ===== -->
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
+<script src="haiti-time.js"></script>
 <script src="countries.js"></script>
 <script src="esign.js"></script>
 <script>
@@ -4315,50 +4316,69 @@
 <style>
   #chatFab{position:fixed;right:20px;bottom:20px;z-index:60;background:var(--ink,#111);color:#fff;border:0;border-radius:99px;padding:13px 18px;font:inherit;font-weight:800;font-size:.88rem;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.45);display:flex;align-items:center;gap:8px}
   #chatFab .dot{display:none;min-width:20px;height:20px;border-radius:99px;background:#ff4081;color:#fff;font-size:.72rem;align-items:center;justify-content:center;padding:0 6px}
-  #chatBox{position:fixed;right:20px;bottom:78px;z-index:61;width:360px;max-width:calc(100vw - 24px);height:480px;max-height:calc(100vh - 110px);background:#fff;border:1px solid var(--line,#e5e5e5);border-radius:16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden}
+  #chatBox{position:fixed;right:20px;bottom:78px;z-index:61;width:360px;max-width:calc(100vw - 24px);height:500px;max-height:calc(100vh - 110px);background:#fff;border:1px solid var(--line,#e5e5e5);border-radius:16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden}
   #chatBox.open{display:flex}
-  #chatBox header{padding:14px 16px;background:var(--ink,#111);color:#fff}
+  #chatBox header{padding:14px 16px;background:var(--ink,#111);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px}
   #chatBox header b{display:block;font-size:.95rem}#chatBox header span{font-size:.76rem;opacity:.75}
+  #chatClose{border:0;background:rgba(255,255,255,.14);color:#fff;width:32px;height:32px;border-radius:99px;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
+  #chatClose:hover{background:rgba(255,255,255,.26)}
   #chatMsgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#f7f7f9}
   .cm{max-width:82%;padding:9px 12px;border-radius:14px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
   .cm.me{align-self:flex-end;background:var(--ink,#111);color:#fff;border-bottom-right-radius:4px}
   .cm.team{align-self:flex-start;background:#fff;border:1px solid var(--line,#e5e5e5);border-bottom-left-radius:4px}
   .cm small{display:block;font-size:.68rem;opacity:.6;margin-top:3px}
-  #chatForm{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line,#e5e5e5);background:#fff}
+  .cm img{display:block;max-width:100%;max-height:220px;border-radius:10px;margin-bottom:6px;cursor:zoom-in}
+  #chatPreview{display:none;align-items:center;gap:10px;padding:8px 10px;border-top:1px solid var(--line,#e5e5e5);background:#fafafa;font-size:.8rem}
+  #chatPreview img{width:44px;height:44px;object-fit:cover;border-radius:8px}
+  #chatPreview button{margin-left:auto;border:0;background:none;color:#b91c1c;font:inherit;font-weight:700;cursor:pointer}
+  #chatForm{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line,#e5e5e5);background:#fff;align-items:flex-end}
   #chatInput{flex:1;resize:none;border:1px solid var(--line,#e5e5e5);border-radius:10px;padding:9px 11px;font:inherit;font-size:.88rem;height:42px;max-height:110px}
-  #chatSend{border:0;background:#ff4081;color:#fff;border-radius:10px;padding:0 16px;font:inherit;font-weight:800;cursor:pointer}
+  #chatAttach{border:1px solid var(--line,#e5e5e5);background:#fff;border-radius:10px;width:42px;height:42px;cursor:pointer;display:grid;place-items:center;color:#444;flex-shrink:0}
+  #chatSend{border:0;background:#ff4081;color:#fff;border-radius:10px;padding:0 16px;height:42px;font:inherit;font-weight:800;cursor:pointer}
   #chatSend:disabled{opacity:.5;cursor:not-allowed}
   @media(max-width:520px){#chatBox{right:8px;left:8px;width:auto;bottom:72px}#chatFab{right:12px;bottom:12px}}
 </style>
 <button id="chatFab" type="button" aria-label="Ouvrir le chat avec l'équipe" onclick="toggleChat()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.8 8.8 0 0 1-3.6-.8L3 21l1.9-5.1A8.4 8.4 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg> Chat <span class="dot" id="chatDot">0</span></button>
 <div id="chatBox" role="dialog" aria-label="Chat avec l'équipe Freda Pay Issuing">
-  <header><b>Équipe Freda Pay Issuing</b><span>Écrivez-nous, nous répondons ici.</span></header>
-  <div id="chatMsgs"><div class="cm team">Bonjour ! Posez votre question, un membre de l'équipe vous répond dès que possible.</div></div>
+  <header>
+    <div><b>Équipe Freda Pay Issuing</b><span>Écrivez-nous, nous répondons ici.</span></div>
+    <button id="chatClose" type="button" aria-label="Fermer le chat" onclick="toggleChat(false)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </header>
+  <div id="chatMsgs"></div>
+  <div id="chatPreview"><img id="chatPreviewImg" alt="Photo à envoyer"><span id="chatPreviewName"></span><button type="button" onclick="clearChatPhoto()">Retirer</button></div>
   <form id="chatForm" onsubmit="return sendChat(event)">
+    <input type="file" id="chatFile" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+    <button id="chatAttach" type="button" aria-label="Joindre une photo" title="Joindre une photo" onclick="document.getElementById('chatFile').click()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-8 9"/></svg></button>
     <textarea id="chatInput" maxlength="2000" placeholder="Votre message…" aria-label="Votre message"></textarea>
     <button id="chatSend" type="submit">Envoyer</button>
   </form>
 </div>
 <script>
   (function(){
-    var open = false, timer = null, lastCount = -1;
+    var open = false, timer = null, lastCount = -1, photo = null;
     var $ = function(id){ return document.getElementById(id); };
+    var HELLO = "Bonjour ! Posez votre question ou envoyez-nous une photo (capture d'écran), un membre de l'équipe vous répond dès que possible.";
     function setDot(n){ var d = $('chatDot'); d.textContent = n > 9 ? '9+' : n; d.style.display = n > 0 ? 'inline-flex' : 'none'; }
     function fmt(iso){ try{ return new Date(iso).toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }); }catch(e){ return ''; } }
     function render(messages){
       var box = $('chatMsgs'), atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
       box.textContent = '';
-      var hello = document.createElement('div'); hello.className = 'cm team'; hello.textContent = "Bonjour ! Posez votre question, un membre de l'équipe vous répond dès que possible."; box.appendChild(hello);
+      var hello = document.createElement('div'); hello.className = 'cm team'; hello.textContent = HELLO; box.appendChild(hello);
       messages.forEach(function(m){
         var d = document.createElement('div'); d.className = 'cm ' + (m.sender === 'merchant' ? 'me' : 'team');
-        d.appendChild(document.createTextNode(m.body));
+        if(m.attachment && m.attachment.url){
+          var img = document.createElement('img'); img.src = m.attachment.url; img.alt = m.attachment.name || 'Photo';
+          img.addEventListener('click', function(){ window.open(m.attachment.url, '_blank', 'noopener'); });
+          d.appendChild(img);
+        }
+        if(m.body) d.appendChild(document.createTextNode(m.body));
         var sm = document.createElement('small'); sm.textContent = (m.sender === 'merchant' ? (m.author_name || 'Vous') : (m.author_name || 'Équipe')) + ' · ' + fmt(m.created_at); d.appendChild(sm);
         box.appendChild(d);
       });
       if(atBottom || messages.length !== lastCount) box.scrollTop = box.scrollHeight;
       lastCount = messages.length;
     }
-    async function load(markRead){
+    async function load(){
       try{
         var d = await apiFetch('/dashboard/chat', { method: 'GET' });
         render(d.messages || []);
@@ -4369,24 +4389,53 @@
       if(open) return load();
       try{ var d = await apiFetch('/dashboard/chat/unread', { method: 'GET' }); setDot(d.unread || 0); }catch(e){}
     }
-    window.toggleChat = function(){
-      open = !open; $('chatBox').classList.toggle('open', open);
-      if(open){ load(); $('chatInput').focus(); clearInterval(timer); timer = setInterval(function(){ load(); }, 6000); }
-      else { clearInterval(timer); timer = setInterval(poll, 30000); }
+    window.toggleChat = function(force){
+      open = typeof force === 'boolean' ? force : !open; $('chatBox').classList.toggle('open', open);
+      clearInterval(timer);
+      if(open){ load(); $('chatInput').focus(); timer = setInterval(load, 6000); }
+      else { timer = setInterval(poll, 30000); }
     };
+    // The photo is shrunk in the browser (1600 px, JPEG) before it is sent: phone photos are huge.
+    function shrink(file){
+      return new Promise(function(resolve, reject){
+        if(!/^image\//.test(file.type)) return reject(new Error('Choisissez une image (PNG, JPEG, GIF ou WebP).'));
+        var url = URL.createObjectURL(file), img = new Image();
+        img.onload = function(){
+          var max = 1600, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+          var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+          var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          var data = c.toDataURL('image/jpeg', 0.85);
+          resolve({ name: (file.name || 'photo').replace(/\.[^.]+$/, '') + '.jpg', data: data.split(',')[1], preview: data });
+        };
+        img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("Impossible de lire cette image.")); };
+        img.src = url;
+      });
+    }
+    window.clearChatPhoto = function(){ photo = null; $('chatFile').value = ''; $('chatPreview').style.display = 'none'; };
+    $('chatFile').addEventListener('change', async function(){
+      var f = this.files && this.files[0]; if(!f) return;
+      try{
+        photo = await shrink(f);
+        $('chatPreviewImg').src = photo.preview; $('chatPreviewName').textContent = f.name; $('chatPreview').style.display = 'flex';
+      }catch(e){ clearChatPhoto(); showToast(e.message, 'error'); }
+    });
     window.sendChat = async function(ev){
       ev.preventDefault();
-      var inp = $('chatInput'), text = inp.value.trim(); if(!text) return false;
+      var inp = $('chatInput'), text = inp.value.trim(); if(!text && !photo) return false;
       var btn = $('chatSend'); btn.disabled = true;
       try{
-        await apiFetch('/dashboard/chat', { method: 'POST', body: { body: text } });
-        inp.value = ''; inp.style.height = '42px'; await load();
+        var body = { body: text };
+        if(photo) body.attachment = { name: photo.name, data: photo.data };
+        await apiFetch('/dashboard/chat', { method: 'POST', body: body });
+        inp.value = ''; inp.style.height = '42px'; clearChatPhoto(); await load();
       }catch(e){ showToast(e.message, 'error'); }
       btn.disabled = false; inp.focus(); return false;
     };
     $('chatInput').addEventListener('keydown', function(e){ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); $('chatForm').requestSubmit(); } });
     $('chatInput').addEventListener('input', function(){ this.style.height = '42px'; this.style.height = Math.min(110, this.scrollHeight) + 'px'; });
-    setTimeout(poll, 2500); timer = setInterval(poll, 30000);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && open) window.toggleChat(false); });
+    render([]); setTimeout(poll, 2500); timer = setInterval(poll, 30000);
   })();
 </script>
 </body>
