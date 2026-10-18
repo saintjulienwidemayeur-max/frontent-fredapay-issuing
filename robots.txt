@@ -4,7 +4,9 @@ Allow: /
 # Private areas (login required): never indexed.
 Disallow: /dashboard
 Disallow: /checkout
-Disallow: /sign
+Disallow: /sign$
+Disallow: /sign?
+Disallow: /sign.html
 Disallow: /admin
 Disallow: /admin.html
 # Old names, in case an old link is still crawled
@@ -31,7 +33,9 @@ Allow: /
 # Private areas (login required): never indexed.
 Disallow: /dashboard
 Disallow: /checkout
-Disallow: /sign
+Disallow: /sign$
+Disallow: /sign?
+Disallow: /sign.html
 Disallow: /admin
 Disallow: /admin.html
 # Old names, in case an old link is still crawled

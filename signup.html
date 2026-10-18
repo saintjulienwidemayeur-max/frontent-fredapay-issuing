@@ -12,7 +12,8 @@
 <meta name="robots" content="noindex, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"></noscript>
 <style>
   /* The hidden attribute must always win over component display rules (flex/grid/inline-flex), or "hidden" elements stay visible. */
   [hidden]{display:none !important}
@@ -100,6 +101,7 @@
   .field{margin-bottom:18px}
   .field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:7px;color:var(--ink)}
   .field .hint{font-size:.76rem;color:var(--muted);font-weight:400;margin-left:4px}
+  @media (max-width:640px){.field input,.field select,.field textarea{font-size:16px !important}}
   .field input,.field select,.field textarea{width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--line);font-size:.94rem;font-family:inherit;color:var(--ink);background:#fff;transition:.15s;appearance:none}
 
   .pw-field{position:relative}
@@ -199,7 +201,7 @@
   <aside class="auth-side">
     <div class="side-inner">
       <a href="/" class="side-logo">
-        <span class="mark"><img src="logo.png" alt="Freda Pay Issuing"></span>
+        <span class="mark"><img src="logo-64.png" alt="Freda Pay Issuing" width="32" height="32"></span>
         <span class="brand-text">FREDA PAY <span class="brand-issuing">ISSUING</span></span>
       </a>
 
@@ -421,7 +423,7 @@
                 </div>
                 <div class="tbody">
                   <h3>Payment Gateway</h3>
-                  <p>Acceptez les paiements MonCash et Natcash via notre API de paiement.</p>
+                  <p>Acceptez les paiements par carte, MonCash et Natcash via notre API.</p>
                 </div>
               </div>
               <div class="type-card" id="cardIssuing" onclick="selectService('issuing')"><span class="check-badge"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
@@ -594,7 +596,7 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
               <div class="pw-meter"><span></span><span></span><span></span><span></span></div>
-              <div class="pw-hint">Utilisez au moins 8 caractères, avec une majuscule et un chiffre.</div>
+              <div class="pw-hint">Utilisez au moins 8 caractères (12 et plus, avec majuscule et chiffre, c'est encore mieux).</div>
             </div>
             <div class="field pw-field">
               <label for="signupPasswordConfirm">Confirmer le mot de passe</label>
@@ -875,6 +877,10 @@
         if(!el.value.trim()){ ok=false; el.classList.add('field-error'); }
         else{ el.classList.remove('field-error'); }
       });
+      const emEl = document.getElementById('signupEmail');
+      if(emEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emEl.value.trim())){ ok=false; emEl.classList.add('field-error'); }
+      const phEl = document.getElementById('signupPhone');
+      if(phEl.value.trim() && phEl.value.replace(/\D/g,'').length < 7){ ok=false; phEl.classList.add('field-error'); }
       document.getElementById('infoError').classList.toggle('show', !ok);
       return ok;
     }
@@ -895,6 +901,8 @@
     if(currentStep===4){ buildRecap(); }
     if(currentStep < totalSteps){ showStep(currentStep+1); }
   }
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
 
   function goBack(){
     if(currentStep>1){ showStep(currentStep-1); }
@@ -940,7 +948,7 @@
     rows.push(['Téléphone', phone ? ((dialCode || '') + ' ' + phone) : '-']);
 
     document.getElementById('recapBox').innerHTML = rows.map(r =>
-      `<div class="recap-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`
+      `<div class="recap-row"><span class="k">${esc(r[0])}</span><span class="v">${esc(r[1])}</span></div>`
     ).join('');
   }
 
@@ -1002,10 +1010,10 @@
     const otpSub = document.querySelector('#otpView > p');
     if(fromLogin){
       otpHeading.textContent = 'Confirmez votre email pour continuer';
-      otpSub.innerHTML = 'Votre compte existe déjà, mais son email n\'est pas encore vérifié. Entrez le code envoyé à <strong id="otpEmailLabel">' + email + '</strong>.';
+      otpSub.innerHTML = 'Votre compte existe déjà, mais son email n\'est pas encore vérifié. Entrez le code envoyé à <strong id="otpEmailLabel">' + esc(email) + '</strong>.';
     }else{
       otpHeading.textContent = 'Vérifiez votre email';
-      otpSub.innerHTML = 'Entrez le code à 6 chiffres envoyé à <strong id="otpEmailLabel">' + email + '</strong>.';
+      otpSub.innerHTML = 'Entrez le code à 6 chiffres envoyé à <strong id="otpEmailLabel">' + esc(email) + '</strong>.';
     }
 
     document.getElementById('otpView').classList.add('active');
@@ -1053,7 +1061,7 @@
       otpResendCooldownUntil = Date.now() + 60000;
       showOtpView(payload.email);
     }catch(err){
-      showError('signupError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
+      showError('signupError', "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
     }finally{
       setLoading(btn, false);
     }
@@ -1085,7 +1093,7 @@
       document.getElementById('otpView').classList.remove('active');
       document.getElementById('successView').classList.add('active');
     }catch(err){
-      showError('otpError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
+      showError('otpError', "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
     }finally{
       setLoading(btn, false);
     }
@@ -1094,7 +1102,7 @@
 
   async function handleResendOtp(e){
     e.preventDefault();
-    if(Date.now() < otpResendCooldownUntil) return false;
+    if(Date.now() < otpResendCooldownUntil){ showError('otpError', 'Patientez ' + Math.ceil((otpResendCooldownUntil - Date.now())/1000) + ' s avant de renvoyer le code.'); return false; }
     const link = document.getElementById('otpResendLink');
     const originalText = link.textContent;
     link.textContent = 'Envoi en cours…';
@@ -1152,7 +1160,7 @@
       saveSession(data.session_token, data.merchant);
       window.location.href = pageUrl('dashboard');
     }catch(err){
-      showError('loginError', "Impossible de contacter le serveur. Vérifiez que le backend Freda Pay Issuing est démarré (" + API_BASE_URL + ").");
+      showError('loginError', "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
     }finally{
       setLoading(btn, false);
     }
