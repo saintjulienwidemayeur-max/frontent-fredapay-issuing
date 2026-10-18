@@ -143,9 +143,10 @@
     $('statusChip').textContent = done ? 'Contrat signé' : v.signed ? 'Votre signature est enregistrée' : 'En attente';
     $('doneTitle').textContent = done ? (already ? 'Ce contrat est déjà signé' : 'Contrat signé') : v.signed ? 'Signature enregistrée' : 'Pas encore prêt à signer';
     $('doneText').textContent = done ? 'Le contrat est signé par toutes les parties. Une copie PDF vous a été envoyée par email.'
-      : v.signed ? 'Merci ! Le contrat sera finalisé quand tous les signataires auront signé. Vous recevrez le PDF par email.'
+      : v.signed ? 'Merci ! Vous pouvez télécharger dès maintenant une copie du contrat (une copie vous a aussi été envoyée par email). Quand tous les signataires auront signé, la version finale vous sera envoyée automatiquement.'
       : 'Ce contrat sera prêt à signer dès que ' + c.recipient_name + ' l\'aura signé. Vous recevrez alors un email avec votre lien de signature.';
-    $('pdfBtn').hidden = !done;
+    $('pdfBtn').hidden = !(done || v.signed);
+    $('pdfBtn').textContent = done ? 'Télécharger le PDF signé' : 'Télécharger le PDF (signatures actuelles)';
     $('sigs').innerHTML = FredaESign.signaturesHtml(c);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

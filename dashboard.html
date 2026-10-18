@@ -4145,9 +4145,9 @@
       const left = (c.signers || []).filter(x => x.status !== 'SIGNED').length;
       const t = document.getElementById('ctrDoneText');
       if(t) t.textContent = done ? 'Le contrat est signé par toutes les parties. Une copie PDF vous a été envoyée par email.'
-        : 'Votre signature est enregistrée. Le contrat sera finalisé quand ' + (left === 1 ? 'le dernier signataire invité aura signé' : 'les ' + left + ' autres signataires invités auront signé') + '. Vous recevrez le PDF par email.';
+        : 'Votre signature est enregistrée. Vous pouvez télécharger dès maintenant une copie du contrat (une copie vous a aussi été envoyée par email). Le contrat sera finalisé quand ' + (left === 1 ? 'le dernier signataire invité aura signé' : 'les ' + left + ' autres signataires invités auront signé') + ' : la version finale vous sera alors envoyée automatiquement.';
       const pdfBtn = document.getElementById('ctrPdfBtn');
-      if(pdfBtn) pdfBtn.hidden = !done;
+      if(pdfBtn){ pdfBtn.hidden = false; pdfBtn.textContent = done ? 'Télécharger le PDF signé' : 'Télécharger le PDF (signatures actuelles)'; }
       document.getElementById('ctrSigs').innerHTML = FredaESign.signaturesHtml(c);
       return;
     }
@@ -4178,7 +4178,7 @@
       });
       currentContract = d.contract;
       renderContractDetail();
-      showToast(currentContract.status === 'COMPLETED' ? 'Contrat signé. Le PDF vous a été envoyé par email.' : 'Signature enregistrée. En attente des autres signataires.', 'success');
+      showToast(currentContract.status === 'COMPLETED' ? 'Contrat signé. Le PDF vous a été envoyé par email.' : 'Signature enregistrée. Vous pouvez télécharger le PDF dès maintenant.', 'success');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }catch(e){
       err.textContent = e.message; err.hidden = false;
