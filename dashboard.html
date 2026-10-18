@@ -720,6 +720,7 @@
             </div>
 
             <div id="withdrawMobileBlock" hidden>
+              <div class="hint" style="font-size:.82rem;line-height:1.5;background:#fff8e6;border:1px solid #f5deb3;border-radius:10px;padding:10px 12px;margin-bottom:12px">Pour retirer par <strong>MonCash</strong> ou <strong>Natcash</strong>, votre solde Gateway doit être d'<strong>au moins 2 500 HTG</strong>. Une fois ce seuil atteint, vous pouvez retirer le montant que vous voulez, dans la limite de votre solde.</div>
               <div class="field">
                 <label>Numéro MonCash / Natcash du destinataire</label>
                 <input type="text" id="withdrawRecipient" placeholder="509XXXXXXXX">
@@ -2899,7 +2900,8 @@
         const q = await apiFetch('/dashboard/payouts/quote?method=' + method + '&currency=' + cur + '&amount=' + encodeURIComponent(amt), { method: 'GET' });
         if(parseFloat(document.getElementById('withdrawAmount').value) !== amt) return;
         box.innerHTML = 'Frais : <strong>' + fmtCur(q.fee, cur) + '</strong> (' + esc(q.fee_rule) + ') · Total retiré de votre solde : <strong>' + fmtCur(q.total, cur) + '</strong>'
-          + (q.minimum ? '<br><span style="color:var(--muted)">Montant minimum : ' + fmtCur(q.minimum, cur) + '</span>' : '');
+          + (q.minimum ? '<br><span style="color:var(--muted)">Montant minimum : ' + fmtCur(q.minimum, cur) + '</span>' : '')
+          + (q.min_balance_htg ? '<br><span style="color:var(--muted)">Solde Gateway minimum requis pour retirer : ' + fmtCur(q.min_balance_htg, 'HTG') + '</span>' : '');
       }catch(err){ box.textContent = err.message; }
     }, 250);
   }
@@ -4309,5 +4311,83 @@
   if(location.hash === '#contrats'){ setTimeout(() => showSection('contracts'), 700); }
 </script>
 
+<!-- ===== Chat avec l'équipe Freda Pay Issuing ===== -->
+<style>
+  #chatFab{position:fixed;right:20px;bottom:20px;z-index:60;background:var(--ink,#111);color:#fff;border:0;border-radius:99px;padding:13px 18px;font:inherit;font-weight:800;font-size:.88rem;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.45);display:flex;align-items:center;gap:8px}
+  #chatFab .dot{display:none;min-width:20px;height:20px;border-radius:99px;background:#ff4081;color:#fff;font-size:.72rem;align-items:center;justify-content:center;padding:0 6px}
+  #chatBox{position:fixed;right:20px;bottom:78px;z-index:61;width:360px;max-width:calc(100vw - 24px);height:480px;max-height:calc(100vh - 110px);background:#fff;border:1px solid var(--line,#e5e5e5);border-radius:16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden}
+  #chatBox.open{display:flex}
+  #chatBox header{padding:14px 16px;background:var(--ink,#111);color:#fff}
+  #chatBox header b{display:block;font-size:.95rem}#chatBox header span{font-size:.76rem;opacity:.75}
+  #chatMsgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#f7f7f9}
+  .cm{max-width:82%;padding:9px 12px;border-radius:14px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+  .cm.me{align-self:flex-end;background:var(--ink,#111);color:#fff;border-bottom-right-radius:4px}
+  .cm.team{align-self:flex-start;background:#fff;border:1px solid var(--line,#e5e5e5);border-bottom-left-radius:4px}
+  .cm small{display:block;font-size:.68rem;opacity:.6;margin-top:3px}
+  #chatForm{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line,#e5e5e5);background:#fff}
+  #chatInput{flex:1;resize:none;border:1px solid var(--line,#e5e5e5);border-radius:10px;padding:9px 11px;font:inherit;font-size:.88rem;height:42px;max-height:110px}
+  #chatSend{border:0;background:#ff4081;color:#fff;border-radius:10px;padding:0 16px;font:inherit;font-weight:800;cursor:pointer}
+  #chatSend:disabled{opacity:.5;cursor:not-allowed}
+  @media(max-width:520px){#chatBox{right:8px;left:8px;width:auto;bottom:72px}#chatFab{right:12px;bottom:12px}}
+</style>
+<button id="chatFab" type="button" aria-label="Ouvrir le chat avec l'équipe" onclick="toggleChat()">&#128172; Chat <span class="dot" id="chatDot">0</span></button>
+<div id="chatBox" role="dialog" aria-label="Chat avec l'équipe Freda Pay Issuing">
+  <header><b>Équipe Freda Pay Issuing</b><span>Écrivez-nous, nous répondons ici.</span></header>
+  <div id="chatMsgs"><div class="cm team">Bonjour ! Posez votre question, un membre de l'équipe vous répond dès que possible.</div></div>
+  <form id="chatForm" onsubmit="return sendChat(event)">
+    <textarea id="chatInput" maxlength="2000" placeholder="Votre message…" aria-label="Votre message"></textarea>
+    <button id="chatSend" type="submit">Envoyer</button>
+  </form>
+</div>
+<script>
+  (function(){
+    var open = false, timer = null, lastCount = -1;
+    var $ = function(id){ return document.getElementById(id); };
+    function setDot(n){ var d = $('chatDot'); d.textContent = n > 9 ? '9+' : n; d.style.display = n > 0 ? 'inline-flex' : 'none'; }
+    function fmt(iso){ try{ return new Date(iso).toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }); }catch(e){ return ''; } }
+    function render(messages){
+      var box = $('chatMsgs'), atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+      box.textContent = '';
+      var hello = document.createElement('div'); hello.className = 'cm team'; hello.textContent = "Bonjour ! Posez votre question, un membre de l'équipe vous répond dès que possible."; box.appendChild(hello);
+      messages.forEach(function(m){
+        var d = document.createElement('div'); d.className = 'cm ' + (m.sender === 'merchant' ? 'me' : 'team');
+        d.appendChild(document.createTextNode(m.body));
+        var sm = document.createElement('small'); sm.textContent = (m.sender === 'merchant' ? (m.author_name || 'Vous') : (m.author_name || 'Équipe')) + ' · ' + fmt(m.created_at); d.appendChild(sm);
+        box.appendChild(d);
+      });
+      if(atBottom || messages.length !== lastCount) box.scrollTop = box.scrollHeight;
+      lastCount = messages.length;
+    }
+    async function load(markRead){
+      try{
+        var d = await apiFetch('/dashboard/chat', { method: 'GET' });
+        render(d.messages || []);
+        if(open && d.unread){ await apiFetch('/dashboard/chat/read', { method: 'POST', body: {} }); setDot(0); } else setDot(d.unread || 0);
+      }catch(e){ /* silent: the chat must never disturb the dashboard */ }
+    }
+    async function poll(){
+      if(open) return load();
+      try{ var d = await apiFetch('/dashboard/chat/unread', { method: 'GET' }); setDot(d.unread || 0); }catch(e){}
+    }
+    window.toggleChat = function(){
+      open = !open; $('chatBox').classList.toggle('open', open);
+      if(open){ load(); $('chatInput').focus(); clearInterval(timer); timer = setInterval(function(){ load(); }, 6000); }
+      else { clearInterval(timer); timer = setInterval(poll, 30000); }
+    };
+    window.sendChat = async function(ev){
+      ev.preventDefault();
+      var inp = $('chatInput'), text = inp.value.trim(); if(!text) return false;
+      var btn = $('chatSend'); btn.disabled = true;
+      try{
+        await apiFetch('/dashboard/chat', { method: 'POST', body: { body: text } });
+        inp.value = ''; inp.style.height = '42px'; await load();
+      }catch(e){ showToast(e.message, 'error'); }
+      btn.disabled = false; inp.focus(); return false;
+    };
+    $('chatInput').addEventListener('keydown', function(e){ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); $('chatForm').requestSubmit(); } });
+    $('chatInput').addEventListener('input', function(){ this.style.height = '42px'; this.style.height = Math.min(110, this.scrollHeight) + 'px'; });
+    setTimeout(poll, 2500); timer = setInterval(poll, 30000);
+  })();
+</script>
 </body>
 </html>
