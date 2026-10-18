@@ -112,7 +112,8 @@
   .btn-pay{background:var(--gold)}
   .btn-pay:hover{background:#e0336f}
 
-  footer{text-align:center;padding:18px 20px 26px;font-size:.76rem;color:#999}
+  footer{text-align:center;padding:18px 20px 26px;font-size:.76rem;color:#6b6b6b}
+  @media (max-width:640px){.field input,.field select{font-size:16px}}
 </style>
 </head>
 <body>
@@ -138,8 +139,9 @@
       <!-- Method selection view -->
       <div class="state-view active" id="view-select">
         <div class="field" id="openAmountField" hidden>
-          <label>Montant à payer (<span id="openCur">HTG</span>)</label>
-          <input type="number" id="openAmount" placeholder="Ex : 500" oninput="validatePayButton()">
+          <label for="openAmount">Montant à payer (<span id="openCur">HTG</span>)</label>
+          <input type="number" id="openAmount" placeholder="Ex : 500" oninput="validatePayButton()" inputmode="decimal" step="any" min="0">
+          <div id="openMinHint" role="alert" style="font-size:.78rem;color:#b3261e;margin-top:6px"></div>
         </div>
 
         <div class="section-label">Choisissez votre méthode de paiement</div>
@@ -173,11 +175,11 @@
 
         <div id="cardInfoFields" hidden>
           <div class="field">
-            <label>Nom sur la carte</label>
+            <label for="payerName">Nom sur la carte</label>
             <input type="text" id="payerName" placeholder="Prénom Nom" autocomplete="name">
           </div>
           <div class="field">
-            <label>Email <span style="font-weight:400;color:var(--muted)">(pour votre reçu, facultatif)</span></label>
+            <label for="payerEmail">Email <span style="font-weight:400;color:var(--muted)">(pour votre reçu, facultatif)</span></label>
             <input type="email" id="payerEmail" placeholder="vous@exemple.com" autocomplete="email">
           </div>
         </div>
@@ -311,15 +313,18 @@
     validatePayButton();
   }
 
+  function openMin(){ return (linkInfo && linkInfo.currency === 'USD') ? 0.5 : 20; }
   function validatePayButton(){
     const btn = document.getElementById('payBtn');
     const openAmountOk = linkInfo && linkInfo.amount != null
       ? true
-      : (parseFloat(document.getElementById('openAmount').value) > 0);
+      : (parseFloat(document.getElementById('openAmount').value) >= openMin());
     btn.disabled = !(selectedMethod && openAmountOk);
     showMethodAmounts();
     if(linkInfo && linkInfo.amount == null){
       const val = parseFloat(document.getElementById('openAmount').value);
+      const hint = document.getElementById('openMinHint');
+      if(hint) hint.textContent = (val > 0 && val < openMin()) ? 'Montant minimum : ' + openMin() + ' ' + (linkInfo.currency || 'HTG') : '';
       if(val > 0) setHeroAmount(val, linkInfo.currency); else { document.getElementById('amt').textContent = 'Montant libre'; document.getElementById('amtAlt').hidden = true; }
     }
   }
@@ -358,7 +363,7 @@
       return;
     }
     try{
-      const res = await fetch(API_BASE_URL + '/public/payment-links/' + linkId);
+      const res = await fetch(API_BASE_URL + '/public/payment-links/' + encodeURIComponent(linkId));
       const data = await res.json();
       if(!res.ok){
         document.getElementById('bizName').textContent = 'Lien introuvable';
@@ -397,6 +402,13 @@
     const btn = document.getElementById('payBtn');
     btn.classList.add('loading');
     btn.disabled = true;
+    /* MonCash / Natcash open in a separate window. Mobile browsers only allow that during the click itself, so we open a blank
+       window right now and point it to the payment page once the server answers. */
+    let payWin = null;
+    if(selectedMethod !== 'carte'){
+      try{ payWin = window.open('', '_blank'); if(payWin) payWin.opener = null; }catch(e){ payWin = null; }
+    }
+    const closePayWin = () => { try{ if(payWin && !payWin.closed) payWin.close(); }catch(e){} payWin = null; };
     try{
       const body = { method: selectedMethod };
       if(linkInfo && linkInfo.amount == null) body.amount = amount;
@@ -404,29 +416,45 @@
         body.customer_name = document.getElementById('payerName').value.trim() || undefined;
         body.customer_email = document.getElementById('payerEmail').value.trim() || undefined;
       }
-      const res = await fetch(API_BASE_URL + '/public/payment-links/' + linkId + '/pay', {
+      const res = await fetch(API_BASE_URL + '/public/payment-links/' + encodeURIComponent(linkId) + '/pay', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(body),
       });
       const data = await res.json();
       if(!res.ok){
+        closePayWin();
         showState('view-error');
         document.getElementById('errorTitle').textContent = 'Paiement refusé';
         document.getElementById('errorText').textContent = (data.error && data.error.message) || 'Veuillez réessayer.';
         return;
       }
       if(selectedMethod === 'carte' && data.card){
+        closePayWin();
         showCardForm(data);
         return;
       }
       showState('view-pending');
       if(data.checkout_url){
-        document.getElementById('pendingText').innerHTML = 'Une nouvelle fenêtre va s\u2019ouvrir pour finaliser votre paiement ' + selectedMethod + '. Revenez sur cet onglet une fois terminé.';
-        window.open(data.checkout_url, '_blank');
-      }
+        const pt = document.getElementById('pendingText');
+        pt.textContent = 'Finalisez votre paiement ' + selectedMethod + ' dans la nouvelle fenêtre, puis revenez sur cet onglet.';
+        let opened = false;
+        if(payWin && !payWin.closed){ try{ payWin.location.href = data.checkout_url; opened = true; }catch(e){} }
+        if(!opened){
+          /* Popup blocked: give the customer a visible link instead. */
+          pt.textContent = 'Appuyez sur le bouton ci-dessous pour finaliser votre paiement ' + selectedMethod + ', puis revenez sur cet onglet. ';
+          if(/^https?:\/\//i.test(data.checkout_url)){
+            const a = document.createElement('a');
+            a.href = data.checkout_url; a.target = '_blank'; a.rel = 'noopener';
+            a.className = 'btn-open-pay'; a.textContent = 'Ouvrir la page de paiement';
+            a.style.cssText = 'display:inline-block;margin-top:12px;padding:12px 20px;border-radius:10px;background:#d81b60;color:#fff;font-weight:700;text-decoration:none';
+            pt.appendChild(document.createElement('br')); pt.appendChild(a);
+          }
+        }
+      } else { closePayWin(); }
       pollPaymentStatus(data.id);
     }catch(err){
+      closePayWin();
       showState('view-error');
       document.getElementById('errorTitle').textContent = 'Connexion impossible';
       document.getElementById('errorText').textContent = "Impossible de contacter le serveur de paiement.";
@@ -540,7 +568,13 @@
     try{
       const res = await fetch(hosted
         ? API_BASE_URL + '/public/card-checkout/' + encodeURIComponent(hostedId) + '/status?t=' + encodeURIComponent(hostedToken || '')
-        : API_BASE_URL + '/public/payment-links/' + linkId + '/payments/' + paymentId);
+        : API_BASE_URL + '/public/payment-links/' + encodeURIComponent(linkId) + '/payments/' + paymentId);
+      if(!res.ok && res.status >= 400 && res.status < 500){
+        showState('view-error');
+        document.getElementById('errorTitle').textContent = 'Paiement introuvable';
+        document.getElementById('errorText').textContent = 'Ce paiement est introuvable ou a expiré. Contactez le marchand.';
+        return;
+      }
       const data = await res.json();
       if(data.return_url) returnUrl = data.return_url;
       if(data.status === 'succeeded'){ showSuccess(); return; }
