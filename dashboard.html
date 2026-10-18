@@ -110,8 +110,17 @@
   @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
   .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px}
-  .grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+  .grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
   @media (max-width:700px){ .grid-stats{grid-template-columns:1fr} }
+  .stat-grid{display:grid;gap:14px}
+  .stat-grid.c3{grid-template-columns:repeat(3,1fr)}
+  .stat-grid.c4{grid-template-columns:repeat(4,1fr)}
+  .stat-grid > *{min-width:0}
+  @media (max-width:700px){ .stat-grid.c3, .stat-grid.c4{grid-template-columns:1fr 1fr} }
+  @media (max-width:420px){ .stat-grid.c3, .stat-grid.c4{grid-template-columns:1fr} }
+  .field-row.wide{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:none}
+  @media (max-width:480px){ .field-row.wide{grid-template-columns:1fr} .cd-actions{grid-template-columns:repeat(2,1fr)} }
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
   .holder-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
   .holder-avatar{width:44px;height:44px;border-radius:50%;background:var(--gold-soft);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;overflow:hidden;flex-shrink:0}
@@ -315,9 +324,9 @@
   table.datatable tbody tr.clickable,table.datatable tr.clickable{cursor:pointer;transition:.12s}
   table.datatable tr.clickable:hover td{background:var(--bg-soft)}
 
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,15,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,15,.55);z-index:100;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
   .modal-overlay.open{display:flex}
-  .modal-box{overflow-wrap:anywhere;background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px 26px 22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);animation:fadeIn .2s ease}
+  .modal-box{overflow-wrap:anywhere;max-height:calc(100vh - 40px);overflow-y:auto;background:#fff;border-radius:16px;max-width:440px;width:100%;padding:26px 26px 22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);animation:fadeIn .2s ease}
   /* Side-panel variant: anchored to the left edge, full height, more room
      to breathe than a centered popup - used for the card detail view. */
   .modal-overlay.side-panel{justify-content:flex-start;padding:0}
@@ -565,10 +574,10 @@
         <div class="table-toolbar">
           <div>
             <div class="section-title">Transactions récentes sur vos cartes</div>
-            <div class="section-desc" style="margin-bottom:0">Les 20 dernières transactions, toutes cartes émises confondues.</div>
+            <div class="section-desc" style="margin-bottom:0">Les 20 dernières transactions de vos cartes business.</div>
           </div>
         </div>
-        <div class="tbl-wrap"><table id="ovCardTxTable"></table></div>
+        <div class="tbl-wrap"><table class="datatable" id="ovCardTxTable"></table></div>
         <div class="empty-state" id="ovCardTxEmpty" hidden>Aucune transaction pour le moment.</div>
       </div>
 
@@ -612,7 +621,7 @@
               <div class="utitle">Pièce d'identité officielle (passeport, carte d'identité ou permis de conduire)</div>
               <div class="ustatus" id="kycItem1Status">Aucun fichier</div>
             </div>
-            <label class="upload-btn">Choisir<input type="file" hidden onchange="fileChosen(this,'kycItem1')"></label>
+            <label class="upload-btn">Choisir<input type="file" hidden accept="image/*,.pdf" onchange="fileChosen(this,'kycItem1')"></label>
           </div>
 
           <div class="upload-item" id="kycItem2">
@@ -621,7 +630,7 @@
               <div class="utitle">Selfie avec pièce d'identité</div>
               <div class="ustatus" id="kycItem2Status">Aucun fichier</div>
             </div>
-            <label class="upload-btn">Choisir<input type="file" hidden onchange="fileChosen(this,'kycItem2')"></label>
+            <label class="upload-btn">Choisir<input type="file" hidden accept="image/*,.pdf" onchange="fileChosen(this,'kycItem2')"></label>
           </div>
 
           <button class="btn" style="width:100%;margin-top:18px" id="kycSubmitBtn" disabled onclick="submitVerification('kyc')">Soumettre pour vérification</button>
@@ -644,7 +653,7 @@
               <div class="utitle">Document d'enregistrement de l'entreprise</div>
               <div class="ustatus" id="kybItem1Status">Aucun fichier</div>
             </div>
-            <label class="upload-btn">Choisir<input type="file" hidden onchange="fileChosen(this,'kybItem1')"></label>
+            <label class="upload-btn">Choisir<input type="file" hidden accept="image/*,.pdf" onchange="fileChosen(this,'kybItem1')"></label>
           </div>
           <p style="font-size:.78rem;color:var(--muted);margin:-6px 0 0">Le document officiel qui prouve l'enregistrement de votre entreprise, quel que soit le pays (ex. certificat d'incorporation ou articles of organization, extrait du registre du commerce, ou l'équivalent dans votre pays).</p>
 
@@ -801,7 +810,7 @@
       <div class="card">
         <div class="section-title">Résumé Gateway</div>
         <div class="section-desc" style="margin-bottom:14px">Argent entré et frais payés sur ce compte, en HTG (MonCash, Natcash) et en USD (carte).</div>
-        <div class="stat-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+        <div class="stat-grid c3">
           <div class="stat-card"><div class="label">Total encaissé</div><div class="value" id="gwSummaryIn">-</div><div class="value gw-usd" id="gwSummaryInUsd">-</div></div>
           <div class="stat-card"><div class="label">Frais payés</div><div class="value" id="gwSummaryFees">-</div><div class="value gw-usd" id="gwSummaryFeesUsd">-</div></div>
           <div class="stat-card"><div class="label">Net reçu</div><div class="value" id="gwSummaryNet">-</div><div class="value gw-usd" id="gwSummaryNetUsd">-</div></div>
@@ -821,6 +830,7 @@
         </div>
         <table class="datatable" id="paymentsTable"><tr><th>Date</th><th>Client</th><th>Méthode</th><th>Montant</th><th>Statut</th></tr></table>
         <div class="empty-state" id="paymentsEmpty" hidden>Aucun paiement pour le moment.</div>
+        <div style="text-align:center;margin-top:14px"><button class="key-btn" id="paymentsMore" hidden onclick="loadPayments(true)">Charger plus</button></div>
       </div>
     </section>
 
@@ -836,7 +846,7 @@
             <button class="key-btn" onclick="downloadPaymentsCsv()">Exporter CSV</button>
           </div>
         </div>
-        <div class="stat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:6px">
+        <div class="stat-grid c4" style="margin-bottom:6px">
           <div class="stat-card"><div class="label">Transactions</div><div class="value" id="txCountTotal">0</div><div class="sub">au total</div></div>
           <div class="stat-card"><div class="label">Réussies</div><div class="value" id="txCountOk" style="color:var(--green,#16a34a)">0</div><div class="sub" id="txSubOk">aucune terminée</div></div>
           <div class="stat-card"><div class="label">En cours</div><div class="value" id="txCountPending" style="color:var(--amber)">0</div><div class="sub">en attente de confirmation</div></div>
@@ -857,6 +867,7 @@
         </div>
         <table class="datatable" id="transactionsTable"><tr><th>Date</th><th>Référence</th><th>Méthode</th><th>Montant</th><th>Statut</th></tr></table>
         <div class="empty-state" id="transactionsEmpty" hidden>Aucune transaction pour le moment.</div>
+        <div style="text-align:center;margin-top:14px"><button class="key-btn" id="transactionsMore" hidden onclick="loadTransactions(true)">Charger plus</button></div>
       </div>
     </section>
 
@@ -864,13 +875,13 @@
       <div class="card">
         <div class="section-title">Performance du mois <span id="perfMonthLabel" style="font-weight:500;color:var(--muted)"></span></div>
         <div class="section-desc" style="margin-bottom:14px">Vos encaissements de ce mois, comparés au mois dernier. Les gourdes (MonCash, Natcash) et les dollars (carte) ne sont jamais additionnés.</div>
-        <div class="stat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div class="stat-grid c4">
           <div class="stat-card"><div class="label">Encaissé (HTG)</div><div class="value" id="perfVolHtg">-</div><div class="sub" id="perfVolHtgDelta">&nbsp;</div></div>
           <div class="stat-card"><div class="label">Encaissé (USD, cartes)</div><div class="value" id="perfVolUsd">-</div><div class="sub" id="perfVolUsdDelta">&nbsp;</div></div>
           <div class="stat-card"><div class="label">Paiements réussis</div><div class="value" id="perfCount">-</div><div class="sub" id="perfCountDelta">&nbsp;</div></div>
           <div class="stat-card"><div class="label">Taux de réussite</div><div class="value" id="perfRate">-</div><div class="sub" id="perfAttempts">&nbsp;</div></div>
         </div>
-        <div class="stat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px">
+        <div class="stat-grid c4" style="margin-top:14px">
           <div class="stat-card"><div class="label">Panier moyen (HTG)</div><div class="value" id="perfAvgHtg">-</div></div>
           <div class="stat-card"><div class="label">Panier moyen (USD)</div><div class="value" id="perfAvgUsd">-</div></div>
           <div class="stat-card"><div class="label">Frais payés</div><div class="value" id="perfFees" style="font-size:1rem">-</div></div>
@@ -942,7 +953,7 @@
         <div class="table-toolbar">
           <div>
             <div class="section-title">Titulaires de carte (Customers)</div>
-            <div class="section-desc" style="margin-bottom:0">Les personnes pour qui vous émettez des cartes individuelles. Copiez l'identifiant (<code>mpc_…</code>) pour l'envoyer comme <code>holder_id</code> via l'API. Non requis pour les cartes entreprise.</div>
+            <div class="section-desc" style="margin-bottom:0">Les personnes pour qui vous émettez des cartes individuelles. Copiez l'identifiant du titulaire pour l'envoyer comme <code>holder_id</code> via l'API. Non requis pour les cartes entreprise.</div>
           </div>
           <button class="btn btn-sm" onclick="openHolderModal()">Créer un titulaire de carte</button>
         </div>
@@ -1081,7 +1092,7 @@
           <div class="note note-pink" style="margin-top:0;margin-bottom:14px">
             En convertissant votre compte en entreprise, vous devrez compléter une vérification KYB (en plus du KYC) avant de passer en mode Live.
           </div>
-          <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:none">
+          <div class="field-row wide">
             <div class="field" style="max-width:none">
               <label>Nom de l'entreprise</label>
               <input type="text" id="upgradeBusinessName" placeholder="Ex : Acme Commerce LLC">
@@ -1094,7 +1105,7 @@
           <button class="btn btn-sm" onclick="convertToBusiness()">Confirmer la conversion</button>
         </div>
 
-        <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:none">
+        <div class="field-row wide">
           <div class="field" style="max-width:none">
             <label>Nom <span id="businessNameLabelSuffix"></span></label>
             <input type="text" id="settingsBusinessName" value="" placeholder="Nom de votre entreprise">
@@ -1105,7 +1116,7 @@
             <select id="settingsEntityType"><option value="LLC">LLC (société à responsabilité limitée)</option><option value="Corporation">Corporation / Inc.</option><option value="Ltd">Ltd (private limited company)</option><option value="SA">Société anonyme (SA, AG, plc, SAS)</option><option value="SARL">SARL / GmbH / BV</option><option value="Partnership">Société de personnes (partnership)</option><option value="EI">Entrepreneur individuel (sole proprietorship)</option><option value="NonProfit">Association / organisation à but non lucratif</option><option value="Cooperative">Coopérative</option><option value="Autre">Autre</option></select>
           </div>
         </div>
-        <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:none">
+        <div class="field-row wide">
           <div class="field" style="max-width:none">
             <label>Email de contact</label>
             <input type="email" id="settingsEmail" value="contact@entreprise-lakay.com" disabled>
@@ -1121,7 +1132,7 @@
       <div class="card" style="margin-bottom:20px">
         <div class="section-title">Mot de passe</div>
         <div class="section-desc">Changez le mot de passe de votre compte.</div>
-        <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:none">
+        <div class="field-row wide">
           <div class="field" style="max-width:none">
             <label>Mot de passe actuel</label>
             <input type="password" id="currentPasswordSettings" placeholder="••••••••" autocomplete="current-password">
@@ -1320,6 +1331,7 @@
         <div class="section-title" style="margin-top:26px;font-size:.92rem">Événements disponibles</div>
         <div class="event-list">
           <span class="event-chip">payment.succeeded</span>
+          <span class="event-chip">payment.failed</span>
           <span class="event-chip">payout.succeeded</span>
           <span class="event-chip">payout.failed</span>
           <span class="event-chip">card.created</span>
@@ -1424,7 +1436,7 @@
       <div class="payinfo-row"><span>Email Zelle</span><strong>contact@fredapay.com</strong></div>
       <div class="payinfo-row"><span>Nom sur le compte</span><strong>FREDA PAY LLC</strong></div>
     </div>
-    <div class="hint-text" style="margin-bottom:12px">Les frais de financement de votre plan Issuing (4,5 % en Startup, 3 % en Pro, 2,5 % en Premium) sont retenus sur le montant reçu.</div>
+    <div class="hint-text" style="margin-bottom:12px">Les frais de financement de votre plan Issuing sont retenus sur le montant reçu (voir Facturation).</div>
     <div class="field"><label>Montant envoyé (USD)</label><input type="number" id="zelleAmount" placeholder="500"></div>
     <div class="field"><label>Reçu (capture d'écran ou PDF)</label><input type="file" id="zelleReceipt" accept="image/*,.pdf"></div>
     <button class="btn" onclick="submitManualTopup('zelle')">Envoyer la demande</button>
@@ -1445,7 +1457,7 @@
       <div class="payinfo-row"><span>Routing number (ACH)</span><strong>011000138</strong></div>
       <div class="payinfo-row"><span>Routing number (Wires)</span><strong>026009593</strong></div>
     </div>
-    <div class="hint-text" style="margin-bottom:12px">Les frais de financement de votre plan Issuing (4,5 % en Startup, 3 % en Pro, 2,5 % en Premium) sont retenus sur le montant reçu.</div>
+    <div class="hint-text" style="margin-bottom:12px">Les frais de financement de votre plan Issuing sont retenus sur le montant reçu (voir Facturation).</div>
     <div class="field"><label>Montant envoyé (USD)</label><input type="number" id="bankAmount" placeholder="500"></div>
     <div class="field"><label>Reçu / confirmation de virement</label><input type="file" id="bankReceipt" accept="image/*,.pdf"></div>
     <button class="btn" onclick="submitManualTopup('bank_transfer')">Envoyer la demande</button>
@@ -1662,7 +1674,7 @@
 </div>
 
 <!-- ===== Toasts ===== -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
 <script src="countries.js"></script>
 <script src="esign.js"></script>
@@ -1754,8 +1766,8 @@
     currentMerchant = merchant;
     const teamOwnerEl = document.getElementById('teamOwnerEmail');
     if(teamOwnerEl) teamOwnerEl.textContent = merchant.email;
-    document.querySelector('.who .biz').textContent = merchant.business_name;
-    const initials = merchant.business_name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    document.querySelector('.who .biz').textContent = merchant.business_name || '';
+    const initials = (merchant.business_name || '').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
     document.querySelector('.who .avatar').textContent = initials || 'FP';
     document.querySelector('.who .plan').textContent = (merchant.active_mode === 'live' ? 'Live' : 'Sandbox') + ' · GW ' + gatewayPlanLabel(merchant.gateway_plan) + ' · Issuing ' + issuingPlanLabel(merchant.issuing_plan);
     const gwBannerEl = document.getElementById('gatewayPlanBannerLabel');
@@ -1850,10 +1862,10 @@
       empty.hidden = true;
       table.innerHTML = '<tr><th>Carte</th><th>Type</th><th>Montant</th><th>Marchand</th><th>Date</th></tr>' +
         d.transactions.map(t => `<tr>
-          <td>${t.card_reference || t.card_id}</td>
+          <td>${esc(t.card_reference || t.card_id)}</td>
           <td>${t.mode === 'CREDIT' ? 'Crédit' : 'Débit'}</td>
-          <td>${t.mode === 'CREDIT' ? '+' : '-'}${Number(t.amount).toLocaleString('fr-FR',{minimumFractionDigits:2})} ${t.currency}</td>
-          <td>${t.merchant_name || '-'}</td>
+          <td>${t.mode === 'CREDIT' ? '+' : '-'}${Number(t.amount).toLocaleString('fr-FR',{minimumFractionDigits:2})} ${esc(t.currency)}</td>
+          <td>${esc(t.merchant_name || '-')}</td>
           <td>${fmtDate(t.date)}</td>
         </tr>`).join('');
     }catch(err){ /* silent */ }
@@ -1875,37 +1887,49 @@
   function downloadPaymentsCsv(){
     const token = getSessionToken();
     fetch(API_BASE_URL + '/dashboard/payments/export.csv', { headers: { Authorization: 'Bearer ' + token } })
-      .then(res => res.blob())
+      .then(res => {
+        if(res.status === 401){ clearSession(); location.href = pageUrl('signup'); throw new Error('401'); }
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        return res.blob();
+      })
       .then(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'freda-pay-paiements.csv';
+        a.download = 'freda-pay-issuing-paiements-' + new Date().toISOString().slice(0,10) + '.csv';
         document.body.appendChild(a);
         a.click();
         a.remove();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
       })
       .catch(() => showToast('Échec du téléchargement.', 'error'));
   }
 
-  async function loadPayments(){
+  let paymentsCache = [], paymentsPage = 1;
+  async function loadPayments(more){
     try{
-      const data = await apiFetch('/dashboard/payments', { method: 'GET' });
-      renderPaymentsTable(data.payments || []);
+      const page = more === true ? paymentsPage + 1 : 1;
+      const data = await apiFetch('/dashboard/payments?page_size=50&page=' + page, { method: 'GET' });
+      paymentsCache = (page > 1 ? paymentsCache : []).concat(data.payments || []);
+      paymentsPage = page;
+      renderPaymentsTable(paymentsCache);
+      const mb = document.getElementById('paymentsMore');
+      if(mb) mb.hidden = !(data.pagination && data.pagination.has_more);
     }catch(err){ /* toast already shown by other loaders if session invalid */ }
   }
 
+  const METHOD_LABEL = { moncash:'MonCash', natcash:'Natcash', moncash_ussd:'MonCash (USSD)', carte:'Carte', all:'Autre' };
+  function methodLabel(m){ return METHOD_LABEL[m] || m || '-'; }
   function renderPaymentsTable(payments, tableId, emptyId){
     const table = document.getElementById(tableId || 'paymentsTable');
     const rows = payments.map(p => `
       <tr class="clickable" onclick="openPaymentDetail(this)"
-          data-id="${p.id}" data-date="${fmtDate(p.created_at)}" data-client="${p.reference}"
-          data-method="${p.method}" data-payer="${esc([p.customer_name, p.customer_email, p.customer_phone].filter(Boolean).join(' · '))}" data-amount="${p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount)}"
-          data-status="${statusTagLabel(p.status)}" data-fee="${p.fee!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.fee) : fmtHTGFromApi(p.fee)) : '-'}" data-net="${p.net_amount!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.net_amount) : fmtHTGFromApi(p.net_amount)) : '-'}">
-        <td>${fmtDate(p.created_at)}</td><td>${p.reference}</td><td>${p.method}</td>
-        <td>${p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount)}</td>
-        <td><span class="tag ${tagClass(p.status)}">${statusTagLabel(p.status)}</span></td>
+          data-id="${esc(p.id)}" data-date="${esc(fmtDate(p.created_at))}" data-client="${esc(p.reference)}"
+          data-method="${esc(methodLabel(p.method))}" data-reason="${esc(p.failure_reason || '')}" data-payer="${esc([p.customer_name, p.customer_email, p.customer_phone].filter(Boolean).join(' · '))}" data-amount="${esc(p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount))}"
+          data-status="${esc(statusTagLabel(p.status))}" data-fee="${p.fee!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.fee) : fmtHTGFromApi(p.fee)) : '-'}" data-net="${p.net_amount!=null ? (p.currency==='USD' ? fmtUSDFromApi(p.net_amount) : fmtHTGFromApi(p.net_amount)) : '-'}">
+        <td>${esc(fmtDate(p.created_at))}</td><td>${esc(p.reference)}</td><td>${esc(methodLabel(p.method))}</td>
+        <td>${esc(p.currency==='HTG' ? fmtHTGFromApi(p.amount) : fmtUSDFromApi(p.amount))}</td>
+        <td><span class="tag ${tagClass(p.status)}">${esc(statusTagLabel(p.status))}</span></td>
       </tr>`).join('');
     table.innerHTML = '<tr><th>Date</th><th>Client</th><th>Méthode</th><th>Montant</th><th>Statut</th></tr>' + rows;
     const empty = document.getElementById(emptyId || 'paymentsEmpty');
@@ -1914,13 +1938,18 @@
 
   /* ===== Transactions page and monthly performance ===== */
   let transactionsCache = [];
-  async function loadTransactions(){
+  let transactionsPage = 1;
+  async function loadTransactions(more){
     try{
+      const page = more === true ? transactionsPage + 1 : 1;
       const st = document.getElementById('txFilterStatus').value, me = document.getElementById('txFilterMethod').value;
-      const qs = '?page_size=100' + (st ? '&status=' + st : '') + (me ? '&method=' + me : '');
+      const qs = '?page_size=100&page=' + page + (st ? '&status=' + st : '') + (me ? '&method=' + me : '');
       const data = await apiFetch('/dashboard/payments' + qs, { method: 'GET' });
-      transactionsCache = data.payments || [];
+      transactionsCache = (page > 1 ? transactionsCache : []).concat(data.payments || []);
+      transactionsPage = page;
       renderTransactionsFiltered();
+      const mb = document.getElementById('transactionsMore');
+      if(mb) mb.hidden = !(data.pagination && data.pagination.has_more);
     }catch(err){ /* silent */ }
   }
   function renderTransactionsFiltered(){
@@ -1964,7 +1993,7 @@
       }).join('');
       document.getElementById('perfChartAxis').innerHTML = '<span>1</span><span>' + Math.ceil(m.by_day.length / 2) + '</span><span>' + m.by_day.length + '</span>';
       const mt = document.getElementById('perfMethods'), me = document.getElementById('perfMethodsEmpty');
-      const label = { moncash:'MonCash', natcash:'Natcash', moncash_ussd:'MonCash (USSD)', carte:'Carte', all:'Autre' };
+      const label = METHOD_LABEL;
       mt.innerHTML = '<tr><th>Méthode</th><th>Paiements réussis</th><th>Montant</th></tr>' + m.by_method.map(x => '<tr><td>' + esc(label[x.method] || x.method) + '</td><td>' + x.count + '</td><td>' + esc(fmtMoneyCur(x.volume, x.currency)) + '</td></tr>').join('');
       me.hidden = m.by_method.length > 0;
     }catch(err){ /* silent */ }
@@ -1984,6 +2013,7 @@
   function fmtDate(iso){
     if(!iso) return '-';
     const d = new Date(iso);
+    if(isNaN(d)) return '-';
     return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
   }
   function statusTagLabel(s){
@@ -2060,11 +2090,15 @@
     webhooks: () => [loadWebhook],
   };
   let loadedSections = new Set();
+  const loadedAt = {};
+  const SECTION_REFRESHABLE = new Set(['payments','transactions','balances','cards-business','cards-individual','contracts','overview']); // data lists that change without the user (forms and settings are not reloaded)
+  const SECTION_REFRESH_MS = 30000; // reopening a section after this delay reloads its data
   function ensureSection(name, force){
     const loaders = (SECTION_LOADERS[name] || (() => []))();
     if(force) loadedSections.delete(name);
-    if(loadedSections.has(name)) return Promise.resolve();
+    if(loadedSections.has(name) && !(SECTION_REFRESHABLE.has(name) && Date.now() - (loadedAt[name] || 0) >= SECTION_REFRESH_MS)) return Promise.resolve();
     loadedSections.add(name);
+    loadedAt[name] = Date.now();
     return Promise.all(loaders.map(fn => Promise.resolve().then(fn).catch(() => {})));
   }
   window.addEventListener('load', () => { try{ if(location.hash === '#plugins') setTimeout(() => showSection('plugins'), 600); }catch(e){} });
@@ -2132,16 +2166,16 @@
         <div class="key-row-head">
           <span class="tag ${k.mode === 'live' ? 'tag-green' : 'tag-amber'}">${k.mode === 'live' ? 'Live' : 'Test'}</span>
           <span class="tag ${k.revoked_at ? 'tag-red' : 'tag-green'}">${k.revoked_at ? 'Révoquée' : 'Active'}</span>
-          <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">Créée le ${fmtDate(k.created_at)}</span>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">Créée le ${esc(fmtDate(k.created_at))}</span>
         </div>
         <div class="key-row">
           <span class="klabel">Clé publique</span>
-          <code>${k.key_id}</code>
+          <code>${esc(k.key_id)}</code>
         </div>
         <div class="key-row">
           <span class="klabel">Clé secrète</span>
           <code>sk_${k.mode}_•••••••••••••••••••••••</code>
-          ${k.revoked_at ? '' : `<button class="key-btn" onclick="revokeApiKey('${k.id}')">Révoquer</button>`}
+          ${k.revoked_at ? '' : `<button class="key-btn" onclick="revokeApiKey('${esc(k.id)}')">Révoquer</button>`}
         </div>
       </div>
     `).join('');
@@ -2165,10 +2199,17 @@
   function closeNewKeyModal(){
     document.getElementById('newKeyModal').classList.remove('open');
   }
+  function copyText(text, okMsg, failMsg){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => showToast(okMsg, 'success'), () => showToast(failMsg, 'error'));
+    }else{
+      showToast(failMsg, 'error');
+    }
+  }
   function copyKeyField(elId){
     const text = document.getElementById(elId).textContent;
     if(!text || text === '-') return;
-    if(navigator.clipboard){ navigator.clipboard.writeText(text); showToast('Copié.', 'success'); }
+    copyText(text, 'Copié.', 'Copie impossible : sélectionnez le texte à la main.');
   }
 
   async function revokeApiKey(id){
@@ -2214,13 +2255,13 @@
         <div class="key-row-head">
           <span class="tag ${l.status==='active' ? 'tag-green' : 'tag-red'}">${l.status==='active' ? 'Actif' : 'Désactivé'}</span>
           <span style="font-weight:700;font-size:.85rem">${l.amount ? (l.currency==='USD' ? fmtUSDFromApi(l.amount) : fmtHTGFromApi(l.amount)) : 'Montant libre'}</span>
-          ${l.description ? `<span style="font-size:.8rem;color:var(--muted)">· ${l.description}</span>` : ''}
+          ${l.description ? `<span style="font-size:.8rem;color:var(--muted)">· ${esc(l.description)}</span>` : ''}
           <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">${fmtDate(l.created_at)}</span>
         </div>
         <div class="key-row">
-          <code style="font-size:.76rem">${checkoutUrlFor(l.id)}</code>
-          <button class="key-btn" onclick="copyPaymentLink('${l.id}')">Copier</button>
-          <button class="key-btn" style="color:var(--red)" onclick="disablePaymentLink('${l.id}')">Supprimer</button>
+          <code style="font-size:.76rem">${esc(checkoutUrlFor(l.id))}</code>
+          <button class="key-btn" onclick="copyPaymentLink('${esc(l.id)}')">Copier</button>
+          <button class="key-btn" style="color:var(--red)" onclick="disablePaymentLink('${esc(l.id)}')">Supprimer</button>
         </div>
       </div>
     `).join('');
@@ -2253,8 +2294,7 @@
 
   function copyPaymentLink(id){
     const url = checkoutUrlFor(id);
-    if(navigator.clipboard){ navigator.clipboard.writeText(url); }
-    showToast('Lien copié.', 'success');
+    copyText(url, 'Lien copié.', 'Copie impossible : sélectionnez le lien à la main.');
   }
 
   function disablePaymentLink(id){
@@ -2314,7 +2354,15 @@
     document.getElementById('webhookSecretModal').classList.remove('open');
   }
 
-  async function rotateWebhookSecret(){
+  function rotateWebhookSecret(){
+    openConfirm(
+      'Régénérer le secret du webhook ?',
+      "L'ancien secret cessera de fonctionner immédiatement : vous devrez mettre à jour votre serveur avec le nouveau secret.",
+      doRotateWebhookSecret,
+      'Régénérer'
+    );
+  }
+  async function doRotateWebhookSecret(){
     try{
       const data = await apiFetch('/dashboard/webhooks/rotate-secret', { method: 'POST' });
       document.getElementById('webhookSecretValue').textContent = data.secret;
@@ -2368,6 +2416,7 @@
   function fileChosen(input, itemId){
     if(!input.files || !input.files[0]) return;
     const file = input.files[0];
+    if(!/^(image\/|application\/pdf)/.test(file.type)){ showToast('Format accepté : image ou PDF.', 'error'); input.value=''; return; }
     if(file.size > 6*1024*1024){ showToast('Fichier trop volumineux (max 6 Mo).', 'error'); input.value=''; return; }
     document.getElementById(itemId).classList.add('done');
     document.getElementById(itemId+'Status').textContent = file.name;
@@ -2694,7 +2743,7 @@
       const empty = document.getElementById('movementsEmpty');
       const rows = d.movements.map(m => {
         const amount = (m.amount > 0 ? '+ ' : '- ') + (m.currency === 'HTG' ? fmtHTGFromApi(Math.abs(m.amount)) : fmtUSDFromApi(Math.abs(m.amount)));
-        return `<tr><td>${fmtDate(m.date)}</td><td>${esc(m.label)}</td><td>${esc(m.wallet)}</td><td>${amount}</td></tr>`;
+        return `<tr><td>${esc(fmtDate(m.date))}</td><td>${esc(m.label)}</td><td>${esc(m.wallet)}</td><td>${amount}</td></tr>`;
       }).join('');
       table.innerHTML = '<tr><th>Date</th><th>Type</th><th>Wallet</th><th>Montant</th></tr>' + rows;
       empty.hidden = d.movements.length > 0;
@@ -2702,7 +2751,7 @@
   }
 
   /** Text coming from the user or the server is escaped before it is put into the page. */
-  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
   /* ===== Withdrawals: bank transfer (done by hand by the team) or MonCash / Natcash ===== */
   let bankAccounts = [];
@@ -2754,14 +2803,14 @@
     if(window.FREDA_COUNTRIES && sel.options.length < 5) FREDA_COUNTRIES.fill(sel, 'iso', 'Sélectionner…');
     document.getElementById('baKind').value = acc && acc.kind === 'zelle' ? 'zelle' : 'bank';
     document.getElementById('baZelle').value = '';
-    document.getElementById('baZelle').placeholder = acc && acc.kind === 'zelle' ? 'Entrez-le à nouveau pour le modifier' : 'nom@email.com ou (305) 555-0142';
+    document.getElementById('baZelle').placeholder = acc && acc.kind === 'zelle' ? 'Ressaisissez-le pour enregistrer' : 'nom@email.com ou (305) 555-0142';
     document.getElementById('baHolder').value = acc ? acc.holder_name : '';
     document.getElementById('baBank').value = acc ? acc.bank_name : '';
     sel.value = acc ? acc.country : '';
     onBankCountryChange(acc ? acc.currency : null);
     onBankKindChange();
-    // The full numbers are never shown again: leaving them empty on an edit means "keep them".
-    ['baAccount','baIban'].forEach(i => { const el = document.getElementById(i); el.value = ''; el.placeholder = acc ? 'Entrez-le à nouveau pour le modifier' : ''; });
+    // The full numbers are never shown again: an edit must type them again (checked in saveBankAccount).
+    ['baAccount','baIban'].forEach(i => { const el = document.getElementById(i); el.value = ''; el.placeholder = acc ? 'Ressaisissez-le pour enregistrer' : ''; });
     document.getElementById('baSwift').value = acc && acc.swift ? acc.swift : '';
     document.getElementById('baRouting').value = acc && acc.routing_number ? acc.routing_number : '';
     document.getElementById('bankAccountForm').hidden = false;
@@ -2788,8 +2837,16 @@
     const v = id => document.getElementById(id).value.trim();
     const kind = document.getElementById('baKind').value;
     const body = kind === 'zelle' ? { kind: 'zelle', holder_name: v('baHolder'), zelle_contact: v('baZelle') } : { kind: 'bank', holder_name: v('baHolder'), bank_name: v('baBank'), country: v('baCountry'), currency: v('baCurrency'), account_number: v('baAccount') || null, iban: v('baIban') || null, swift: v('baSwift') || null, routing_number: v('baRouting') || null };
+    const editing = editingBankAccountId;
+    // The server never returns the full numbers, so an edit needs them typed again (it has no "keep the old one" mode).
+    if(editing){
+      const missing = kind === 'zelle' ? !body.zelle_contact : !(body.account_number || body.iban);
+      if(missing){
+        showToast(kind === 'zelle' ? 'Ressaisissez l’adresse e-mail ou le numéro Zelle pour enregistrer les modifications.' : 'Ressaisissez le numéro de compte (ou l’IBAN) pour enregistrer les modifications.', 'error');
+        return;
+      }
+    }
     try{
-      const editing = editingBankAccountId;
       const d = await apiFetch(editing ? '/dashboard/bank-accounts/' + encodeURIComponent(editing) : '/dashboard/bank-accounts', { method: editing ? 'PUT' : 'POST', body });
       await loadBankAccount();
       if(!editing && d.bank_account) document.getElementById('withdrawBankAccount').value = d.bank_account.id;
@@ -2868,15 +2925,15 @@
   }
 
   async function executeWithdraw(amt, method, recipient, bankAccountId, cur){
-    document.getElementById('withdrawForm').classList.remove('open');
-    document.getElementById('withdrawAmount').value = '';
-    document.getElementById('withdrawRecipient').value = '';
-    document.getElementById('withdrawQuote').hidden = true;
     try{
       const body = { amount: amt, method, reference: 'PO-' + Date.now() };
       if(cur === 'USD') body.currency = 'USD';
       if(method === 'bank') body.bank_account_id = bankAccountId; else body.recipient = recipient;
       const payout = await apiFetch('/dashboard/payouts', { method: 'POST', body });
+      document.getElementById('withdrawForm').classList.remove('open');
+      document.getElementById('withdrawAmount').value = '';
+      document.getElementById('withdrawRecipient').value = '';
+      document.getElementById('withdrawQuote').hidden = true;
       await refreshBalances();
       loadWalletSummary();
       if(method === 'bank'){
@@ -3015,8 +3072,10 @@
         return;
       }
       await refreshBalances();
-      if(topup.status === 'succeeded'){
-        showToast('Wallet crédité de ' + topup.credited_usd.toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' $.', 'success');
+      if(topup.status === 'awaiting_review'){
+        showToast('Paiement reçu, en cours de vérification par notre équipe.', 'info');
+      } else if(topup.status === 'succeeded'){
+        showToast('Wallet crédité de ' + Number(topup.credited_usd || 0).toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' $.', 'success');
       } else {
         showToast('Le paiement a échoué : ' + (topup.failure_reason || 'raison inconnue.'), 'error');
       }
@@ -3071,8 +3130,8 @@
         openForm.hidden = true;
         closedBox.hidden = false;
         const statusLabel = { open: 'En cours de revue', resolved: 'Résolu', rejected: 'Refusé' }[existing.status] || existing.status;
-        closedBox.innerHTML = `<div class="modal-row"><span class="k">Litige</span><span class="v">${statusLabel}</span></div>` +
-          (existing.admin_note ? `<div class="modal-row"><span class="k">Note</span><span class="v">${existing.admin_note}</span></div>` : '');
+        closedBox.innerHTML = `<div class="modal-row"><span class="k">Litige</span><span class="v">${esc(statusLabel)}</span></div>` +
+          (existing.admin_note ? `<div class="modal-row"><span class="k">Note</span><span class="v">${esc(existing.admin_note)}</span></div>` : '');
       }else{
         openForm.hidden = false;
         closedBox.hidden = true;
@@ -3114,7 +3173,8 @@
     };
     const toast = document.createElement('div');
     toast.className = 'toast toast-' + type;
-    toast.innerHTML = (icons[type]||icons.success) + '<span>' + msg + '</span>';
+    toast.innerHTML = (icons[type]||icons.success);
+    const toastText = document.createElement('span'); toastText.textContent = msg; toast.appendChild(toastText);
     document.getElementById('toastContainer').appendChild(toast);
     requestAnimationFrame(()=> toast.classList.add('show'));
     setTimeout(()=>{
@@ -3225,7 +3285,7 @@
     const hint = document.getElementById('cardHolderHint');
     if(!sel) return;
     const enrolled = holdersCache.filter(h => h.status === 'enrolled');
-    sel.innerHTML = enrolled.map(h => `<option value="${h.id}">${h.first_name} ${h.last_name}</option>`).join('');
+    sel.innerHTML = enrolled.map(h => `<option value="${esc(h.id)}">${esc(h.first_name)} ${esc(h.last_name)}</option>`).join('');
     sel.disabled = !enrolled.length;
     hint.textContent = enrolled.length
       ? 'Choisissez la personne pour qui cette carte est émise.'
@@ -3396,8 +3456,13 @@
 
   async function loadCards(){
     try{
-      const data = await apiFetch('/dashboard/cards', { method: 'GET' });
-      renderCardsList(data.cards || []);
+      let all = [], page = 1, data;
+      do{
+        data = await apiFetch('/dashboard/cards?page_size=100&page=' + page, { method: 'GET' });
+        all = all.concat(data.cards || []);
+        page++;
+      }while(data.pagination && data.pagination.has_more && page <= 20);
+      renderCardsList(all);
     }catch(err){ /* silent */ }
   }
 
@@ -3487,14 +3552,14 @@
     if(cardsSpace === 'business'){
       const rows = mine.map(c => {
         const detail = (c.status === 'active' || c.status === 'disabled')
-          ? `<button class="key-btn" onclick="event.stopPropagation();openCardDetail('${c.id}')">Détails</button>`
-          : (c.status === 'failed' ? `<button class="key-btn" style="color:var(--red)" onclick="event.stopPropagation();cardRowAction('delete','${c.id}')">Supprimer</button>` : '');
+          ? `<button class="key-btn" onclick="event.stopPropagation();openCardDetail('${esc(c.id)}')">Détails</button>`
+          : (c.status === 'failed' ? `<button class="key-btn" style="color:var(--red)" onclick="event.stopPropagation();cardRowAction('delete','${esc(c.id)}')">Supprimer</button>` : '');
         return `
-      <tr class="${c.status === 'active' || c.status === 'disabled' ? 'clickable' : ''}" ${c.status === 'active' || c.status === 'disabled' ? `onclick="openCardDetail('${c.id}')"` : ''}>
+      <tr class="${c.status === 'active' || c.status === 'disabled' ? 'clickable' : ''}" ${c.status === 'active' || c.status === 'disabled' ? `onclick="openCardDetail('${esc(c.id)}')"` : ''}>
         <td>${esc(c.holder_name || 'Entreprise')}</td>
         <td>${c.masked_pan ? `<code>${esc(c.masked_pan)}</code>` : '<span style="color:var(--muted)">En cours…</span>'} <span style="display:inline-flex;vertical-align:middle;margin-left:4px">${brandLogoSvg(c.brand, 18)}</span></td>
         <td>${(Number(c.balance)||0).toLocaleString('fr-FR',{minimumFractionDigits:2})} $</td>
-        <td><span class="tag ${CARD_STATUS_TAG[c.status]||'tag-amber'}">${CARD_STATUS_LABEL[c.status]||c.status}</span>${c.status === 'failed' && c.failure_reason ? `<div style="font-size:.72rem;color:var(--muted);max-width:220px">${esc(c.failure_reason)}</div>` : ''}</td>
+        <td><span class="tag ${CARD_STATUS_TAG[c.status]||'tag-amber'}">${esc(CARD_STATUS_LABEL[c.status]||c.status)}</span>${c.status === 'failed' && c.failure_reason ? `<div style="font-size:.72rem;color:var(--muted);max-width:220px">${esc(c.failure_reason)}</div>` : ''}</td>
         <td>${detail}</td>
       </tr>`; }).join('');
       table.innerHTML = '<tr><th>Carte</th><th>Numéro</th><th>Solde</th><th>Statut</th><th></th></tr>' + rows;
@@ -3505,17 +3570,17 @@
     const rows = mine.map(c => {
       const live = c.status === 'active' || c.status === 'disabled';
       const actions = live
-        ? `<button class="key-btn" onclick="cardRowAction('fund','${c.id}')">Ajouter</button>
-           <button class="key-btn" onclick="cardRowAction('withdraw','${c.id}')">Retirer</button>
-           <button class="key-btn" onclick="cardRowAction('${c.status === 'disabled' ? 'unfreeze' : 'freeze'}','${c.id}')">${c.status === 'disabled' ? 'Dégeler' : 'Geler'}</button>
-           <button class="key-btn" style="color:var(--red)" onclick="cardRowAction('delete','${c.id}')">Supprimer</button>`
-        : (c.status === 'failed' ? `<button class="key-btn" style="color:var(--red)" onclick="cardRowAction('delete','${c.id}')">Supprimer</button>` : '');
+        ? `<button class="key-btn" onclick="cardRowAction('fund','${esc(c.id)}')">Ajouter</button>
+           <button class="key-btn" onclick="cardRowAction('withdraw','${esc(c.id)}')">Retirer</button>
+           <button class="key-btn" onclick="cardRowAction('${c.status === 'disabled' ? 'unfreeze' : 'freeze'}','${esc(c.id)}')">${c.status === 'disabled' ? 'Dégeler' : 'Geler'}</button>
+           <button class="key-btn" style="color:var(--red)" onclick="cardRowAction('delete','${esc(c.id)}')">Supprimer</button>`
+        : (c.status === 'failed' ? `<button class="key-btn" style="color:var(--red)" onclick="cardRowAction('delete','${esc(c.id)}')">Supprimer</button>` : '');
       return `
       <tr>
         <td>${esc(c.holder_name || '-')}</td>
         <td>${c.masked_pan ? `<code>${esc(c.masked_pan)}</code>` : '<span style="color:var(--muted)">En cours…</span>'} <span style="display:inline-flex;vertical-align:middle;margin-left:4px">${brandLogoSvg(c.brand, 18)}</span></td>
         <td>${(Number(c.balance)||0).toLocaleString('fr-FR',{minimumFractionDigits:2})} $</td>
-        <td><span class="tag ${CARD_STATUS_TAG[c.status]||'tag-amber'}">${CARD_STATUS_LABEL[c.status]||c.status}</span>${c.status === 'failed' && c.failure_reason ? `<div style="font-size:.72rem;color:var(--muted);max-width:220px">${esc(c.failure_reason)}</div>` : ''}</td>
+        <td><span class="tag ${CARD_STATUS_TAG[c.status]||'tag-amber'}">${esc(CARD_STATUS_LABEL[c.status]||c.status)}</span>${c.status === 'failed' && c.failure_reason ? `<div style="font-size:.72rem;color:var(--muted);max-width:220px">${esc(c.failure_reason)}</div>` : ''}</td>
         <td style="white-space:nowrap">${actions}</td>
       </tr>`; }).join('');
     table.innerHTML = '<tr><th>Titulaire</th><th>Carte</th><th>Solde</th><th>Statut</th><th></th></tr>' + rows;
@@ -3591,12 +3656,12 @@
         const isCredit = t.mode === 'CREDIT';
         const sign = isCredit ? '+' : '−';
         const color = isCredit ? 'var(--green,#16a34a)' : 'var(--ink)';
-        const label = t.merchant_name || (t.type || 'Transaction');
+        const label = esc(t.merchant_name || (t.type || 'Transaction'));
         return `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:.83rem">
             <div>
               <div style="font-weight:600">${label}</div>
-              <div style="color:var(--muted);font-size:.74rem">${t.date ? fmtDate(t.date) : ''}${t.merchant_city ? ' · ' + t.merchant_city : ''}</div>
+              <div style="color:var(--muted);font-size:.74rem">${t.date ? fmtDate(t.date) : ''}${t.merchant_city ? ' · ' + esc(t.merchant_city) : ''}</div>
             </div>
             <div style="font-weight:700;color:${color}">${sign}${Math.abs(t.amount).toLocaleString('fr-FR',{minimumFractionDigits:2})} $</div>
           </div>`;
@@ -3622,14 +3687,14 @@
       return;
     }
     const freezeBtn = c.status === 'active'
-      ? `<button class="cd-action-btn" onclick="cardAction('freeze','${c.id}')">${cdIcon('<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>')}Geler</button>`
-      : `<button class="cd-action-btn" onclick="cardAction('unfreeze','${c.id}')">${cdIcon('<path d="M20 6 9 17l-5-5"/>')}Dégeler</button>`;
+      ? `<button class="cd-action-btn" onclick="cardAction('freeze','${esc(c.id)}')">${cdIcon('<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>')}Geler</button>`
+      : `<button class="cd-action-btn" onclick="cardAction('unfreeze','${esc(c.id)}')">${cdIcon('<path d="M20 6 9 17l-5-5"/>')}Dégeler</button>`;
 
     box.innerHTML = `
-      <button class="cd-action-btn" onclick="cardFundPrompt('${c.id}')">${cdIcon('<path d="M12 5v14M5 12h14"/>')}Ajouter</button>
-      <button class="cd-action-btn" onclick="cardWithdrawPrompt('${c.id}')">${cdIcon('<path d="M5 12h14M12 5l7 7-7 7"/>')}Retirer</button>
+      <button class="cd-action-btn" onclick="cardFundPrompt('${esc(c.id)}')">${cdIcon('<path d="M12 5v14M5 12h14"/>')}Ajouter</button>
+      <button class="cd-action-btn" onclick="cardWithdrawPrompt('${esc(c.id)}')">${cdIcon('<path d="M5 12h14M12 5l7 7-7 7"/>')}Retirer</button>
       ${freezeBtn}
-      <button class="cd-action-btn" onclick="cardTerminateConfirm('${c.id}')">${cdIcon('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/>')}Fermer</button>
+      <button class="cd-action-btn" onclick="cardTerminateConfirm('${esc(c.id)}')">${cdIcon('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/>')}Supprimer</button>
     `;
   }
 
@@ -3747,7 +3812,7 @@
   function cardTerminateConfirm(cardId){
     openConfirm(
       'Supprimer cette carte ?',
-      'La carte sera définitivement fermée et supprimée, et son solde restant sera reversé sur votre Master Wallet. Cette action est irréversible.',
+      'La carte sera définitivement fermée et supprimée. Son solde restant, s\'il y en a un, sera reversé sur votre Master Wallet. Cette action est irréversible.',
       () => cardAction('terminate', cardId),
       'Supprimer la carte'
     );
@@ -3994,14 +4059,14 @@
   function renderTeam(data){
     const table = document.getElementById('teamTable');
     const rows = ['<tr><th>Email</th><th>Rôle</th><th>Statut</th><th></th></tr>',
-      `<tr><td>${data.owner.email}</td><td>${ROLE_LABELS.owner}</td><td><span class="tag tag-green">Actif</span></td><td></td></tr>`];
+      `<tr><td>${esc(data.owner.email)}</td><td>${ROLE_LABELS.owner}</td><td><span class="tag tag-green">Actif</span></td><td></td></tr>`];
     data.members.forEach(m => {
       const status = m.status === 'active'
         ? '<span class="tag tag-green">Actif</span>'
         : '<span class="tag tag-amber">Invitation envoyée</span>';
-      const resend = m.status === 'invited' ? `<button class="key-btn" onclick="resendInvite('${m.id}')">Renvoyer</button> ` : '';
-      rows.push(`<tr><td>${m.email}</td><td>${ROLE_LABELS[m.role] || m.role}</td><td>${status}</td>
-        <td style="text-align:right;white-space:nowrap">${resend}<button class="key-btn" style="color:var(--red)" onclick="removeMemberConfirm('${m.id}','${m.email}')">Retirer</button></td></tr>`);
+      const resend = m.status === 'invited' ? `<button class="key-btn" onclick="resendInvite('${esc(m.id)}')">Renvoyer</button> ` : '';
+      rows.push(`<tr><td>${esc(m.email)}</td><td>${esc(ROLE_LABELS[m.role] || m.role)}</td><td>${status}</td>
+        <td style="text-align:right;white-space:nowrap">${resend}<button class="key-btn" style="color:var(--red)" data-email="${esc(m.email)}" onclick="removeMemberConfirm('${esc(m.id)}', this.dataset.email)">Retirer</button></td></tr>`);
     });
     table.innerHTML = rows.join('');
   }
@@ -4053,7 +4118,32 @@
     if(teamCard) teamCard.hidden = currentUserRole !== 'owner';
     const banner = document.getElementById('roleBanner');
     if(banner) banner.hidden = currentUserRole !== 'viewer';
+    document.body.classList.toggle('is-viewer', currentUserRole === 'viewer');
+    lockViewerControls();
   }
+
+  /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
+  function lockViewerControls(){
+    if(currentUserRole !== 'viewer') return;
+    document.querySelectorAll('[onclick]').forEach(el => {
+      if(el.dataset.viewerLocked || !VIEWER_WRITE_RE.test(el.getAttribute('onclick'))) return;
+      el.dataset.viewerLocked = '1';
+      if('disabled' in el) el.disabled = true; else el.style.pointerEvents = 'none';
+      el.style.opacity = '.45'; el.style.cursor = 'not-allowed';
+      el.setAttribute('title', VIEWER_TIP); el.setAttribute('aria-disabled', 'true');
+    });
+    const live = document.getElementById('liveToggleCheckbox');
+    if(live){ live.disabled = true; const lab = live.parentElement; if(lab) lab.setAttribute('title', VIEWER_TIP); }
+  }
+  new MutationObserver(() => { if(currentUserRole === 'viewer') lockViewerControls(); }).observe(document.body, { childList: true, subtree: true });
+
+  /* Sidebar items are divs: make them reachable and usable from the keyboard. */
+  document.querySelectorAll('.sb-link').forEach(el => {
+    el.setAttribute('role', 'link'); el.setAttribute('tabindex', '0');
+    el.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); } });
+  });
 
   /* ===== One click = one action =====
      Every button whose handler starts an async job (API call) gets a spinner and
@@ -4085,7 +4175,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','tryGoLive'].forEach(function(name){
+    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();

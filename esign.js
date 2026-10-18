@@ -64,7 +64,9 @@
       var l = document.createElement('link'); l.id = 'esg-fonts'; l.rel = 'stylesheet'; l.href = FONT_CSS; document.head.appendChild(l);
     }
   }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function own(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
+  function safePng(u) { return typeof u === 'string' && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(u) ? u : ''; }
   function b64(bytes) {
     var s = '', step = 0x8000;
     for (var i = 0; i < bytes.length; i += step) s += String.fromCharCode.apply(null, bytes.subarray(i, i + step));
@@ -231,11 +233,11 @@
       if (opts.editable) {
         var inp = document.createElement('input');
         inp.type = 'text'; inp.className = 'esg-input'; inp.maxLength = 200; inp.placeholder = label; inp.setAttribute('aria-label', label);
-        inp.dataset.label = label; inp.value = (c.fields && c.fields[label]) || '';
+        inp.dataset.label = label; inp.value = (own(c.fields, label) && c.fields[label]) || '';
         inp.addEventListener('input', function () { inp.classList.remove('bad'); });
         span.replaceWith(inp); inputs.push(inp);
       } else {
-        var v = c.fields && c.fields[label];
+        var v = own(c.fields, label) ? c.fields[label] : '';
         span.className = 'esg-filled'; span.textContent = v || '………………';
       }
     });
@@ -261,7 +263,7 @@
   /** The two signatures of a contract, as HTML (admin first, then the signer). */
   function sigCard(title, name, png, signedAt) {
     return '<div class="esg-sig"><div class="t">' + esc(title) + '</div>' +
-      (png ? '<img alt="Signature de ' + esc(name) + '" src="' + esc(png) + '">' : '<div class="wait">En attente de signature</div>') +
+      (safePng(png) ? '<img alt="Signature de ' + esc(name) + '" src="' + esc(safePng(png)) + '">' : '<div class="wait">En attente de signature</div>') +
       '<div class="n">' + esc(name) + '</div><div class="d">' + (signedAt ? 'Signé le ' + esc(fmtDate(signedAt)) : 'Pas encore signé') + '</div></div>';
   }
   /** Every signature box: Freda Pay Issuing people on the left, the other side on the right. */

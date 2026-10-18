@@ -4,6 +4,7 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self)
+  Strict-Transport-Security: max-age=31536000
 
 # Espaces privés : jamais mis en cache ni indexés
 /dashboard
@@ -12,6 +13,16 @@
 /checkout
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
+  ! Permissions-Policy
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self "https://api.tranzak.co")
+/admin
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/signup
+  X-Robots-Tag: noindex
 /sign
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
@@ -30,10 +41,44 @@
 # Fichiers pour les assistants IA (GEO) : texte brut UTF-8, mis à jour souvent.
 /llms.txt
   Content-Type: text/plain; charset=utf-8
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
   Cache-Control: public, max-age=3600
 /llms-full.txt
   Content-Type: text/plain; charset=utf-8
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
   Cache-Control: public, max-age=3600
+
+# Images et polices qui ne changent pas : cache long (les HTML restent en no-cache et référencent ces fichiers).
+# Les noms de fichiers sont stables : en cas de remplacement, changer le nom du fichier.
+/images/*
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+/team/*
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+/logo-64.png
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+/favicon-*
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
+  Cache-Control: public, max-age=2592000
+/apple-touch-icon.png
+  ! Cache-Control
+  ! CDN-Cache-Control
+  ! Cloudflare-CDN-Cache-Control
+  Cache-Control: public, max-age=2592000
 
 # robots.txt: plain UTF-8 text.
 /robots.txt

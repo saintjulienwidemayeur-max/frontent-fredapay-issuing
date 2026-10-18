@@ -124,6 +124,7 @@
     $('signCard').hidden = !v.can_sign;
     $('doneCard').hidden = v.can_sign;
     if (!v.can_sign) { showDone(c, true); return; }
+    $('signBtn').textContent = 'Signer et confirmer';
     $('signerName').value = v.name || '';
     pad = FredaESign.createSignaturePad($('pad'), { name: v.name });
     pad.onChange(check);
@@ -164,13 +165,18 @@
         body: JSON.stringify({ signer_name: $('signerName').value.trim(), fields: doc.getFields(), signature: signature })
       });
       var data = await res.json().catch(function () { return null; });
+      if (res.status === 409) {
+        // already signed / not pending / waiting: show the real state of the contract instead of a dead form
+        await load();
+        return;
+      }
       if (!res.ok) throw new Error((data && data.error && data.error.message) || 'La signature a échoué.');
       contract = data.contract;
       doc = FredaESign.renderContract($('doc'), contract, { editable: false });
       showDone(contract, false);
       if (contract.status !== 'COMPLETED') $('doneCard').hidden = false;
     } catch (e) {
-      $('signErr').textContent = e.message; $('signErr').hidden = false;
+      $('signErr').textContent = e.message || 'La signature a échoué. Réessayez.'; $('signErr').hidden = false;
       btn.textContent = 'Signer et confirmer'; check();
     }
   });
