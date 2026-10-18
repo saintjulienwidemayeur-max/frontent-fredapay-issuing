@@ -24,7 +24,8 @@
 <meta name="description" content="Intégrez les paiements par carte (Visa, Mastercard, Amazon Pay, Cash App, Link), MonCash et Natcash dans votre site ou application avec l'API Freda Pay Issuing : paiements, retraits, soldes, liens de paiement et plugins.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
   :root{
     --pink:#ff4081; --pink-deep:#d81b60; --pink-soft:#fff0f5;
@@ -54,7 +55,7 @@
   .tb-cta{background:var(--ink);color:#fff}
   .tb-cta:hover{background:#34252d}
   .cta-short{display:none}
-  .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-weight:700;font-size:.8rem;cursor:pointer}
+  .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;min-height:40px;font-weight:700;font-size:.8rem;cursor:pointer}
 
   /* ===== AI band (the one bold element) ===== */
   .ai-band{background:var(--code-bg);color:#fff;border-bottom:1px solid #000}
@@ -98,7 +99,8 @@
   ul.plain li,ol.plain li{margin-bottom:6px}
   code.inline{background:var(--mist);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.84em;color:#8c1d47}
 
-  .endpoint{display:inline-flex;align-items:center;gap:10px;background:var(--mist);border:1px solid var(--line);border-radius:9px;padding:8px 12px;margin:4px 0 14px;font-family:'JetBrains Mono',monospace;font-size:.86rem}
+  .endpoint{display:inline-flex;flex-wrap:wrap;max-width:100%;word-break:break-all;align-items:center;gap:10px;background:var(--mist);border:1px solid var(--line);border-radius:9px;padding:8px 12px;margin:4px 0 14px;font-family:'JetBrains Mono',monospace;font-size:.86rem}
+  .tag{background:var(--pink-soft,#ffe4ee);color:var(--pink-deep,#8c1d47);padding:1px 6px;border-radius:4px;font-weight:700}
   .endpoint .verb{font-size:.72rem;padding:2px 7px}
 
   /* Steps (a real sequence) */
@@ -127,7 +129,7 @@
   /* Code blocks */
   .code-block{background:var(--code-bg);border-radius:var(--radius);overflow:hidden;margin:6px 0 16px}
   .code-tabs{display:flex;gap:2px;padding:8px 8px 0;border-bottom:1px solid rgba(255,255,255,.08);align-items:center}
-  .code-tabs button{background:transparent;border:none;color:#b8a4ae;font:600 .76rem 'Inter',sans-serif;padding:8px 11px;cursor:pointer;border-radius:7px 7px 0 0}
+  .code-tabs button{background:transparent;border:none;color:#b8a4ae;font:600 .76rem 'Inter',sans-serif;padding:8px 11px;min-height:40px;cursor:pointer;border-radius:7px 7px 0 0}
   .code-tabs button.on{color:#fff;background:rgba(255,255,255,.08)}
   .code-tabs .copy-code{margin-left:auto;background:rgba(255,255,255,.08);border-radius:6px;padding:5px 10px;color:#e8d8e0}
   .code-tabs .copy-code:hover{background:rgba(255,255,255,.16)}
@@ -301,7 +303,7 @@
           <p>En-tête <code class="inline">Authorization: Bearer sk_test_…</code> (ou <code class="inline">sk_live_…</code>) sur chaque requête. Les clés live s'activent après vérification du compte.</p>
           <h3 style="margin-top:18px">Sandbox et Live</h3>
           <p>Il y a <strong>une seule API</strong> pour tous les services. Le préfixe de la clé décide de l'environnement :</p>
-          <ul>
+          <ul class="plain">
             <li><code class="inline">sk_test_…</code> : <strong>Sandbox</strong>. Argent fictif, cartes de test. Aucun risque.</li>
             <li><code class="inline">sk_live_…</code> : <strong>Live</strong>. Vrais paiements, vraies cartes, vrai argent.</li>
           </ul>
@@ -348,7 +350,7 @@ Content-Type: application/json</pre>
         La clé est envoyée directement de votre navigateur à <code class="inline">api.fredapay.com</code> : elle n'est ni enregistrée ni transmise ailleurs, et disparaît quand vous fermez la page. Si vous testez une clé <code class="inline">sk_live_…</code>, supprimez-la ensuite du presse-papiers.
       </div>
       <h3>Que vérifie l'outil ?</h3>
-      <ul>
+      <ul class="plain">
         <li>La clé est <strong>reconnue</strong> (ni mal écrite, ni révoquée) et l'environnement : Sandbox ou Live.</li>
         <li>Le compte est <strong>actif</strong> (non suspendu). Une clé Live demande aussi le Live activé après KYC/KYB.</li>
         <li>L'<strong>émission de cartes</strong> est autorisée (en Live, par l'accès Issuing séparé).</li>
@@ -629,7 +631,8 @@ $payment = <span class="c-f">json_decode</span>(<span class="c-f">curl_exec</spa
   <span class="c-k">const</span> expected = crypto.<span class="c-f">createHmac</span>(<span class="c-s">"sha256"</span>, secret)
     .<span class="c-f">update</span>(rawBody)
     .<span class="c-f">digest</span>(<span class="c-s">"hex"</span>);
-  <span class="c-k">const</span> received = signatureHeader.<span class="c-f">replace</span>(<span class="c-s">"sha256="</span>, <span class="c-s">""</span>);
+  <span class="c-k">const</span> received = (signatureHeader || <span class="c-s">""</span>).<span class="c-f">replace</span>(<span class="c-s">"sha256="</span>, <span class="c-s">""</span>);
+  <span class="c-k">if</span> (received.length !== expected.length) <span class="c-k">return false</span>;
   <span class="c-k">return</span> crypto.<span class="c-f">timingSafeEqual</span>(
     Buffer.<span class="c-f">from</span>(expected), Buffer.<span class="c-f">from</span>(received)
   );
@@ -751,7 +754,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
           <div class="tbl-wrap"><table>
             <tr><th>Statut</th><th>Signification</th></tr>
             <tr><td><code>pending</code></td><td>En file d'attente ou en cours d'envoi.</td></tr>
-            <tr><td><code>success</code></td><td>L'argent a été envoyé. <code>fee</code> contient les frais du réseau.</td></tr>
+            <tr><td><code>success</code></td><td>L'argent a été envoyé. <code>fee</code> contient les frais Freda Pay Issuing (5 % du montant) et <code>total_debited</code> le total débité (montant + frais).</td></tr>
             <tr><td><code>failed</code></td><td>L'envoi a échoué et votre solde n'a pas été débité. <code>failure_reason</code> explique pourquoi, par exemple un numéro invalide.</td></tr>
           </table></div>
           <div class="ask-ai">Intégrer cet appel avec
@@ -775,7 +778,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
   <span class="c-s">"method"</span>: <span class="c-s">"natcash"</span>,
   <span class="c-s">"recipient"</span>: <span class="c-s">"50937001234"</span>,
   <span class="c-s">"status"</span>: <span class="c-s">"success"</span>,
-  <span class="c-s">"fee"</span>: <span class="c-n">12.5</span>,
+  <span class="c-s">"fee"</span>: <span class="c-n">25</span>,
+  <span class="c-s">"total_debited"</span>: <span class="c-n">525</span>,
   <span class="c-s">"failure_reason"</span>: <span class="c-k">null</span>
 }</pre>
           </div>
@@ -882,8 +886,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
     "identificationNumber": "ID123456",
     "identity": { "type": "PASSPORT", "number": "P1234567", "imageUrl": "data:image/jpeg;base64,/9j/4AAQ...", "country": "US" },
     "phoneShortCode": "+1",
-    "phoneNumber": "37001234",
-    "address": { "street": "350 Fifth Avenue", "city": "New York", "state": "NY", "postalCode": "HT6110", "country": "US" }
+    "phoneNumber": "2025550123",
+    "address": { "street": "350 Fifth Avenue", "city": "New York", "state": "NY", "postalCode": "10118", "country": "US" }
   }'</span></pre>
           </div>
           <div class="code-block">
@@ -901,8 +905,8 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
     <span class="c-s">"country"</span>: <span class="c-s">"US"</span>,
     <span class="c-s">"photo_url"</span>: null,
     <span class="c-s">"dob"</span>: <span class="c-s">"1990-05-12"</span>,
-    <span class="c-s">"phone"</span>: <span class="c-s">"+137001234"</span>,
-    <span class="c-s">"address"</span>: { <span class="c-s">"street"</span>: <span class="c-s">"350 Fifth Avenue"</span>, <span class="c-s">"city"</span>: <span class="c-s">"New York"</span>, <span class="c-s">"state"</span>: <span class="c-s">"NY"</span>, <span class="c-s">"postalCode"</span>: <span class="c-s">"HT6110"</span>, <span class="c-s">"country"</span>: <span class="c-s">"US"</span> },
+    <span class="c-s">"phone"</span>: <span class="c-s">"+12025550123"</span>,
+    <span class="c-s">"address"</span>: { <span class="c-s">"street"</span>: <span class="c-s">"350 Fifth Avenue"</span>, <span class="c-s">"city"</span>: <span class="c-s">"New York"</span>, <span class="c-s">"state"</span>: <span class="c-s">"NY"</span>, <span class="c-s">"postalCode"</span>: <span class="c-s">"10118"</span>, <span class="c-s">"country"</span>: <span class="c-s">"US"</span> },
     <span class="c-s">"identification_number_last4"</span>: <span class="c-s">"3456"</span>,
     <span class="c-s">"failure_reason"</span>: null,
     <span class="c-s">"created_at"</span>: <span class="c-s">"2026-10-11T10:00:00.000Z"</span>
@@ -952,10 +956,10 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
             <tr><th>Champ</th><th>Type</th><th>Description</th></tr>
             <tr><td><code>reference</code> <span class="req">requis</span></td><td>texte</td><td>Votre identifiant unique. Rejoué, renvoie la carte existante.</td></tr>
             <tr><td><code>kind</code> <span class="opt">optionnel</span></td><td>texte</td><td><code>individual</code> (défaut) ou <code>business</code>.</td></tr>
-            <tr><td><code>brand</code> <span class="opt">optionnel</span></td><td>texte</td><td><code>VISA</code> ou <code>MASTERCARD</code>.</td></tr>
+            <tr><td><code>brand</code> <span class="opt">optionnel</span></td><td>texte</td><td><code>VISA</code> ou <code>MASTERCARD</code>. Défaut : VISA (carte individuelle), MASTERCARD (carte entreprise).</td></tr>
             <tr><td><code>amount</code> <span class="req">requis</span></td><td>nombre</td><td>Montant à préfinancer, en <strong>dollars</strong> (pas en centimes). Débité du Master Wallet immédiatement.</td></tr>
-            <tr><td><code>holder_id</code> <span style="font-size:.72rem;color:var(--muted)">optionnel</span></td><td>Carte individuelle : <code>id</code> du titulaire (<code>mpc_…</code>, voir <a href="#cards-profile">Titulaires</a>). <strong>Recommandé : toujours l'envoyer.</strong> Sans lui, l'API prend le titulaire <code>enrolled</code> le plus récent de votre compte dans l'environnement de la clé.</td></tr>
-            <tr><td><code>business_name</code></td><td>texte</td><td>Requis si <code>kind</code> = <code>business</code>. Pas de profil titulaire nécessaire dans ce cas.</td></tr>
+            <tr><td><code>holder_id</code> <span class="opt">optionnel</span></td><td>texte</td><td>Carte individuelle : <code>id</code> du titulaire (<code>mpc_…</code>, voir <a href="#cards-profile">Titulaires</a>). <strong>Recommandé : toujours l'envoyer.</strong> Sans lui, l'API prend le titulaire <code>enrolled</code> le plus récent de votre compte dans l'environnement de la clé.</td></tr>
+            <tr><td><code>business_name</code> <span class="opt">optionnel</span></td><td>texte</td><td>Requis si <code>kind</code> = <code>business</code>. Pas de profil titulaire nécessaire dans ce cas.</td></tr>
           </table></div>
           <div class="callout warn">
             <strong>Solde insuffisant ou échec de création</strong>
@@ -968,9 +972,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
             <tr><td>400</td><td><code>INVALID_BRAND</code></td><td><code>brand</code> doit être <code>VISA</code> ou <code>MASTERCARD</code>.</td></tr>
             <tr><td>400</td><td><code>HOLDER_PROFILE_REQUIRED</code></td><td>Carte individuelle, <code>holder_id</code> absent, et <strong>aucun</strong> titulaire n'existe dans l'environnement de la clé. Créez-en un (<code>POST /cards/holders</code>) avec une clé du même mode, puis envoyez son <code>id</code>.</td></tr>
             <tr><td>409</td><td><code>HOLDER_NOT_ENROLLED</code></td><td>Le titulaire (indiqué par <code>holder_id</code>, ou aucun titulaire prêt sans <code>holder_id</code>) n'a pas le statut <code>enrolled</code>. Le message donne le statut et la raison d'échec ; recréez le titulaire.</td></tr>
-            <tr><td>400</td><td><code>HOLDER_PROFILE_REQUIRED</code></td><td>Carte individuelle sans <code>holder_id</code> alors qu'aucun titulaire n'existe dans l'environnement de la clé. Voir <a href="#cards-profile">Titulaires</a>.</td></tr>
-        <tr><td>409</td><td><code>HOLDER_NOT_ENROLLED</code></td><td>Le titulaire n'est pas au statut <code>enrolled</code> (pending ou failed).</td></tr>
-        <tr><td>409</td><td><code>HOLDER_MODE_MISMATCH</code></td><td>Le titulaire appartient à l'autre environnement (Sandbox/Live).</td></tr>
+            <tr><td>409</td><td><code>HOLDER_MODE_MISMATCH</code></td><td>Le titulaire appartient à l'autre environnement (Sandbox/Live).</td></tr>
             <tr><td>409</td><td><code>HOLDER_PROFILE_INCOMPLETE</code></td><td>Ancien titulaire sans lien avec le service de cartes et non récupérable : recréez-le.</td></tr>
             <tr><td>404</td><td><code>NOT_FOUND</code></td><td><code>holder_id</code> inconnu pour votre compte.</td></tr>
             <tr><td>400</td><td><code>CARD_LIMIT_REACHED</code></td><td>Limite de cartes du plan Issuing atteinte (par environnement).</td></tr>
@@ -992,21 +994,22 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
               <button class="on" data-lang="curl">cURL</button><button data-lang="node">Node.js</button>
               <button class="copy-code" onclick="copyCode(this)">Copier</button>
             </div>
-<pre data-lang="curl">curl -X POST https://api.fredapay.com/dashboard/cards \
-  -H <span class="c-s">"Authorization: Bearer VOTRE_SESSION_TOKEN"</span> \
+<pre data-lang="curl">curl -X POST https://api.fredapay.com/v1/cards \
+  -H <span class="c-s">"Authorization: Bearer sk_test_VOTRE_CLE"</span> \
   -H <span class="c-s">"Content-Type: application/json"</span> \
   -d <span class="c-s">'{
     "reference": "CARD-001",
     "brand": "VISA",
-    "amount": 20
+    "amount": 20,
+    "holder_id": "mpc_VOTRE_TITULAIRE"
   }'</span></pre>
-<pre data-lang="node" hidden><span class="c-k">const</span> res = <span class="c-k">await</span> <span class="c-f">fetch</span>(<span class="c-s">"https://api.fredapay.com/dashboard/cards"</span>, {
+<pre data-lang="node" hidden><span class="c-k">const</span> res = <span class="c-k">await</span> <span class="c-f">fetch</span>(<span class="c-s">"https://api.fredapay.com/v1/cards"</span>, {
   method: <span class="c-s">"POST"</span>,
   headers: {
-    Authorization: <span class="c-s">`Bearer ${sessionToken}`</span>,
+    Authorization: <span class="c-s">`Bearer ${process.env.FREDA_SECRET_KEY}`</span>,
     <span class="c-s">"Content-Type"</span>: <span class="c-s">"application/json"</span>,
   },
-  body: JSON.<span class="c-f">stringify</span>({ reference: <span class="c-s">"CARD-001"</span>, brand: <span class="c-s">"VISA"</span>, amount: <span class="c-n">20</span> }),
+  body: JSON.<span class="c-f">stringify</span>({ reference: <span class="c-s">"CARD-001"</span>, brand: <span class="c-s">"VISA"</span>, amount: <span class="c-n">20</span>, holder_id: <span class="c-s">"mpc_VOTRE_TITULAIRE"</span> }),
 });
 <span class="c-k">const</span> card = <span class="c-k">await</span> res.<span class="c-f">json</span>(); <span class="c-c">// status: "pending"</span></pre>
           </div>
@@ -1038,7 +1041,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
         <tr><td>Retirer des fonds</td><td><span class="verb post">POST</span> <code>/cards/:id/withdraw</code></td><td><code>{ "amount": 5, "reference": "WD-001" }</code>. Recrédite le Master Wallet (montant moins les frais de retrait). La réponse ajoute <code>fee</code> et <code>net_credited</code>. Même règle d'idempotence que <code>/fund</code>. Solde insuffisant : <code>400 INSUFFICIENT_CARD_BALANCE</code>.</td></tr>
         <tr><td>Geler</td><td><span class="verb post">POST</span> <code>/cards/:id/freeze</code></td><td>Bloque tout achat <strong>et</strong> tout ajout/retrait de fonds.</td></tr>
         <tr><td>Dégeler</td><td><span class="verb post">POST</span> <code>/cards/:id/unfreeze</code></td><td>Réactive la carte.</td></tr>
-        <tr><td>Fermer définitivement</td><td><span class="verb post">POST</span> <code>/cards/:id/terminate</code></td><td>Irréversible. La carte est fermée, son solde restant est reversé au Master Wallet, puis elle disparaît de vos listes.</td></tr>
+        <tr><td>Fermer définitivement</td><td><span class="verb post">POST</span> <code>/cards/:id/terminate</code></td><td>Irréversible. La carte est fermée, son solde restant est reversé au Master Wallet, puis son statut passe à <code>terminated</code>.</td></tr>
         <tr><td>Simuler une transaction <span class="tag" style="font-size:.62rem;vertical-align:middle">SANDBOX</span></td><td><span class="verb post">POST</span> <code>/cards/:id/simulate-transaction</code></td><td><code>{ "amount": 12.5, "type": "DEBIT" }</code> (ou <code>CREDIT</code>). Pour tester l'historique. Refusé en mode Live.</td></tr>
         <tr><td>Voir le numéro complet</td><td><span class="verb post">POST</span> <code>/cards/:id/reveal</code></td><td>Réponse : <code>{ number, cvv, expiry_month, expiry_year, holder_name }</code>. Dans le tableau de bord, seules les cartes business ont un bouton Détails : les détails d'une carte individuelle ne sont jamais visibles par vos équipes. Par l'API, cette route sert uniquement à afficher la carte à son titulaire ; ne stockez ni ne journalisez jamais le numéro ni le CVV.</td></tr>
       </table></div>
@@ -1111,13 +1114,13 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
         <strong>Option recommandée : les <a href="#webhooks">webhooks sortants</a></strong>
         Enregistrez une URL (<a href="#webhooks">voir Notifications</a>) et recevez <code class="inline">card.created</code> / <code class="inline">card.failed</code> automatiquement.
       </div>
-      <p>Sans URL enregistrée, interrogez simplement <code class="inline">GET /dashboard/cards/:id</code> jusqu'à ce que <code class="inline">status</code> quitte <code class="inline">pending</code> :</p>
+      <p>Sans URL enregistrée, interrogez simplement <code class="inline">GET /v1/cards/:id</code> jusqu'à ce que <code class="inline">status</code> quitte <code class="inline">pending</code> :</p>
       <div class="code-block" style="max-width:640px">
         <div class="code-tabs"><span class="code-title">Exemple d'attente</span><button class="copy-code" onclick="copyCode(this)">Copier</button></div>
 <pre><span class="c-k">async function</span> <span class="c-f">waitForCard</span>(id) {
   <span class="c-k">for</span> (<span class="c-k">let</span> i = <span class="c-n">0</span>; i &lt; <span class="c-n">40</span>; i++) {
-    <span class="c-k">const</span> res = <span class="c-k">await</span> <span class="c-f">fetch</span>(<span class="c-s">`https://api.fredapay.com/dashboard/cards/${id}`</span>, {
-      headers: { Authorization: <span class="c-s">`Bearer ${sessionToken}`</span> },
+    <span class="c-k">const</span> res = <span class="c-k">await</span> <span class="c-f">fetch</span>(<span class="c-s">`https://api.fredapay.com/v1/cards/${id}`</span>, {
+      headers: { Authorization: <span class="c-s">`Bearer ${process.env.FREDA_SECRET_KEY}`</span> },
     });
     <span class="c-k">const</span> card = <span class="c-k">await</span> res.<span class="c-f">json</span>();
     <span class="c-k">if</span> (card.status !== <span class="c-s">"pending"</span>) <span class="c-k">return</span> card;
@@ -1157,7 +1160,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
           <div class="code-block">
             <div class="code-tabs"><span class="code-title">Code à coller</span><button class="copy-code" onclick="copyCode(this)">Copier</button></div>
 <pre>&lt;div data-freda-link=<span class="c-s">"lnk_VOTRE_LIEN"</span>&gt;&lt;/div&gt;
-&lt;script src=<span class="c-s">"https://pay.fredapay.com/freda-button.js"</span> async&gt;&lt;/script&gt;</pre>
+&lt;script src=<span class="c-s">"https://issuing.fredapay.com/freda-button.js"</span> async&gt;&lt;/script&gt;</pre>
           </div>
           <p style="font-size:.85rem;color:var(--muted)">Options : <code class="inline">data-label="Faire un don"</code> change le texte du bouton, <code class="inline">data-theme="light"</code> affiche une version claire.</p>
         </div>
@@ -1276,19 +1279,30 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       <div class="tbl-wrap"><table>
         <tr><th>HTTP</th><th>Code</th><th>Cause et solution</th></tr>
         <tr><td>400</td><td><code>MISSING_FIELDS</code></td><td>Un champ requis manque. Vérifiez le tableau des paramètres.</td></tr>
-        <tr><td>400</td><td><code>INVALID_AMOUNT</code></td><td>Montant absent, négatif ou inférieur à 20 HTG. Envoyez un nombre, pas du texte.</td></tr>
+        <tr><td>400</td><td><code>INVALID_AMOUNT</code></td><td>Montant non numérique ou inférieur ou égal à 0 (envoyez un nombre, pas du texte). Un montant absent renvoie <code>MISSING_FIELDS</code>.</td></tr>
         <tr><td>400</td><td><code>INVALID_METHOD</code></td><td>Méthode inconnue. Paiements (<code>POST /v1/payments</code>) : <code>moncash</code>, <code>moncash_ussd</code>, <code>natcash</code>, <code>carte</code> ou <code>all</code>. Retraits (<code>POST /v1/payouts</code>) : <code>moncash</code> ou <code>natcash</code> uniquement.</td></tr>
+        <tr><td>400</td><td><code>AMOUNT_TOO_LOW</code></td><td>Sous le minimum : 20 HTG en MonCash/Natcash, 0,50 USD pour un paiement par carte ou une création de carte, et le minimum du virement bancaire.</td></tr>
+        <tr><td>400</td><td><code>INVALID_CURRENCY</code></td><td><code>currency</code> doit être <code>HTG</code> ou <code>USD</code>.</td></tr>
+        <tr><td>400</td><td><code>INVALID_RETURN_URL</code></td><td><code>return_url</code> doit être une adresse https valide (500 caractères maximum).</td></tr>
+        <tr><td>400</td><td><code>INVALID_URL</code></td><td>URL de webhook absente ou ne commençant pas par <code>https://</code>.</td></tr>
+        <tr><td>400</td><td><code>INVALID_REFERENCE</code></td><td>Référence (ou <code>Idempotency-Key</code>) de 64 caractères maximum, composée de lettres, chiffres et <code>. _ : -</code>.</td></tr>
+        <tr><td>400</td><td><code>BANK_PAYOUT_DASHBOARD_ONLY</code></td><td>Le virement bancaire se demande depuis le tableau de bord, pas par l'API.</td></tr>
         <tr><td>400</td><td><code>INVALID_RECIPIENT</code></td><td>Numéro mal formé. Format attendu : <code>509XXXXXXXX</code>.</td></tr>
         <tr><td>400</td><td><code>INSUFFICIENT_BALANCE</code></td><td>Solde Gateway trop faible pour ce retrait.</td></tr>
         <tr><td>400</td><td><code>INVALID_JSON</code></td><td>Le corps n'est pas du JSON valide. Ajoutez <code>Content-Type: application/json</code>.</td></tr>
         <tr><td>401</td><td><code>MISSING_API_KEY</code></td><td>En-tête <code>Authorization</code> absent ou mal écrit. Il doit commencer par <code>Bearer sk_</code>.</td></tr>
         <tr><td>401</td><td><code>INVALID_API_KEY</code></td><td>Clé révoquée ou inexistante. Créez-en une nouvelle dans le tableau de bord.</td></tr>
+        <tr><td>401</td><td><code>MERCHANT_NOT_FOUND</code></td><td>Aucun compte ne correspond à cette clé.</td></tr>
+        <tr><td>403</td><td><code>ACCOUNT_SUSPENDED</code></td><td>Compte suspendu. Contactez issuing@fredapay.com.</td></tr>
         <tr><td>403</td><td><code>LIVE_NOT_ENABLED</code></td><td>Clé live utilisée avant la vérification du compte. Terminez votre KYC.</td></tr>
         <tr><td>403</td><td><code>ISSUING_LIVE_NOT_ENABLED</code></td><td>Clé live utilisée sur <code>/v1/cards</code> avant l'autorisation Issuing Live. Les paiements restent disponibles ; faites la demande depuis le tableau de bord.</td></tr>
         <tr><td>400</td><td><code>BELOW_MINIMUM_BALANCE</code></td><td>Le Master Wallet de l'environnement actuel est insuffisant. En Live, seul un vrai dépôt crédite le solde.</td></tr>
-        <tr><td>409</td><td><code>HOLDER_MODE_MISMATCH</code></td><td>Le titulaire a été créé dans l'autre environnement (Sandbox/Live). Créez-le dans l'environnement de la clé utilisée.</td></tr>
+            <tr><td>409</td><td><code>HOLDER_MODE_MISMATCH</code></td><td>Le titulaire a été créé dans l'autre environnement (Sandbox/Live). Créez-le dans l'environnement de la clé utilisée.</td></tr>
         <tr><td>503</td><td><code>CARD_PROVIDER_AUTH</code></td><td>Le service d'émission de cartes est momentanément indisponible côté plateforme (ce n'est pas une erreur de votre requête). Le montant éventuellement débité est remboursé aussitôt. Réessayez plus tard.</td></tr>
         <tr><td>503</td><td><code>CARD_LIVE_NOT_CONFIGURED</code></td><td>L'émission de cartes Live n'est pas encore disponible sur la plateforme. Aucun montant n'est débité.</td></tr>
+        <tr><td>403</td><td><code>CARD_NOT_AVAILABLE</code></td><td>Le paiement par carte n'est pas encore activé pour ce compte en mode Live. Contactez le support.</td></tr>
+        <tr><td>409</td><td><code>CARD_NOT_READY</code></td><td>La carte n'est pas encore active (statut <code>pending</code>). Réessayez dans quelques secondes.</td></tr>
+        <tr><td>429</td><td><code>RATE_LIMITED</code></td><td>Plus de 100 requêtes par minute. Attendez la fin de la fenêtre (en-têtes de limite renvoyés).</td></tr>
         <tr><td>404</td><td><code>NOT_FOUND</code></td><td>Identifiant de paiement ou de retrait introuvable pour ce compte.</td></tr>
         <tr><td>502</td><td><code>PROVIDER_ERROR</code></td><td>Le réseau MonCash ou Natcash n'a pas répondu. Réessayez dans quelques instants.</td></tr>
       </table></div>
@@ -1324,7 +1338,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
   const SERVICE_SCOPED = "Ce prompt ne concerne qu'un seul service. N'ajoute rien de l'autre service (Payment Gateway ou Issuing de cartes) sauf si je le demande.";
 
   const COMMON = [
-    "Tu es un développeur expérimenté et patient. Aide-moi à intégrer l'API de paiement Freda Pay Issuing  dans mon projet. Je suis peut-être débutant : explique chaque étape simplement et donne du code complet, prêt à copier.",
+    "Tu es un développeur expérimenté et patient. Aide-moi à intégrer l'API de paiement Freda Pay Issuing dans mon projet. Je suis peut-être débutant : explique chaque étape simplement et donne du code complet, prêt à copier.",
     "",
     "Freda Pay Issuing propose DEUX services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance) et l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards). Je peux n'avoir besoin que de l'un des deux, ou des deux. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
     "",
