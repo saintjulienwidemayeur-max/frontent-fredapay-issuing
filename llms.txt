@@ -31,3 +31,6 @@ Faits clés :
 - [Conditions d'utilisation](https://issuing.fredapay.com/terms)
 - [Politique de confidentialité](https://issuing.fredapay.com/privacy)
 - [Kit presse](https://issuing.fredapay.com/press-kit)
+- [Blog](https://issuing.fredapay.com/blog)
+- [Politique de cookies](https://issuing.fredapay.com/cookie-policy)
+- [Plan du site](https://issuing.fredapay.com/sitemap.xml)

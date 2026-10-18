@@ -19,12 +19,15 @@ export default {
       });
       const headers = new Headers(upstream.headers);
       headers.delete('set-cookie');
+      // Une redirection du backend doit rester sur notre domaine
+      const loc = headers.get('location');
+      if (loc) headers.set('location', loc.split(BACKEND).join(url.origin));
       // Anti-cache : toujours la derniere version du blog / sitemap (navigateur et CDN)
       headers.set('Cache-Control', 'no-cache, must-revalidate');
       headers.set('CDN-Cache-Control', 'no-cache');
       return new Response(upstream.body, { status: upstream.status, headers });
     } catch (e) {
-      return new Response('Service temporairement indisponible.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      return new Response('Service temporairement indisponible. / Service temporarily unavailable.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     }
   },
 };

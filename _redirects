@@ -24,3 +24,8 @@
 /confidentialite           /privacy                   301
 /freda-pay-landing         /                          301
 /freda-pay-landing.html    /                          301
+/login                     /signup                    301
+/connexion                 /signup                    301
+/tarifs                    /#tarifs                   301
+/pricing                   /#tarifs                   301
+/faq                       /#faq                      301
