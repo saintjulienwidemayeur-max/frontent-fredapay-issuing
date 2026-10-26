@@ -970,6 +970,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
           <div class="tbl-wrap"><table>
             <tr><th>HTTP</th><th>Code</th><th>Cause et solution</th></tr>
             <tr><td>400</td><td><code>MISSING_FIELDS</code></td><td><code>reference</code> manquante (ou <code>business_name</code> pour une carte entreprise).</td></tr>
+            <tr><td>503</td><td><code>BUSINESS_CARDS_PAUSED</code></td><td>La création de cartes entreprise (<code>kind</code> = <code>business</code>) est temporairement suspendue. Rien n'est débité. Les cartes individuelles ne sont pas concernées.</td></tr>
             <tr><td>400</td><td><code>INVALID_BRAND</code></td><td><code>brand</code> doit être <code>VISA</code> ou <code>MASTERCARD</code>.</td></tr>
             <tr><td>400</td><td><code>HOLDER_PROFILE_REQUIRED</code></td><td>Carte individuelle, <code>holder_id</code> absent, et <strong>aucun</strong> titulaire n'existe dans l'environnement de la clé. Créez-en un (<code>POST /cards/holders</code>) avec une clé du même mode, puis envoyez son <code>id</code>.</td></tr>
             <tr><td>409</td><td><code>HOLDER_NOT_ENROLLED</code></td><td>Le titulaire (indiqué par <code>holder_id</code>, ou aucun titulaire prêt sans <code>holder_id</code>) n'a pas le statut <code>enrolled</code>. Le message donne le statut et la raison d'échec ; recréez le titulaire.</td></tr>
@@ -1325,7 +1326,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
   </main>
 </div>
 
-<footer><p style="margin:0 0 6px">Dernière mise à jour de la documentation : 26 octobre 2026. Verso de la pièce d'identité (<code>identity.imageBackUrl</code>), raison d'échec et lien de nouvelle vérification dans <code>card.failed</code>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
+<footer><p style="margin:0 0 6px">Dernière mise à jour de la documentation : 26 octobre 2026. Création de cartes entreprise temporairement suspendue (<code>BUSINESS_CARDS_PAUSED</code>).</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
