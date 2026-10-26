@@ -1521,6 +1521,7 @@
       <div class="field"><label>Numéro de pièce d'identité</label><input type="text" id="hpIdNumber" placeholder="ID123456"></div>
       <div class="field"><label>Type de pièce</label><select id="hpIdType"><option value="PASSPORT">Passeport</option><option value="NIN">NIN</option><option value="DRIVERS_LICENSE">Permis de conduire</option><option value="VOTERS_CARD">Carte d'électeur</option></select></div>
       <div class="field"><label>Image de la pièce d'identité</label><input type="file" id="hpIdFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event)"><input type="hidden" id="hpIdImage"><div class="hint-text" id="hpIdImageHint">Photo nette de la pièce (PNG, JPEG ou WebP).</div></div>
+      <div class="field"><label>Verso de la pièce d'identité (si exigé pour votre pays)</label><input type="file" id="hpIdBackFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event, 'back')"><input type="hidden" id="hpIdBackImage"><div class="hint-text" id="hpIdBackImageHint">Facultatif. Certains pays exigent le recto et le verso.</div></div>
       <div class="field"><label>Pays (2 lettres)</label><select id="hpCountry"><option value="">Sélectionner…</option></select></div>
     </div>
     <div class="field-row">
@@ -3296,8 +3297,10 @@
   }
 
   function openHolderModal(){
-    ['hpFirstName','hpLastName','hpEmail','hpDob','hpIdNumber','hpIdImage','hpCountry','hpPhoneCode','hpPhone','hpStreet','hpCity','hpState','hpPostalCode'].forEach(id => { document.getElementById(id).value = ''; });
+    ['hpFirstName','hpLastName','hpEmail','hpDob','hpIdNumber','hpIdImage','hpIdBackImage','hpCountry','hpPhoneCode','hpPhone','hpStreet','hpCity','hpState','hpPostalCode'].forEach(id => { document.getElementById(id).value = ''; });
     document.getElementById('hpIdFile').value = '';
+    document.getElementById('hpIdBackFile').value = '';
+    document.getElementById('hpIdBackImageHint').textContent = 'Facultatif. Certains pays exigent le recto et le verso.';
     document.getElementById('hpIdImageHint').textContent = 'Photo nette de la pièce (PNG, JPEG ou WebP).';
     // no default country or dial code: the holder can live anywhere, and the country picks the dial code
     holderPhotoData = null;
@@ -3310,10 +3313,12 @@
   }
 
   // The ID document is sent as a Base64 image (what the card provider requires), shrunk to about 1600 px so it stays well under the 1 MB request limit.
-  function onHolderIdImageChosen(e){
+  function onHolderIdImageChosen(e, side){
     const file = e.target.files && e.target.files[0];
-    const hint = document.getElementById('hpIdImageHint');
-    document.getElementById('hpIdImage').value = '';
+    const suffix = side === 'back' ? 'Back' : '';
+    const hint = document.getElementById('hpId' + suffix + 'ImageHint');
+    const target = document.getElementById('hpId' + suffix + 'Image');
+    target.value = '';
     if(!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -3326,7 +3331,7 @@
         let data = canvas.toDataURL('image/jpeg', 0.85);
         if(data.length > 700000) data = canvas.toDataURL('image/jpeg', 0.6);
         if(data.length > 800000){ hint.textContent = 'Image trop lourde : choisissez une photo plus petite.'; return; }
-        document.getElementById('hpIdImage').value = data;
+        target.value = data;
         hint.textContent = 'Image prête (' + Math.round(data.length * 0.75 / 1024) + ' Ko).';
       };
       img.onerror = () => { hint.textContent = "Ce fichier n'est pas une image valide."; };
@@ -3370,6 +3375,7 @@
         type: document.getElementById('hpIdType').value,
         number: document.getElementById('hpIdNumber').value.trim(),
         imageUrl: document.getElementById('hpIdImage').value.trim(),
+        ...(document.getElementById('hpIdBackImage').value ? { imageBackUrl: document.getElementById('hpIdBackImage').value } : {}),
         country,
       },
       phoneShortCode: document.getElementById('hpPhoneCode').value.trim(),
