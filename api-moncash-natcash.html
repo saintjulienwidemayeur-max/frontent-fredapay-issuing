@@ -102,6 +102,7 @@ footer{border-top:1px solid var(--line);padding:32px 0;font-size:.88rem;color:va
 </section></div>
 
 <div class="wrap"><section>
+  <p>Une page dédiée existe pour chaque moyen de paiement : <a href="/api-moncash-haiti">API MonCash</a> et <a href="/api-natcash-haiti">API Natcash</a>. Pour les frais détaillés, voir les <a href="/tarifs">tarifs</a>.</p>
   <h2>Accepter un paiement MonCash en quelques lignes</h2>
   <p>Exemple avec le SDK Node.js. Le même appel accepte Natcash en remplaçant la valeur de <code>method</code>.</p>
 <pre><code>const { FredaPay } = require("@fredapay/issuing");
@@ -158,7 +159,7 @@ const payment = await freda.payments.create({
 </main>
 <footer><div class="wrap">
   <div class="flinks">
-    <a href="/">Accueil</a><a href="/api-moncash-natcash">API MonCash et Natcash</a><a href="/paiement-par-carte-haiti">Paiement par carte en Haïti</a><a href="/cartes-virtuelles-haiti">Cartes virtuelles Visa et Mastercard</a><a href="/docs">Documentation API</a><a href="/terms">Conditions d'utilisation</a><a href="/privacy">Confidentialité</a>
+    <a href="/">Accueil</a><a href="/api-moncash-natcash">API MonCash et Natcash</a><a href="/api-moncash-haiti">API MonCash</a><a href="/api-natcash-haiti">API Natcash</a><a href="/passerelle-de-paiement-haiti">Passerelle de paiement en Haïti</a><a href="/tarifs">Tarifs</a><a href="/paiement-par-carte-haiti">Paiement par carte en Haïti</a><a href="/cartes-virtuelles-haiti">Cartes virtuelles Visa et Mastercard</a><a href="/docs">Documentation API</a><a href="/terms">Conditions d'utilisation</a><a href="/privacy">Confidentialité</a>
   </div>
   <div>© 2026 Freda Pay LLC · <a href="mailto:issuing@fredapay.com">issuing@fredapay.com</a></div>
 </div></footer>
