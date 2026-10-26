@@ -34,3 +34,7 @@ Faits clés :
 - [Blog](https://issuing.fredapay.com/blog)
 - [Politique de cookies](https://issuing.fredapay.com/cookie-policy)
 - [Plan du site](https://issuing.fredapay.com/sitemap.xml)
+- [Tarifs](https://issuing.fredapay.com/tarifs)
+- [API MonCash Haïti](https://issuing.fredapay.com/api-moncash-haiti)
+- [API Natcash Haïti](https://issuing.fredapay.com/api-natcash-haiti)
+- [Passerelle de paiement en Haïti : comment choisir](https://issuing.fredapay.com/passerelle-de-paiement-haiti)

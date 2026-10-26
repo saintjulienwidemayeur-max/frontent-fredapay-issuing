@@ -77,3 +77,7 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 - https://issuing.fredapay.com/docs
 - https://issuing.fredapay.com/regulatory-disclosure
 - https://issuing.fredapay.com/notre-equipe
+- https://issuing.fredapay.com/tarifs
+- https://issuing.fredapay.com/api-moncash-haiti
+- https://issuing.fredapay.com/api-natcash-haiti
+- https://issuing.fredapay.com/passerelle-de-paiement-haiti
