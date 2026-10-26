@@ -124,7 +124,7 @@ const card = await freda.cards.create({
 
 <div class="wrap"><section>
   <h2>Où la carte fonctionne</h2>
-  <p>Ce sont des cartes en USD, acceptées chez les commerçants qui acceptent les cartes en dollars, surtout aux États-Unis. Certaines catégories de commerçants (jeux d'argent, transferts d'argent, cryptomonnaies, par exemple) et certains pays sous sanctions sont refusés. La liste complète est dans la <a href="/docs#cards-restrictions">documentation</a>.</p>
+  <p>Ce sont des cartes en USD, acceptées chez les commerçants qui acceptent les cartes en dollars, surtout aux États-Unis. Certaines catégories de commerçants (jeux d'argent, transferts d'argent, cryptomonnaies, par exemple) et certains pays sous sanctions sont refusés. La liste complète est dans la <a href="/docs/restrictions-cartes#cards-restrictions">documentation</a>.</p>
 </section></div>
 
 <div class="wrap"><section>
@@ -144,7 +144,7 @@ const card = await freda.cards.create({
   <details><summary>Quelle est la différence entre une carte Visa et Mastercard ?</summary><p>Vous choisissez la marque à la création avec le paramètre <code>brand</code>. Les deux sont des cartes virtuelles en USD gérées de la même façon.</p></details>
   <details><summary>Puis-je tester sans argent réel ?</summary><p>Oui. Le mode test fournit un Master Wallet de démonstration, et vous pouvez simuler des achats et des crédits sur une carte pour vérifier votre historique.</p></details>
   <details><summary>Que se passe-t-il si un achat est refusé ?</summary><p>La carte refuse la transaction. Un refus pour solde insuffisant coûte 1,00 $, donc rechargez la carte avant un achat important.</p></details>
-  <details><summary>Puis-je gérer les cartes depuis mon propre système ?</summary><p>Oui, toutes les actions existent en API REST avec votre clé secrète, avec des SDK Node.js et PHP et une spécification OpenAPI. Voir la <a href="/docs#cards-profile">documentation des cartes</a>.</p></details>
+  <details><summary>Puis-je gérer les cartes depuis mon propre système ?</summary><p>Oui, toutes les actions existent en API REST avec votre clé secrète, avec des SDK Node.js et PHP et une spécification OpenAPI. Voir la <a href="/docs/titulaires-de-cartes#cards-profile">documentation des cartes</a>.</p></details>
   <details><summary>Puis-je aussi accepter des paiements MonCash et Natcash ?</summary><p>Oui, avec le même compte. Voir <a href="/api-moncash-natcash">l'API MonCash et Natcash</a>.</p></details>
 </section></div>
 

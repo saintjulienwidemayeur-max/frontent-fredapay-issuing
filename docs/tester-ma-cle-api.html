@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tester ma clé API et ma configuration | Docs Freda Pay</title>
+<meta name="description" content="Testez votre clé API Freda Pay Issuing et votre configuration en un clic : validité de la clé, mode test ou production, et envoi d&#x27;un webhook de test.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://issuing.fredapay.com/docs/tester-ma-cle-api">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Freda Pay Issuing">
+<meta property="og:title" content="Tester ma clé API et ma configuration | Docs Freda Pay">
+<meta property="og:description" content="Testez votre clé API Freda Pay Issuing et votre configuration en un clic : validité de la clé, mode test ou production, et envoi d&#x27;un webhook de test.">
+<meta property="og:url" content="https://issuing.fredapay.com/docs/tester-ma-cle-api">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:image" content="https://issuing.fredapay.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tester ma clé API et ma configuration | Docs Freda Pay">
+<meta name="twitter:description" content="Testez votre clé API Freda Pay Issuing et votre configuration en un clic : validité de la clé, mode test ou production, et envoi d&#x27;un webhook de test.">
+<meta name="twitter:image" content="https://issuing.fredapay.com/og-image.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://issuing.fredapay.com/docs/tester-ma-cle-api#page", "url": "https://issuing.fredapay.com/docs/tester-ma-cle-api", "name": "Tester sa clé API et sa configuration en un clic", "headline": "Tester sa clé API et sa configuration en un clic", "description": "Testez votre clé API Freda Pay Issuing et votre configuration en un clic : validité de la clé, mode test ou production, et envoi d'un webhook de test.", "inLanguage": "fr", "dateModified": "2026-10-26", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website", "url": "https://issuing.fredapay.com/", "name": "Freda Pay Issuing"}, "publisher": {"@type": "Organization", "name": "Freda Pay LLC", "url": "https://issuing.fredapay.com/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "Documentation", "item": "https://issuing.fredapay.com/docs"}, {"@type": "ListItem", "position": 3, "name": "Tester ma clé API", "item": "https://issuing.fredapay.com/docs/tester-ma-cle-api"}]}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+<style>
+  :root{
+    --pink:#ff4081; --pink-deep:#d81b60; --pink-soft:#fff0f5;
+    --ink:#1a1216; --muted:#6b5f66; --line:#ece4e8; --paper:#ffffff; --mist:#faf6f8;
+    --code-bg:#1f141b; --code-ink:#f3e9ee; --green:#16a34a; --amber:#b45309; --red:#dc2626;
+    --radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--pink-deep)}
+  code,pre{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+  :focus-visible{outline:2px solid var(--pink);outline-offset:2px;border-radius:4px}
+
+  /* ===== Top bar ===== */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .topbar-inner{max-width:1400px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .brand .mark{width:30px;height:30px;border-radius:8px;overflow:hidden}
+  .brand .mark img{width:100%;height:100%;object-fit:cover;display:block}
+  .brand strong{font-weight:800;font-size:.95rem;white-space:nowrap}
+  .brand span.sub{color:var(--muted);font-weight:500;font-size:.9rem;padding-left:10px;border-left:1px solid var(--line)}
+  .topbar-links{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .tb-link{white-space:nowrap;font-size:.85rem;font-weight:600;color:var(--ink);text-decoration:none;padding:8px 12px;border-radius:8px}
+  .tb-link:hover{background:var(--mist)}
+  .tb-cta{background:var(--ink);color:#fff}
+  .tb-cta:hover{background:#34252d}
+  .cta-short{display:none}
+  .menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;min-height:40px;font-weight:700;font-size:.8rem;cursor:pointer}
+
+  /* ===== AI band (the one bold element) ===== */
+  .ai-band{background:var(--code-bg);color:#fff;border-bottom:1px solid #000}
+  .ai-inner{max-width:1400px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+  .ai-inner h1{font-size:1.45rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+  .ai-inner p{color:#d9c8d1;font-size:.93rem;max-width:62ch}
+  .ai-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .ai-btn{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;text-decoration:none;font-family:inherit}
+  .ai-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3)}
+  .ai-btn img{width:20px;height:20px;display:block}
+  .ai-btn .logo-chip{width:26px;height:26px;border-radius:7px;background:#fff;display:grid;place-items:center}
+  .ai-btn.copy{background:transparent}
+  @media (max-width:860px){ .ai-inner{grid-template-columns:1fr} }
+
+  /* ===== Layout ===== */
+  .layout{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:0}
+  .sidenav{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow-y:auto;padding:26px 18px 40px 24px;border-right:1px solid var(--line)}
+  .sidenav .sn-h{font-size:.78rem;font-weight:700;color:var(--muted);margin:18px 0 6px 10px}
+  .sidenav .sn-h:first-child{margin-top:0}
+  .sidenav a{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:7px;font-size:.87rem;color:var(--ink);text-decoration:none}
+  .sidenav a:hover{background:var(--mist)}
+  .sidenav a.active{background:var(--pink-soft);color:var(--pink-deep);font-weight:600}
+  .verb{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:500;padding:1px 6px;border-radius:4px;flex-shrink:0}
+  .verb.post{background:#e8f5ec;color:#15803d}
+  .verb.get{background:#e8effd;color:#1d4ed8}
+
+  main{padding:34px 40px 100px;min-width:0}
+  .doc-section{padding:34px 0;border-bottom:1px solid var(--line);scroll-margin-top:70px}
+  .doc-section:first-child{padding-top:0}
+  .doc-section:last-child{border-bottom:none}
+  .two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+  .two-col .sticky-col{position:sticky;top:80px}
+  @media (max-width:1180px){ .two-col{grid-template-columns:minmax(0,1fr);gap:18px} .two-col .sticky-col{position:static} }
+  .two-col > div{min-width:0}
+
+  h2{font-size:1.5rem;font-weight:800;letter-spacing:-.015em;margin-bottom:10px}
+  h3{font-size:1.02rem;font-weight:700;margin:22px 0 8px}
+  p{margin-bottom:12px;max-width:72ch}
+  .lead{color:var(--muted);font-size:1rem}
+  ul.plain,ol.plain{margin:0 0 12px 20px;max-width:70ch}
+  ul.plain li,ol.plain li{margin-bottom:6px}
+  code.inline{background:var(--mist);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.84em;color:#8c1d47}
+
+  .endpoint{display:inline-flex;flex-wrap:wrap;max-width:100%;word-break:break-all;align-items:center;gap:10px;background:var(--mist);border:1px solid var(--line);border-radius:9px;padding:8px 12px;margin:4px 0 14px;font-family:'JetBrains Mono',monospace;font-size:.86rem}
+  .tag{background:var(--pink-soft,#ffe4ee);color:var(--pink-deep,#8c1d47);padding:1px 6px;border-radius:4px;font-weight:700}
+  .endpoint .verb{font-size:.72rem;padding:2px 7px}
+
+  /* Steps (a real sequence) */
+  .steps{counter-reset:s;list-style:none;margin:10px 0 0}
+  .steps li{counter-increment:s;position:relative;padding:0 0 18px 44px;max-width:70ch}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--pink-soft);color:var(--pink-deep);font-weight:800;font-size:.85rem;display:grid;place-items:center}
+  .steps li::after{content:"";position:absolute;left:13.5px;top:30px;bottom:4px;width:1px;background:var(--line)}
+  .steps li:last-child::after{display:none}
+  .steps li strong{display:block;margin-bottom:2px}
+
+  /* Tables */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin:10px 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th{text-align:left;font-weight:600;color:var(--muted);background:var(--mist);padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:.8rem;color:#8c1d47}
+  .req{color:var(--pink-deep);font-weight:600;font-size:.78rem}
+  .opt{color:var(--muted);font-size:.78rem}
+
+  /* Callouts */
+  .callout{border-left:3px solid var(--pink);background:var(--pink-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:.9rem;max-width:72ch}
+  .callout.warn{border-color:var(--amber);background:#fff8eb}
+  .callout strong{display:block;margin-bottom:2px}
+
+  /* Code blocks */
+  .code-block{background:var(--code-bg);border-radius:var(--radius);overflow:hidden;margin:6px 0 16px}
+  .code-tabs{display:flex;gap:2px;padding:8px 8px 0;border-bottom:1px solid rgba(255,255,255,.08);align-items:center}
+  .code-tabs button{background:transparent;border:none;color:#b8a4ae;font:600 .76rem 'Inter',sans-serif;padding:8px 11px;min-height:40px;cursor:pointer;border-radius:7px 7px 0 0}
+  .code-tabs button.on{color:#fff;background:rgba(255,255,255,.08)}
+  .code-tabs .copy-code{margin-left:auto;background:rgba(255,255,255,.08);border-radius:6px;padding:5px 10px;color:#e8d8e0}
+  .code-tabs .copy-code:hover{background:rgba(255,255,255,.16)}
+  .code-title{color:#b8a4ae;font:600 .76rem 'Inter',sans-serif;padding:8px 11px}
+  pre{margin:0;padding:16px 18px;overflow-x:auto;color:var(--code-ink);font-size:.8rem;line-height:1.7}
+  pre[hidden]{display:none}
+  .c-k{color:#ff8fb8}.c-s{color:#9fe6a0}.c-c{color:#8c7a84}.c-n{color:#ffc27a}.c-f{color:#8ecbff}
+
+  /* Per-endpoint AI row */
+  .ask-ai{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 4px;font-size:.84rem;color:var(--muted)}
+  .ask-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 11px;border-radius:8px;font:600 .8rem 'Inter',sans-serif;cursor:pointer}
+  .ask-btn:hover{border-color:#d7c5ce;background:var(--mist)}
+  .ask-btn img{width:15px;height:15px}
+
+  /* Plugin cards */
+  .plugin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:14px}
+  @media (max-width:760px){ .plugin-grid{grid-template-columns:1fr} }
+  .plugin{border:1px solid var(--line);border-radius:14px;padding:18px}
+  .plugin h3{margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  .plugin h3 img{width:22px;height:22px}
+  .plugin p{font-size:.88rem;color:var(--muted);margin-bottom:12px}
+  .plugin .dl{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;text-decoration:none;padding:9px 14px;border-radius:9px;font-weight:700;font-size:.83rem}
+  .plugin .dl:hover{background:#34252d}
+  .plugin.muted{background:var(--mist)}
+
+  /* Button preview */
+  .btn-preview{border:1px dashed #e0cdd6;border-radius:12px;padding:22px;display:flex;justify-content:center;background:var(--mist);margin:10px 0}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:.86rem;font-weight:600;opacity:0;transition:.2s;z-index:200;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  footer{border-top:1px solid var(--line);padding:26px 24px;text-align:center;color:var(--muted);font-size:.82rem}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .sidenav{display:none;position:fixed;top:57px;left:0;right:0;height:auto;max-height:70vh;background:#fff;z-index:40;border-right:none;border-bottom:1px solid var(--line);box-shadow:0 20px 40px -20px rgba(0,0,0,.25)}
+    .sidenav.open{display:block}
+    .menu-toggle{display:inline-block}
+    main{padding:26px 18px 80px}
+    .topbar-links .tb-link:not(.tb-cta){display:none}
+    .brand span.sub{display:none}
+    .cta-long{display:none}
+    .cta-short{display:inline}
+    .topbar-inner{padding:10px 12px;gap:8px}
+    .brand strong{font-size:.86rem}
+    .tb-link{padding:8px 10px}
+    .menu-toggle{padding:7px 8px}
+  }
+  @media (max-width:360px){ .brand strong{display:none} }
+
+  .kt-box{border:1px solid var(--line,#ece4e8);border-radius:14px;padding:18px;background:#fff;max-width:72ch;margin:14px 0}
+  .kt-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .kt-row input{flex:1;min-width:220px;padding:11px 12px;border:1px solid #e0cdd6;border-radius:10px;font:inherit;font-family:ui-monospace,Menlo,monospace;font-size:.86rem}
+  .kt-btn{padding:11px 18px;border-radius:10px;border:0;background:#111;color:#fff;font-weight:700;font-size:.86rem;cursor:pointer}
+  .kt-btn.ghost{background:#fff;color:#111;border:1px solid #e0cdd6}
+  .kt-btn:disabled{opacity:.5;cursor:default}
+  .kt-list{list-style:none;margin:6px 0 0;padding:0}
+  .kt-list li{display:flex;gap:10px;padding:9px 0;border-top:1px solid #f1e8ec;font-size:.88rem}
+  .kt-list li:first-child{border-top:0}
+  .kt-ico{font-weight:800;width:20px;flex:none}
+  .kt-ok{color:var(--green)} .kt-ko{color:var(--red)} .kt-warn{color:var(--amber)}
+  .kt-msg{margin-top:10px;font-size:.88rem}
+</style>
+<script>
+  /* Defined early: if a brand logo can't load (CDN blocked/offline), show its initial instead of a broken image. */
+  function logoFallback(img){
+    var src = img.getAttribute('src') || '';
+    var m = src.match(/simpleicons\.org\/([a-z]+)/);
+    var name = m ? m[1] : '?';
+    var letters = { claude:'C', openai:'G', woocommerce:'W', wix:'W', squarespace:'S', shopify:'S' };
+    var span = document.createElement('span');
+    span.textContent = letters[name] || name.charAt(0).toUpperCase();
+    span.style.cssText = 'display:inline-grid;place-items:center;width:' + (img.width||18) + 'px;height:' + (img.height||18) + 'px;font:800 12px Inter,sans-serif;color:#1a1216';
+    span.setAttribute('aria-hidden','true');
+    img.replaceWith(span);
+  }
+</script>
+<style>
+  .page-h1{font-size:clamp(1.6rem,3.6vw,2.2rem);line-height:1.2;letter-spacing:-.02em;margin:0 0 10px}
+  .page-lead{font-size:1.02rem;color:var(--muted);margin:0 0 6px;max-width:760px}
+  .crumbs-doc{font-size:.84rem;color:var(--muted);margin:0 0 18px}.crumbs-doc a{color:var(--muted)}
+  .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:34px 0 0;padding-top:20px;border-top:1px solid var(--line)}
+  .pn a{display:block;border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);font-weight:600;font-size:.92rem;max-width:48%}
+  .pn a:hover{border-color:var(--pink)}.pn small{display:block;color:var(--muted);font-weight:500;font-size:.76rem}
+  .doc-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:16px}
+  .doc-card{display:block;border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-decoration:none;color:var(--ink);background:#fff}
+  .doc-card:hover{border-color:var(--pink)}.doc-card strong{display:block;margin-bottom:4px}.doc-card span{color:var(--muted);font-size:.9rem}
+  @media(max-width:760px){.doc-cards{grid-template-columns:1fr}.pn a{max-width:100%}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="brand">
+      <span class="mark"><img src="/logo-64.png" alt="Freda Pay Issuing" width="32" height="32"></span>
+      <strong>Freda Pay Issuing</strong>
+      <span class="sub">Documentation</span>
+    </a>
+    <button class="menu-toggle" onclick="document.getElementById('sidenav').classList.toggle('open')" aria-label="Ouvrir le sommaire">Sommaire</button>
+    <nav class="topbar-links">
+      <a class="tb-link" href="/dashboard.html">Tableau de bord</a>
+      <a class="tb-link tb-cta" href="/signup"><span class="cta-long">Obtenir mes clés API</span><span class="cta-short">Mes clés API</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidenav" id="sidenav">
+    <div class="sn-h">Pour commencer</div>
+    <a href="/docs#demarrage">Démarrage rapide</a>
+    <a href="/docs#authentification">Authentification</a>
+    <div class="sn-h">Encaisser</div>
+    <a href="/docs/tester-ma-cle-api" class="active">Tester ma clé API</a>
+    <a href="/docs/creer-un-paiement"><span class="verb post">POST</span>Créer un paiement</a>
+    <a href="/docs/verifier-un-paiement"><span class="verb get">GET</span>Vérifier un paiement</a>
+    <a href="/docs/webhooks">Notifications (webhooks)</a>
+    <div class="sn-h">Envoyer de l&#x27;argent</div>
+    <a href="/docs/retraits-et-solde">Retraits et solde</a>
+    <div class="sn-h">Cartes</div>
+    <a href="/docs/titulaires-de-cartes"><span class="verb post">POST</span>Titulaires de cartes</a>
+    <a href="/docs/creer-une-carte"><span class="verb post">POST</span>Créer une carte</a>
+    <a href="/docs/gerer-une-carte">Gérer une carte</a>
+    <a href="/docs/restrictions-cartes">Où la carte fonctionne</a>
+    <div class="sn-h">Sans code</div>
+    <a href="/docs/liens-et-bouton-de-paiement">Lien et bouton de paiement</a>
+    <a href="/docs/plugins-et-sdks">Plugins et SDKs</a>
+    <div class="sn-h">Référence</div>
+    <a href="/docs/limites-pagination-versions">Limites, pagination, versions</a>
+    <a href="/docs/erreurs-et-bonnes-pratiques">Erreurs et bonnes pratiques</a>
+  </aside>
+
+  <main>
+    <div class="crumbs-doc"><a href="/">Accueil</a> / <a href="/docs">Documentation</a> / Tester ma clé API</div>
+    <h1 class="page-h1">Tester sa clé API et sa configuration en un clic</h1>
+    <p class="page-lead">Collez votre clé pour vérifier qu&#x27;elle est acceptée et que votre compte est bien configuré, puis envoyez un webhook de test à votre serveur.</p>
+
+<section class="doc-section" id="tester">
+      <h2>Tester ma clé API et ma configuration</h2>
+      <p class="lead">Avant d'écrire du code, vérifiez que Freda Pay Issuing accepte votre clé et que votre compte est bien configuré. L'outil appelle <code class="inline">GET /v1/ping</code> et <code class="inline">POST /v1/webhooks/test</code>, les mêmes appels que vous ferez depuis votre serveur.</p>
+      <div class="kt-box">
+        <label for="ktKey" style="display:block;font-weight:700;font-size:.86rem;margin-bottom:6px">Votre clé API</label>
+        <div class="kt-row">
+          <input type="password" id="ktKey" placeholder="sk_test_…" autocomplete="off" spellcheck="false">
+          <button class="kt-btn" id="ktCheck" onclick="ktCheck()">Vérifier ma clé</button>
+        </div>
+        <ul class="kt-list" id="ktResult" hidden></ul>
+        <div class="kt-msg" id="ktMsg"></div>
+        <div class="kt-row" style="margin:14px 0 0">
+          <button class="kt-btn ghost" id="ktHook" onclick="ktWebhook()" disabled>Envoyer un webhook de test</button>
+        </div>
+        <div class="kt-msg" id="ktHookMsg"></div>
+      </div>
+      <div class="callout">
+        <strong>Utilisez de préférence une clé test</strong>
+        La clé est envoyée directement de votre navigateur à <code class="inline">api.fredapay.com</code> : elle n'est ni enregistrée ni transmise ailleurs, et disparaît quand vous fermez la page. Si vous testez une clé <code class="inline">sk_live_…</code>, supprimez-la ensuite du presse-papiers.
+      </div>
+      <h3>Que vérifie l'outil ?</h3>
+      <ul class="plain">
+        <li>La clé est <strong>reconnue</strong> (ni mal écrite, ni révoquée) et l'environnement : Sandbox ou Live.</li>
+        <li>Le compte est <strong>actif</strong> (non suspendu). Une clé Live demande aussi le Live activé après KYC/KYB.</li>
+        <li>L'<strong>émission de cartes</strong> est autorisée (en Live, par l'accès Issuing séparé).</li>
+        <li>Un <strong>endpoint webhook</strong> est enregistré. Le bouton « webhook de test » envoie un événement <code class="inline">webhook.test</code> signé et vous dit si votre serveur a répondu <code class="inline">2xx</code>.</li>
+      </ul>
+      <h3>Si la vérification échoue</h3>
+      <div class="tbl-wrap"><table>
+        <tr><th>Code</th><th>Sens</th><th>Que faire</th></tr>
+        <tr><td><code>MISSING_API_KEY</code></td><td>Clé absente ou mal formée</td><td>Elle doit ressembler à <code>sk_test_…</code> ou <code>sk_live_…</code>, sans espace.</td></tr>
+        <tr><td><code>INVALID_API_KEY</code></td><td>Clé inconnue ou révoquée</td><td>Créez une nouvelle clé dans Tableau de bord → Clés API.</td></tr>
+        <tr><td><code>ACCOUNT_SUSPENDED</code></td><td>Compte suspendu</td><td>Écrivez à issuing@fredapay.com.</td></tr>
+        <tr><td><code>LIVE_NOT_ENABLED</code></td><td>Clé Live, Live pas encore activé</td><td>Terminez la vérification KYC/KYB.</td></tr>
+        <tr><td><code>NO_WEBHOOK_ENDPOINT</code></td><td>Aucun webhook enregistré</td><td>Enregistrez une URL avec <code>POST /v1/webhooks</code> (voir <a href="/docs/webhooks#webhooks">Notifications</a>).</td></tr>
+      </table></div>
+      <div class="code-block" style="margin-top:14px">
+        <div class="code-tabs"><span class="code-title">curl</span><button class="copy-code" onclick="copyCode(this)">Copier</button></div>
+<pre data-lang="curl">curl https://api.fredapay.com/v1/ping \
+  -H "Authorization: Bearer sk_test_VOTRE_CLE_SECRETE"
+
+curl -X POST https://api.fredapay.com/v1/webhooks/test \
+  -H "Authorization: Bearer sk_test_VOTRE_CLE_SECRETE"</pre>
+      </div>
+    </section>
+
+    <div class="pn"><a href="/docs/webhooks"><small>Précédent</small>Notifications (webhooks)</a><a href="/docs/retraits-et-solde" style="text-align:right"><small>Suivant</small>Retraits et solde</a></div>
+  </main>
+</div>
+
+<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 26 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const API_BASE = window.FREDA_API_BASE_URL || 'https://api.fredapay.com';
+
+  /* ===== Prompts for AI assistants ===== */
+  const SERVICE_QUESTION = "0) quel service je veux intégrer : le Payment Gateway seul (encaisser par MonCash/Natcash), l'Issuing de cartes seul (créer des cartes virtuelles, sans paiement MonCash/Natcash), ou les deux ; ";
+  const SERVICE_SCOPED = "Ce prompt ne concerne qu'un seul service. N'ajoute rien de l'autre service (Payment Gateway ou Issuing de cartes) sauf si je le demande.";
+
+  const COMMON = [
+    "Tu es un développeur expérimenté et patient. Aide-moi à intégrer l'API de paiement Freda Pay Issuing dans mon projet. Je suis peut-être débutant : explique chaque étape simplement et donne du code complet, prêt à copier.",
+    "",
+    "Freda Pay Issuing propose DEUX services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance) et l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards). Je peux n'avoir besoin que de l'un des deux, ou des deux. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
+    "",
+    "Avant d'écrire du code, pose-moi ces questions : " + SERVICE_QUESTION + "1) quel langage ou quelle plateforme j'utilise (PHP, Node.js, Python, WordPress, Laravel, Django, autre) ; 2) ce que je vends ou encaisse ; 3) si j'ai déjà un serveur ou seulement un site vitrine (dans ce cas propose-moi les liens de paiement ou le bouton de paiement, sans code serveur).",
+    "",
+    "Informations sur l'API :",
+    "- URL de base : " + API_BASE,
+    "- Authentification : en-tête 'Authorization: Bearer sk_test_...' (ou sk_live_... en production) et 'Content-Type: application/json'. Il n'y a qu'une seule API : le préfixe de la clé choisit Sandbox (argent fictif) ou Live (argent réel), avec des données totalement séparées. Une clé live donne accès aux paiements dès que le KYC est approuvé ; /v1/cards en Live exige une autorisation Issuing séparée (erreur ISSUING_LIVE_NOT_ENABLED sinon).",
+    "- Issuing seul : les cartes sont préfinancées depuis le Master Wallet (USD), qui se recharge depuis le tableau de bord ; aucun paiement MonCash/Natcash n'est à intégrer dans ce cas. Payment Gateway seul : aucune demande d'accès Issuing n'est nécessaire.",
+    "- La clé secrète ne doit JAMAIS être dans le navigateur, une application mobile ou un dépôt Git. Mets-la dans une variable d'environnement FREDA_SECRET_KEY et appelle l'API uniquement depuis le serveur.",
+    "- Toutes les erreurs ont le format { \"error\": { \"code\": \"...\", \"message\": \"...\" } }. Gère-les et affiche 'message' à l'utilisateur.",
+    "- Codes d'erreur : MISSING_FIELDS, INVALID_AMOUNT, INVALID_METHOD, INVALID_RECIPIENT, INSUFFICIENT_BALANCE, INVALID_JSON (400) ; MISSING_API_KEY, INVALID_API_KEY (401) ; LIVE_NOT_ENABLED (403) ; NOT_FOUND (404) ; RATE_LIMITED (429, en-tête Retry-After présent) ; PROVIDER_ERROR (502, réessayer plus tard).",
+    "- Limite de requêtes : 100/minute par clé API sur tous les endpoints /v1/... (en-têtes X-RateLimit-Limit et X-RateLimit-Remaining sur chaque réponse).",
+    "- Les listes (GET /v1/payments, /v1/payouts, /v1/cards) acceptent ?page=1&page_size=20 (max 100) et renvoient { ..., pagination: { page, page_size, has_more } }.",
+    "- Pour éviter d'interroger l'API en boucle, un webhook peut être enregistré (POST /v1/webhooks) pour recevoir les événements directement sur ton serveur.",
+  ].join("\n");
+
+  const ENDPOINTS = {
+    payments_create: [
+      "ENDPOINT : POST /v1/payments. Créer un paiement.",
+      "Corps JSON : amount (nombre, HTG, minimum 20, requis) ; method (requis : 'moncash', 'natcash', 'moncash_ussd', 'all' ou 'carte') ; reference (texte unique, requis, ex. numéro de commande) ; currency (optionnel : 'HTG' par défaut pour MonCash/Natcash ; 'USD' obligatoire pour 'carte') ; phone (requis seulement pour moncash_ussd, format 509XXXXXXXX) ; customer_name et customer_email (optionnels, pour 'carte').",
+      "RÉPONSE : contient aussi customer_name, customer_email (carte) et customer_phone (MonCash/Natcash) quand ils existent : c'est QUI a payé. Frais du paiement par carte selon le plan Gateway : Standard 7 % + 0,50 $, Pro 6 % + 0,50 $, Business 5 % + 0,50 $ (fee et net_amount sont remplis quand le paiement est confirmé).",
+      "TEST SANDBOX (clé sk_test_...) : sur la page de paiement par carte, utilise le numéro 4242 4242 4242 4242, la date 05/27 et le CVV 088. Aucun argent réel n'est débité. Les erreurs possibles pour la carte : AMOUNT_TOO_LOW (minimum 0,50 USD), INVALID_CURRENCY (la carte se paie en USD), CARD_NOT_AVAILABLE (carte pas encore activée en Live).",
+      "PAIEMENT PAR CARTE : method 'carte' + currency 'USD', minimum 0,50 USD. La réponse 201 contient checkout_url : une page de paiement sécurisée Freda Pay Issuing où le client entre sa carte ; redirige le client vers cette adresse (comme pour MonCash). Optionnel : return_url (adresse https de ton site, où la page ramène le client après le paiement), customer_name, customer_email. Le retour du navigateur ne prouve rien : confirme avec le webhook payment.succeeded ou GET /v1/payments/:id côté serveur. Un paiement réussi crédite le solde Gateway USD (frais déduits) ; un paiement refusé passe à 'failed' (webhook payment.failed). Erreurs : INVALID_CURRENCY, AMOUNT_TOO_LOW, INVALID_RETURN_URL, CARD_NOT_AVAILABLE (403, carte non activée en Live), PROVIDER_ERROR (502).",
+      "Réponse 201 : { id, reference, amount, currency, method, status: 'pending', fee, net_amount, checkout_url, provider_transaction_id, created_at, updated_at }.",
+      "Après la création, enregistre 'id' avec la commande et redirige le client vers 'checkout_url' (il est null pour moncash_ussd : le client reçoit alors une invite USSD sur son téléphone).",
+      "Si la même 'reference' est renvoyée, l'API renvoie le paiement existant (code 200) au lieu d'en créer un nouveau : utilise une référence différente pour chaque nouvelle tentative (ex. CMD-1001-1, CMD-1001-2).",
+    ].join("\n"),
+    payments_get: [
+      "ENDPOINT : GET /v1/payments/:id. Vérifier un paiement.",
+      "Réponse : le même objet que la création. 'status' vaut 'pending' (pas encore payé), 'succeeded' (confirmé : fee et net_amount sont remplis, livrer la commande) ou 'failed'.",
+      "Chaque appel interroge MonCash/Natcash pour avoir le statut à jour. Vérifie toutes les 3 à 5 secondes, et arrête après environ 10 minutes.",
+      "Ne te fie jamais à la page de retour du navigateur : confirme toujours le paiement par cet appel depuis le serveur avant de livrer. Montre-moi aussi comment faire une tâche planifiée (cron) qui vérifie les commandes restées en attente.",
+    ].join("\n"),
+    payouts_create: [
+      "ENDPOINT : POST /v1/payouts. Envoyer de l'argent vers MonCash ou Natcash depuis mon solde Gateway.",
+      "Corps JSON : amount (nombre, HTG, requis) ; method ('moncash' ou 'natcash', requis) ; recipient (numéro au format 509XXXXXXXX sans espace ni +, requis) ; reference (texte unique, requis). Frais de retrait : 5 % du montant, ajoutés au montant débité du solde ; le virement bancaire n'est pas disponible par l'API.",
+      "Réponse 202 : { id, reference, amount, method, recipient, status: 'pending', fee, provider_reference, provider_transaction_id, failure_reason, created_at, updated_at }.",
+      "Les retraits sont mis en file d'attente et traités un par un avec environ 2 minutes entre chaque envoi. Il faut ensuite suivre le statut avec GET /v1/payouts/:id.",
+      "Erreurs spécifiques : INSUFFICIENT_BALANCE si le solde ne suffit pas, INVALID_RECIPIENT si le numéro est mal formé. Réutiliser la même 'reference' renvoie le retrait existant : cela évite un double envoi, donc génère une référence unique par retrait et conserve-la.",
+      "Ajoute une validation du numéro avant l'appel et une confirmation claire avant d'envoyer de l'argent.",
+    ].join("\n"),
+    payouts_get: [
+      "ENDPOINT : GET /v1/payouts/:id. Vérifier un retrait.",
+      "'status' vaut 'pending' (en file ou en cours), 'success' (envoyé ; 'fee' contient les frais du réseau) ou 'failed' (échec, le solde n'est pas débité ; 'failure_reason' explique pourquoi).",
+      "Écris une fonction qui vérifie le statut toutes les 30 secondes pendant au maximum 15 minutes, puis enregistre le résultat.",
+    ].join("\n"),
+    balance: [
+      "ENDPOINT : GET /v1/balance. Consulter mes soldes.",
+      "Réponse : { mode, gateway: { available, currency: 'HTG' }, gateway_usd: { available, currency: 'USD' }, gateway_balances: { HTG, USD }, master_wallet: { available, currency: 'USD' } }. 'gateway' est l'argent reçu par MonCash/Natcash (HTG, frais déduits), utilisable pour les retraits MonCash, Natcash ou bancaires. 'gateway_usd' est l'argent reçu par carte (USD, frais déduits), retiré par virement bancaire ou Zelle depuis le tableau de bord. 'master_wallet' sert à l'émission de cartes et à l'abonnement.",
+      "Montre-moi comment afficher ces soldes dans une page d'administration et comment vérifier le solde gateway avant de proposer un retrait.",
+    ].join("\n"),
+    auth: [
+      "SUJET : l'authentification. Explique-moi comment stocker ma clé secrète en variable d'environnement dans mon environnement (fichier .env, hébergement mutualisé, Vercel, Railway, cPanel…), comment envoyer l'en-tête Authorization, et comment réagir aux erreurs MISSING_API_KEY, INVALID_API_KEY et LIVE_NOT_ENABLED.",
+    ].join("\n"),
+    cards_profile: [
+      "SUJET : les titulaires de carte (holders). Plusieurs par compte ; requis pour chaque carte individuelle, pas pour une carte entreprise.",
+      "ENDPOINTS : POST /v1/cards/holders (créer), GET /v1/cards/holders (liste), GET /v1/cards/holders/:id. Mêmes routes sous /dashboard/cards/holders avec un session token. L'ancien POST /cards/holder-profile crée aussi un titulaire.",
+      "Corps JSON requis : firstName, lastName, email, country (2 lettres ISO, ex. 'US'), dob ('YYYY-MM-DD'), identificationNumber, identity (objet : type NIN, PASSPORT, VOTERS_CARD ou DRIVERS_LICENSE, number, imageUrl = image de la pièce en Base64 ('data:image/jpeg;base64,...', png/jpeg/webp, environ 700 Ko max) ou lien https direct vers l'image (converti par Freda Pay Issuing), country optionnel), phoneShortCode (ex. '+1'), phoneNumber, address (objet avec street, city, state, postalCode ET country - les 5 sont obligatoires, une adresse incomplète est refusée avec 400 MISSING_FIELDS). Optionnel : photoUrl (data URL png/jpeg/webp < 200 Ko ou URL https), affichée uniquement dans le tableau de bord.",
+      "Réponse 201 : { id, already_existed, holder: { id (mpc_..., à envoyer comme holder_id), mode ('sandbox'|'live'), status: 'enrolled' | 'pending' | 'failed', first_name, last_name, email, country, dob, phone, address, identification_number_last4 (4 derniers caractères seulement), photo_url, failure_reason, created_at } }. 'profile' est un ancien alias de 'holder'.",
+      "Règles : le titulaire est enrolled dès la réponse 201 (création synchrone, aucune attente ni nouvelle tentative). Si un titulaire enrolled avec le même e-mail existe déjà dans ce mode, POST renvoie 200 avec already_existed=true et l'id existant (pas de doublon). Sandbox et Live sont séparés selon le préfixe de la clé (sk_test_ / sk_live_) ; le titulaire appartient au compte marchand, pas à une clé. Seul un titulaire enrolled peut recevoir une carte ; la photo n'est jamais exigée.",
+      "Retrouver un id : GET /v1/cards/holders (liste, du plus récent au plus ancien, dans le mode de la clé) ou GET /v1/cards/holders/:id ({ holder }). Stocke l'id mpc_... côté serveur à la création et envoie-le toujours comme holder_id à POST /v1/cards. Traite les ids comme des chaînes opaques (préfixe mpc_ puis hexadécimal).",
+      "Erreurs de POST /cards/holders : 400 MISSING_FIELDS, 400 INVALID_PHOTO, 400 INVALID_JSON, 401 MISSING_API_KEY / INVALID_API_KEY, 403 LIVE_NOT_ENABLED, 502 HOLDER_CREATION_FAILED, 502 CARD_SERVICE_ERROR / 503 CARD_PROVIDER_AUTH. Un titulaire en échec est conservé avec status 'failed' et failure_reason.",
+    ].join("\n"),
+    webhooks: [
+      "SUJET : les webhooks sortants Freda Pay Issuing.",
+      "Enregistrement : POST /dashboard/webhooks (session) ou POST /v1/webhooks (clé API), corps { url }, url doit commencer par https://. La réponse contient secret (whsec_...) affiché UNE SEULE FOIS - à stocker côté serveur immédiatement. GET relit l'URL active (sans le secret). DELETE désactive. POST .../rotate-secret génère un nouveau secret.",
+      "Événements : payment.succeeded, payment.failed (paiement par carte refusé ou expiré, data.failure_reason), payout.succeeded, payout.failed, card.created, card.failed, card.frozen, card.unfrozen, card.terminated, card.transaction, card.funded, card.withdrawn.",
+      "Chaque livraison POST vers votre URL contient : en-têtes X-Freda-Signature (sha256=<hmac hex>), X-Freda-Event-Id, X-Freda-Delivery-Attempt ; corps JSON { id, event, created_at, data }.",
+      "Vérification de signature : HMAC-SHA256 du corps BRUT (avant JSON.parse) avec votre secret whsec_..., comparé en temps constant (crypto.timingSafeEqual en Node.js) à la valeur après 'sha256=' dans l'en-tête.",
+      "Politique de retry : immédiat, puis +5s, puis +30s si la réponse n'est pas 2xx (ou timeout 8s) ; abandon après 3 tentatives. Traitez l'idempotence via data.id, car une même livraison peut arriver deux fois.",
+      "Montre-moi comment créer un serveur Express qui reçoit ces webhooks, vérifie la signature avec le corps brut (express.raw, pas express.json), et traite chaque type d'événement.",
+    ].join("\n"),
+    cards_create: [
+      "ENDPOINT : POST /dashboard/cards (session) ou POST /v1/cards (clé API sk_test_.../sk_live_...). Créer une carte virtuelle Visa/Mastercard, préfinancée depuis le Master Wallet (USD).",
+      "Corps JSON : reference (texte unique, requis) ; kind ('individual' par défaut, ou 'business') ; brand ('VISA' ou 'MASTERCARD') ; amount (nombre, en DOLLARS, requis) ; business_name (requis seulement si kind='business') ; holder_id (carte individuelle : id mpc_... du titulaire ; toujours l'envoyer ; sans lui, défaut = titulaire enrolled le plus récent du compte dans le mode de la clé).",
+      "Réponse 202 : { id, reference, kind, brand, status: 'pending', ... }. Le champ 'id' est LE SEUL identifiant nécessaire pour toutes les autres actions sur cette carte (voir, gérer, historique).",
+      "La création est ASYNCHRONE : interroge GET .../cards/:id toutes les 3 secondes jusqu'à ce que status devienne 'active' (masked_pan et balance remplis) ou 'failed' (failure_reason). Alternative : enregistrer un webhook et recevoir card.created / card.failed.",
+      "Restrictions : cartes USD, refusées pour certaines catégories de commerçants (MCC 4829, 5962, 5966, 6051, 6211, 7273, 7297, 7800, 7801, 7802, 7995) et dans certains pays sous sanctions (Iran, Corée du Nord, Cuba, Russie, Syrie, Venezuela, etc., liste complète dans la section Où la carte fonctionne).",
+      "Les ids de carte (card_ puis hexadécimal) sont des chaînes opaques : stocke-les côté serveur. Erreurs à gérer : 400 MISSING_FIELDS, 400 INVALID_BRAND, 400 BELOW_MINIMUM_BALANCE (Master Wallet insuffisant), 400 HOLDER_PROFILE_REQUIRED (aucun titulaire dans ce mode), 409 HOLDER_NOT_ENROLLED (titulaire pending/failed), 409 HOLDER_MODE_MISMATCH, 409 HOLDER_PROFILE_INCOMPLETE, 404 NOT_FOUND (holder_id inconnu), 400 CARD_LIMIT_REACHED (limite du plan Issuing atteinte), 403 ISSUING_LIVE_NOT_ENABLED, 502/503 CARD_SERVICE_ERROR / CARD_PROVIDER_AUTH / CARD_LIVE_NOT_CONFIGURED (service indisponible, rien n'est débité ou remboursé aussitôt). Spécification complète : https://api.fredapay.com/openapi.yaml.",
+    ].join("\n"),
+    cards_manage: [
+      "SUJET : gérer une carte déjà créée (Freda Pay Issuing). Chaque action existe sous /dashboard/cards/:id/... (session) et /v1/cards/:id/... (clé API).",
+      "GET .../cards/:id : détails (status, masked_pan, balance, brand, kind, created_at).",
+      "GET .../cards (liste) : accepte ?page=1&page_size=20, renvoie { cards, pagination: { page, page_size, has_more } }.",
+      "GET .../cards/:id/transactions : historique { transactions: [{ id, type, mode: 'CREDIT'|'DEBIT', amount, currency, merchant_name, merchant_city, date }], month_spend, currency }.",
+      "POST .../cards/:id/fund { amount, reference? } : ajoute des fonds (débite le Master Wallet : montant + frais de recharge) ; la réponse contient la carte plus fee et total_debited. POST .../cards/:id/withdraw { amount, reference? } : retire des fonds (recrédite le Master Wallet, moins les frais du plan) ; la réponse contient la carte plus fee et net_credited (erreur 400 INSUFFICIENT_CARD_BALANCE si le solde de la carte est insuffisant). reference (ou l'en-tête Idempotency-Key, 64 caractères max) rend l'opération rejouable : la même clé ne débite jamais deux fois (idempotent_replay: true), la même clé avec un autre montant renvoie 409 IDEMPOTENCY_MISMATCH. Toujours envoyer une reference unique par opération.",
+      "POST .../cards/:id/freeze et /unfreeze (sans corps) : bloque/débloque la carte. Une carte gelée renvoie 409 CARD_FROZEN sur fund/withdraw.",
+      "POST .../cards/:id/terminate (sans corps) : suppression définitive : la carte est fermée, le solde restant est reversé au Master Wallet, et elle disparaît de vos listes.",
+      "POST .../cards/:id/reveal (sans corps) : renvoie { number, cvv, expiry_month, expiry_year, holder_name }, le numéro complet et le CVV. Réservé au titulaire du compte pour ses propres achats - ne jamais l'afficher à un tiers ni le logger/stocker.",
+      "Montre-moi comment lister mes cartes avec pagination, afficher le solde et l'historique de chacune, et gérer les erreurs CARD_FROZEN et CARD_NOT_READY (carte encore 'pending').",
+    ].join("\n"),
+  };
+
+  const CARD_KEYS = ['cards_profile', 'cards_create', 'cards_manage'];
+
+  function buildPrompt(key){
+    if(key === 'global'){
+      const gatewayKeys = Object.keys(ENDPOINTS).filter(k => k !== 'auth' && CARD_KEYS.indexOf(k) === -1);
+      return COMMON + "\n\nENDPOINTS DU PAYMENT GATEWAY (à inclure seulement si je veux le Gateway) :\n\n" + gatewayKeys.map(k => ENDPOINTS[k]).join("\n\n")
+        + "\n\nENDPOINTS DE L'ISSUING DE CARTES (à inclure seulement si je veux les cartes) :\n\n" + CARD_KEYS.map(k => ENDPOINTS[k]).join("\n\n")
+        + "\n\nFlux Payment Gateway : 1) le serveur crée le paiement ; 2) le client est redirigé vers checkout_url ; 3) le serveur vérifie le statut jusqu'à 'succeeded' ; 4) la commande est livrée."
+        + "\nFlux Issuing de cartes : 1) le serveur crée le titulaire (POST /v1/cards/holders, avec sa pièce d'identité) et garde son id ; 2) le serveur crée la carte avec holder_id (POST /v1/cards) ; 3) il attend status 'active' (GET ou webhook) ; 4) il gère la carte (geler, recharger, historique)."
+        + "\n\nCommence par me demander quel service je veux (Gateway seul, cartes seules, ou les deux), puis pose-moi tes autres questions.";
+    }
+    return COMMON.replace(SERVICE_QUESTION, '') + "\n\n" + SERVICE_SCOPED + "\n\n" + ENDPOINTS[key] + "\n\nCommence par me poser tes questions, puis donne-moi le code complet pour cet endpoint.";
+  }
+
+  function askAI(target, key){
+    const prompt = buildPrompt(key);
+    if(target === 'copy'){ copyText(prompt, 'Prompt copié. Collez-le dans votre assistant IA.'); return; }
+    const url = target === 'claude'
+      ? 'https://claude.ai/new?q=' + encodeURIComponent(prompt)
+      : 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
+    // Copy too, in case the assistant does not prefill very long prompts.
+    copyText(prompt, null);
+    window.open(url, '_blank', 'noopener');
+  }
+
+  /* ===== Code tabs & copy ===== */
+  document.querySelectorAll('[data-tabs]').forEach(block => {
+    block.querySelectorAll('.code-tabs button[data-lang]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        document.querySelectorAll('[data-tabs]').forEach(b => {
+          b.querySelectorAll('.code-tabs button[data-lang]').forEach(x => x.classList.toggle('on', x.dataset.lang === lang));
+          b.querySelectorAll('pre[data-lang]').forEach(p => p.hidden = p.dataset.lang !== lang);
+        });
+      });
+    });
+  });
+
+  function copyCode(btn){
+    const block = btn.closest('.code-block');
+    const pre = block.querySelector('pre:not([hidden])');
+    copyText(pre.innerText, 'Code copié.');
+  }
+
+  function copyText(text, message){
+    const done = () => { if(message) showToast(message); };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    } else { fallbackCopy(text, done); }
+  }
+  function fallbackCopy(text, done){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    ta.remove(); done();
+  }
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ===== Active section in the nav ===== */
+  const navLinks = [...document.querySelectorAll('.sidenav a')];
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const match = navLinks.filter(a => ['#' + e.target.id, '/docs#' + e.target.id].includes(a.getAttribute('href'))); if(match.length) navLinks.forEach(a => a.classList.toggle('active', match.includes(a)));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.doc-section').forEach(s => observer.observe(s));
+  navLinks.forEach(a => a.addEventListener('click', () => document.getElementById('sidenav').classList.remove('open')));
+
+  /* ===== Static preview of the embed button ===== */
+  document.querySelectorAll('[data-freda-preview]').forEach(el => {
+    el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px;background:#ff4081;color:#fff;font:700 15px Inter,sans-serif;padding:13px 22px;border-radius:12px;box-shadow:0 8px 20px -8px rgba(255,64,129,.6)">'
+      + '<img src="/logo-64.png" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px">Payer avec Freda Pay Issuing</span>';
+  });
+  { const bu = document.getElementById('baseUrlInline'); if(bu) bu.textContent = API_BASE; }
+
+  /* ===== Key tester ===== */
+  const KT_ERRORS = {
+    MISSING_API_KEY: "La clé est vide ou mal formée. Elle doit ressembler à sk_test_… ou sk_live_…, sans espace.",
+    INVALID_API_KEY: "Clé inconnue ou révoquée. Créez une nouvelle clé dans le tableau de bord (Clés API).",
+    ACCOUNT_SUSPENDED: "Ce compte est suspendu. Écrivez à issuing@fredapay.com.",
+    LIVE_NOT_ENABLED: "Clé Live, mais le Live n'est pas encore activé sur ce compte. Terminez la vérification KYC/KYB.",
+    MERCHANT_NOT_FOUND: "Aucun compte ne correspond à cette clé.",
+    RATE_LIMITED: "Trop de tentatives. Réessayez dans une minute."
+  };
+  function ktBase(){ const el = document.getElementById('baseUrlInline'); return (el && el.textContent.trim()) || 'https://api.fredapay.com'; }
+  function ktEsc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  async function ktCall(method, path){
+    const key = document.getElementById('ktKey').value.trim();
+    const res = await fetch(ktBase() + path, { method, headers: { Authorization: 'Bearer ' + key } });
+    let data = null; try{ data = await res.json(); }catch(e){}
+    return { status: res.status, data };
+  }
+  async function ktCheck(){
+    const btn = document.getElementById('ktCheck'), list = document.getElementById('ktResult'), msg = document.getElementById('ktMsg');
+    document.getElementById('ktHookMsg').textContent = '';
+    if(!document.getElementById('ktKey').value.trim()){ msg.innerHTML = '<span class="kt-ko">Collez votre clé API.</span>'; list.hidden = true; return; }
+    btn.disabled = true; msg.textContent = 'Vérification…';
+    try{
+      const r = await ktCall('GET', '/v1/ping');
+      if(r.status === 200){
+        list.hidden = false;
+        list.innerHTML = r.data.checks.map(c => {
+          const cls = c.ok ? 'kt-ok' : (c.optional ? 'kt-warn' : 'kt-ko');
+          const ico = c.ok ? '✓' : (c.optional ? '!' : '✕');
+          return '<li><span class="kt-ico ' + cls + '">' + ico + '</span><span><strong>' + ktEsc(c.label) + '</strong><br><span style="color:var(--muted)">' + ktEsc(c.detail) + '</span></span></li>';
+        }).join('');
+        msg.innerHTML = r.data.ok ? '<span class="kt-ok"><strong>Votre clé est acceptée et votre compte est bien configuré.</strong></span>' : '<span class="kt-ko"><strong>La clé est acceptée, mais un point bloquant demande votre attention.</strong></span>';
+        document.getElementById('ktHook').disabled = !r.data.webhook.configured;
+      }else{
+        list.hidden = true;
+        const code = r.data && r.data.error && r.data.error.code;
+        msg.innerHTML = '<span class="kt-ko"><strong>Clé refusée' + (code ? ' (' + ktEsc(code) + ')' : '') + '.</strong></span><br>' + ktEsc(KT_ERRORS[code] || (r.data && r.data.error && r.data.error.message) || ('Erreur HTTP ' + r.status));
+        document.getElementById('ktHook').disabled = true;
+      }
+    }catch(e){
+      list.hidden = true;
+      msg.innerHTML = '<span class="kt-ko">Impossible de joindre l\'API. Vérifiez votre connexion.</span>';
+    }
+    btn.disabled = false;
+  }
+  async function ktWebhook(){
+    const btn = document.getElementById('ktHook'), msg = document.getElementById('ktHookMsg');
+    btn.disabled = true; msg.textContent = 'Envoi…';
+    try{
+      const r = await ktCall('POST', '/v1/webhooks/test');
+      if(r.status === 200 && r.data.sent) msg.innerHTML = '<span class="kt-ok"><strong>Webhook reçu par votre serveur</strong> (réponse HTTP ' + ktEsc(r.data.http_status) + ').</span> Vérifiez aussi que votre code valide la signature <code class="inline">X-Freda-Signature</code>.';
+      else if(r.status === 200) msg.innerHTML = '<span class="kt-ko"><strong>Votre serveur n\'a pas accepté le webhook</strong> : ' + ktEsc(r.data.reason || 'erreur') + '.</span> Il doit répondre 2xx en moins de 8 secondes.';
+      else{
+        const code = r.data && r.data.error && r.data.error.code;
+        msg.innerHTML = '<span class="kt-ko">' + ktEsc((r.data && r.data.error && r.data.error.message) || ('Erreur HTTP ' + r.status)) + '</span>';
+      }
+    }catch(e){ msg.innerHTML = '<span class="kt-ko">Impossible de joindre l\'API.</span>'; }
+    btn.disabled = false;
+  }
+</script>
+<script src="/analytics.js" defer></script>
+</body>
+</html>

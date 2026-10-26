@@ -81,3 +81,16 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 - https://issuing.fredapay.com/api-moncash-haiti
 - https://issuing.fredapay.com/api-natcash-haiti
 - https://issuing.fredapay.com/passerelle-de-paiement-haiti
+- https://issuing.fredapay.com/docs/creer-un-paiement
+- https://issuing.fredapay.com/docs/verifier-un-paiement
+- https://issuing.fredapay.com/docs/webhooks
+- https://issuing.fredapay.com/docs/tester-ma-cle-api
+- https://issuing.fredapay.com/docs/retraits-et-solde
+- https://issuing.fredapay.com/docs/titulaires-de-cartes
+- https://issuing.fredapay.com/docs/creer-une-carte
+- https://issuing.fredapay.com/docs/gerer-une-carte
+- https://issuing.fredapay.com/docs/restrictions-cartes
+- https://issuing.fredapay.com/docs/liens-et-bouton-de-paiement
+- https://issuing.fredapay.com/docs/plugins-et-sdks
+- https://issuing.fredapay.com/docs/limites-pagination-versions
+- https://issuing.fredapay.com/docs/erreurs-et-bonnes-pratiques
