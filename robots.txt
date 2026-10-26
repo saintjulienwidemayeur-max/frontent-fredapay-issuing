@@ -9,6 +9,7 @@ Disallow: /sign?
 Disallow: /sign.html
 Disallow: /admin
 Disallow: /admin.html
+Disallow: /v1/
 # Old names, in case an old link is still crawled
 Disallow: /freda-pay-sandbox
 Disallow: /freda-pay-checkout
@@ -38,6 +39,7 @@ Disallow: /sign?
 Disallow: /sign.html
 Disallow: /admin
 Disallow: /admin.html
+Disallow: /v1/
 # Old names, in case an old link is still crawled
 Disallow: /freda-pay-sandbox
 Disallow: /freda-pay-checkout
