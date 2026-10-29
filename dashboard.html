@@ -3330,11 +3330,11 @@
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
         let data = canvas.toDataURL('image/jpeg', 0.85);
         if(data.length > 700000) data = canvas.toDataURL('image/jpeg', 0.6);
-        if(data.length > 800000){ hint.textContent = 'Image trop lourde : choisissez une photo plus petite.'; return; }
+        if(data.length > 800000){ hint.textContent = 'Image trop lourde : choisissez une photo plus petite.'; showToast('Image trop lourde : choisissez une photo plus petite.', 'error'); return; }
         target.value = data;
         hint.textContent = 'Image prête (' + Math.round(data.length * 0.75 / 1024) + ' Ko).';
       };
-      img.onerror = () => { hint.textContent = "Ce fichier n'est pas une image valide."; };
+      img.onerror = () => { hint.textContent = "Ce fichier n'est pas une image lisible (les photos HEIC d'iPhone ne passent pas : choisissez un JPEG ou une capture d'écran)."; showToast("Image illisible : choisissez un JPEG, un PNG ou un WebP.", 'error'); };
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
@@ -3388,9 +3388,20 @@
         country,
       },
     };
-    const addressComplete = body.address.street && body.address.city && body.address.state && body.address.postalCode;
-    if(Object.values(body).some(v => (typeof v === 'string' && v === '') || v == null) || !addressComplete || !/^data:image\//.test(body.identity.imageUrl)){
-      showToast('Remplissez tous les champs du titulaire, y compris l\u2019adresse complète.', 'error');
+    // Say exactly what is missing instead of one vague sentence, and focus the field.
+    const checks = [
+      [body.firstName, 'hpFirstName', 'le prénom'], [body.lastName, 'hpLastName', 'le nom'], [body.email, 'hpEmail', "l'adresse e-mail"],
+      [body.dob, 'hpDob', 'la date de naissance'], [country, 'hpCountry', 'le pays (code à 2 lettres, ex. US)'],
+      [body.identity.type, 'hpIdType', "le type de pièce d'identité"], [body.identity.number, 'hpIdNumber', "le numéro de la pièce d'identité"],
+      [/^data:image\//.test(body.identity.imageUrl), 'hpIdFile', "l'image de la pièce d'identité (photo PNG, JPEG ou WebP ; si la photo vient d'un iPhone, choisissez-la en JPEG ou faites une capture d'écran)"],
+      [body.phoneShortCode, 'hpPhoneCode', "l'indicatif téléphonique (ex. +509)"], [body.phoneNumber, 'hpPhone', 'le numéro de téléphone'],
+      [body.address.street, 'hpStreet', "la rue de l'adresse"], [body.address.city, 'hpCity', "la ville de l'adresse"],
+      [body.address.state, 'hpState', "l'état ou le département de l'adresse"], [body.address.postalCode, 'hpPostalCode', "le code postal de l'adresse"],
+    ];
+    const missing = checks.find(([value]) => !value);
+    if(missing){
+      showToast('Il manque ' + missing[2] + '.', 'error');
+      const el = document.getElementById(missing[1]); if(el && el.focus) el.focus();
       return;
     }
     if(holderPhotoData) body.photoUrl = holderPhotoData;
