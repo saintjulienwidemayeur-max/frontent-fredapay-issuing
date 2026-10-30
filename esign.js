@@ -13,8 +13,10 @@
 (function (global) {
   'use strict';
 
-  var FONTS = ['Dancing Script', 'Great Vibes', 'Caveat', 'Allura', 'Sacramento', 'Pacifico'];
-  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Caveat:wght@600&family=Allura&family=Sacramento&family=Pacifico&display=swap';
+  var FONTS = ['Dancing Script', 'Great Vibes', 'Caveat', 'Allura', 'Sacramento', 'Pacifico', 'Alex Brush', 'Parisienne', 'Satisfy', 'Kaushan Script', 'Marck Script', 'Yellowtail', 'Homemade Apple', 'La Belle Aurore', 'Zeyada', 'Mr Dafoe', 'Herr Von Muellerhoff', 'Mrs Saint Delafield'];
+  var FONT_CSS = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Great+Vibes&family=Caveat:wght@600&family=Allura&family=Sacramento&family=Pacifico&family=Alex+Brush&family=Parisienne&family=Satisfy&family=Kaushan+Script&family=Marck+Script&family=Yellowtail&family=Homemade+Apple&family=La+Belle+Aurore&family=Zeyada&family=Mr+Dafoe&family=Herr+Von+Muellerhoff&family=Mrs+Saint+Delafield&display=swap';
+  /** Only Dancing Script and Caveat are loaded in bold; the others have a single weight (a forced bold would look smeared). */
+  function weightOf(f) { return f === 'Dancing Script' || f === 'Caveat' ? 600 : 400; }
   var INK = '#141c5a';
 
   var CSS = [
@@ -35,6 +37,16 @@
     '.esg-line{position:absolute;left:6%;right:6%;bottom:28%;border-bottom:1px solid #d8d8e0;pointer-events:none}',
     '.esg-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:.78rem;color:var(--muted,#666)}',
     '.esg-clear{border:0;background:none;color:var(--gold,#ff4081);font:inherit;font-weight:700;cursor:pointer;padding:4px 0}',
+    '.esg [hidden]{display:none !important}',
+    '.esg-fonts{max-height:230px;overflow-y:auto;padding-right:2px}',
+    '.esg-opts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0;font-size:.8rem;color:var(--muted,#666)}',
+    '.esg-sp{flex:1}',
+    '.esg-seg{display:inline-flex;border:1px solid var(--line,#e5e5e5);border-radius:9px;overflow:hidden}',
+    '.esg-seg button{border:0;background:#fff;color:inherit;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;border-right:1px solid var(--line,#e5e5e5)}',
+    '.esg-seg button:last-child{border-right:0}.esg-seg button.on{background:var(--gold-soft,rgba(255,64,129,.08));color:var(--gold,#ff4081)}',
+    '.esg-drop{display:grid;gap:4px;place-items:center;text-align:center;border:2px dashed var(--line,#d6d6dc);border-radius:14px;padding:28px 16px;cursor:pointer;font-size:.86rem;color:var(--muted,#666)}',
+    '.esg-drop strong{color:var(--gold,#ff4081);font-size:.95rem}.esg-drop input{display:none}',
+    '.esg-thr{flex:1;min-width:120px;accent-color:var(--gold,#ff4081)}',
     '.esg-doc{border:1px solid var(--line,#e5e5e5);border-radius:14px;background:#fff;padding:26px 28px;line-height:1.65;font-size:.95rem;color:#1a1a1f;overflow-wrap:anywhere}',
     '.esg-doc h1{font-size:1.5rem;margin:0 0 14px}.esg-doc h2{font-size:1.2rem;margin:18px 0 8px}.esg-doc h3{font-size:1.02rem;margin:14px 0 6px}',
     '.esg-doc p,.esg-doc div{margin:0 0 10px}.esg-doc ul,.esg-doc ol{margin:0 0 10px;padding-left:24px}.esg-doc li{margin-bottom:4px}',
@@ -74,7 +86,7 @@
   }
   function loadFont(family, text) {
     try {
-      if (document.fonts && document.fonts.load) return document.fonts.load('600 64px "' + family + '"', text || 'Abc').then(function () {}, function () {});
+      if (document.fonts && document.fonts.load) return document.fonts.load(weightOf(family) + ' 64px "' + family + '"', text || 'Abc').then(function () {}, function () {});
     } catch (e) { /* fall through */ }
     return Promise.resolve();
   }
@@ -109,27 +121,34 @@
   function createSignaturePad(root, opts) {
     injectOnce();
     opts = opts || {};
-    var mode = 'typed', font = FONTS[0], listeners = [];
+    var mode = 'typed', font = FONTS[0], sizeK = 1, penK = 1, listeners = [];
     root.innerHTML =
       '<div class="esg">' +
-      '<div class="esg-tabs"><button type="button" data-mode="typed" class="on">Taper mon nom</button><button type="button" data-mode="drawn">Dessiner à la main</button></div>' +
+      '<div class="esg-tabs"><button type="button" data-mode="typed" class="on">Taper mon nom</button><button type="button" data-mode="drawn">Dessiner à la main</button><button type="button" data-mode="uploaded">Importer une image</button></div>' +
       '<div data-pane="typed">' +
       '<input class="esg-name" type="text" maxlength="80" autocomplete="name" placeholder="Votre nom complet">' +
       '<div class="esg-fonts"></div>' +
+      '<div class="esg-opts"><span>Taille</span><div class="esg-seg" data-seg="size"><button type="button" data-v="0.8">Petite</button><button type="button" data-v="1" class="on">Moyenne</button><button type="button" data-v="1.2">Grande</button></div></div>' +
       '<div class="esg-box"><canvas class="esg-prev" width="520" height="150"></canvas><div class="esg-hint">Votre signature apparaîtra ici</div></div>' +
       '</div>' +
       '<div data-pane="drawn" hidden>' +
-      '<div class="esg-box"><canvas class="esg-pad" width="640" height="190"></canvas><div class="esg-line"></div><div class="esg-hint">Signez ici avec la souris ou le doigt</div></div>' +
-      '<div class="esg-row"><span>Dessinez votre signature dans le cadre.</span><button type="button" class="esg-clear">Effacer</button></div>' +
+      '<div class="esg-box"><canvas class="esg-pad" width="800" height="240"></canvas><div class="esg-line"></div><div class="esg-hint">Signez ici avec la souris, le doigt ou un stylet</div></div>' +
+      '<div class="esg-opts"><span>Trait</span><div class="esg-seg" data-seg="pen"><button type="button" data-v="0.7">Fin</button><button type="button" data-v="1" class="on">Moyen</button><button type="button" data-v="1.5">Épais</button></div>' +
+      '<span class="esg-sp"></span><button type="button" class="esg-clear esg-undo">Annuler le dernier trait</button><button type="button" class="esg-clear esg-wipe">Tout effacer</button></div>' +
+      '</div>' +
+      '<div data-pane="uploaded" hidden>' +
+      '<label class="esg-drop"><input type="file" accept="image/png,image/jpeg,image/webp" class="esg-file"><strong>Choisir une photo de ma signature</strong><span>Signez sur une feuille blanche avec un stylo foncé, puis prenez la photo bien éclairée, de face.</span></label>' +
+      '<div class="esg-box esg-upbox" hidden><canvas class="esg-up" width="800" height="240"></canvas><div class="esg-hint esg-uphint"></div></div>' +
+      '<div class="esg-opts esg-upopts" hidden><span>Netteté</span><input type="range" class="esg-thr" min="-40" max="40" value="0"><span class="esg-sp"></span><button type="button" class="esg-clear esg-upclear">Changer d’image</button></div>' +
       '</div></div>';
     var nameEl = root.querySelector('.esg-name');
     var fontsEl = root.querySelector('.esg-fonts');
     var prev = root.querySelector('.esg-prev');
     var padCv = root.querySelector('.esg-pad');
-    var typedPane = root.querySelector('[data-pane="typed"]');
-    var drawnPane = root.querySelector('[data-pane="drawn"]');
-    var typedHint = typedPane.querySelector('.esg-hint');
-    var drawnHint = drawnPane.querySelector('.esg-hint');
+    var upCv = root.querySelector('.esg-up');
+    var panes = { typed: root.querySelector('[data-pane="typed"]'), drawn: root.querySelector('[data-pane="drawn"]'), uploaded: root.querySelector('[data-pane="uploaded"]') };
+    var typedHint = panes.typed.querySelector('.esg-hint');
+    var drawnHint = panes.drawn.querySelector('.esg-hint');
     if (opts.name) nameEl.value = opts.name;
 
     function changed() { listeners.forEach(function (fn) { try { fn(); } catch (e) { /* ignore */ } }); }
@@ -151,49 +170,134 @@
       var text = nameEl.value.trim();
       typedHint.style.display = text ? 'none' : '';
       if (!text) return;
-      var size = 84;
+      var size = Math.round(84 * sizeK);
       ctx.fillStyle = INK; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
-      do { ctx.font = '600 ' + size + 'px "' + font + '", cursive'; size -= 4; } while (ctx.measureText(text).width > prev.width - 40 && size > 20);
+      do { ctx.font = weightOf(font) + ' ' + size + 'px "' + font + '", cursive'; size -= 4; } while (ctx.measureText(text).width > prev.width - 40 && size > 20);
       ctx.fillText(text, prev.width / 2, prev.height / 2);
     }
-    function renderTypedSoon() {
-      loadFont(font, nameEl.value).then(drawTyped);
-    }
+    function renderTypedSoon() { loadFont(font, nameEl.value).then(drawTyped); }
     nameEl.addEventListener('input', function () { refreshSamples(); renderTypedSoon(); changed(); });
     refreshSamples(); renderTypedSoon();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { drawTyped(); });
 
-    // ---- drawn
+    function bindSeg(name, onPick) {
+      var seg = root.querySelector('[data-seg="' + name + '"]');
+      [].forEach.call(seg.children, function (b) {
+        b.addEventListener('click', function () { [].forEach.call(seg.children, function (x) { x.classList.toggle('on', x === b); }); onPick(parseFloat(b.dataset.v)); });
+      });
+    }
+    bindSeg('size', function (v) { sizeK = v; drawTyped(); changed(); });
+
+    // ---- drawn: pressure/speed make the line thicker or thinner like a real pen; every stroke is kept so the last one can be undone
     var pctx = padCv.getContext('2d');
-    pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = INK; pctx.lineWidth = 3.4;
-    var drawing = false, last = null, hasInk = false;
+    pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = INK; pctx.fillStyle = INK;
+    var strokes = [], cur = null;
     function pos(e) {
       var r = padCv.getBoundingClientRect();
-      return { x: (e.clientX - r.left) * padCv.width / r.width, y: (e.clientY - r.top) * padCv.height / r.height };
+      return { x: (e.clientX - r.left) * padCv.width / r.width, y: (e.clientY - r.top) * padCv.height / r.height, t: e.timeStamp || Date.now() };
     }
+    function widthFor(p, last, e) {
+      var base = 3.6 * penK;
+      var target;
+      if (e && e.pointerType === 'pen' && e.pressure > 0) target = base * (0.45 + 1.1 * e.pressure);
+      else {
+        var dt = Math.max(1, p.t - last.t), v = Math.hypot(p.x - last.x, p.y - last.y) / dt; // px per ms
+        target = base * (1.25 - Math.min(v, 2.2) / 2.2 * 0.75);
+      }
+      return last.w == null ? target : last.w * 0.72 + target * 0.28;
+    }
+    function drawSegment(a, b, c) {
+      var m1 = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, m2 = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
+      pctx.lineWidth = b.w; pctx.beginPath(); pctx.moveTo(m1.x, m1.y); pctx.quadraticCurveTo(b.x, b.y, m2.x, m2.y); pctx.stroke();
+    }
+    function drawDot(p) { pctx.beginPath(); pctx.arc(p.x, p.y, Math.max(1.4, p.w / 2), 0, Math.PI * 2); pctx.fill(); }
+    function redraw() {
+      pctx.clearRect(0, 0, padCv.width, padCv.height);
+      strokes.forEach(function (s) {
+        if (s.length === 1) { drawDot(s[0]); return; }
+        for (var i = 1; i < s.length - 1; i++) drawSegment(s[i - 1], s[i], s[i + 1]);
+        if (s.length > 1) { var l = s[s.length - 1], q = s[s.length - 2]; pctx.lineWidth = l.w; pctx.beginPath(); pctx.moveTo((q.x + l.x) / 2, (q.y + l.y) / 2); pctx.lineTo(l.x, l.y); pctx.stroke(); }
+      });
+    }
+    function hasInk() { return strokes.length > 0; }
     padCv.addEventListener('pointerdown', function (e) {
-      e.preventDefault(); drawing = true; last = pos(e);
+      e.preventDefault();
       try { padCv.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-      pctx.beginPath(); pctx.arc(last.x, last.y, 1.7, 0, Math.PI * 2); pctx.fillStyle = INK; pctx.fill();
-      hasInk = true; drawnHint.style.display = 'none'; changed();
+      var p = pos(e); p.w = 3.6 * penK * (e.pointerType === 'pen' && e.pressure > 0 ? 0.45 + 1.1 * e.pressure : 1);
+      cur = [p]; strokes.push(cur); drawDot(p);
+      drawnHint.style.display = 'none'; changed();
     });
     padCv.addEventListener('pointermove', function (e) {
-      if (!drawing) return; e.preventDefault();
-      var p = pos(e), mid = { x: (last.x + p.x) / 2, y: (last.y + p.y) / 2 };
-      pctx.beginPath(); pctx.moveTo(last.x, last.y); pctx.quadraticCurveTo(last.x, last.y, mid.x, mid.y); pctx.stroke();
-      last = p;
+      if (!cur) return; e.preventDefault();
+      var evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null;
+      (evs && evs.length ? evs : [e]).forEach(function (ev) {
+        var last = cur[cur.length - 1], p = pos(ev);
+        if (Math.hypot(p.x - last.x, p.y - last.y) < 1.2) return;
+        p.w = widthFor(p, last, ev);
+        cur.push(p);
+        if (cur.length >= 3) drawSegment(cur[cur.length - 3], cur[cur.length - 2], cur[cur.length - 1]);
+      });
     });
-    function stop() { drawing = false; }
+    function stop() { if (cur && cur.length === 2) { pctx.lineWidth = cur[1].w; pctx.beginPath(); pctx.moveTo(cur[0].x, cur[0].y); pctx.lineTo(cur[1].x, cur[1].y); pctx.stroke(); } cur = null; changed(); }
     padCv.addEventListener('pointerup', stop); padCv.addEventListener('pointercancel', stop); padCv.addEventListener('pointerleave', stop);
-    root.querySelector('.esg-clear').addEventListener('click', function () {
-      pctx.clearRect(0, 0, padCv.width, padCv.height); hasInk = false; drawnHint.style.display = ''; changed();
+    bindSeg('pen', function (v) { penK = v; });
+    root.querySelector('.esg-undo').addEventListener('click', function () { strokes.pop(); redraw(); drawnHint.style.display = strokes.length ? 'none' : ''; changed(); });
+    function wipe() { strokes = []; cur = null; pctx.clearRect(0, 0, padCv.width, padCv.height); drawnHint.style.display = ''; changed(); }
+    root.querySelector('.esg-wipe').addEventListener('click', wipe);
+
+    // ---- imported picture: the ink of a photo of a hand-written signature becomes the mask (white paper disappears)
+    var fileEl = root.querySelector('.esg-file'), dropEl = root.querySelector('.esg-drop');
+    var upBox = root.querySelector('.esg-upbox'), upOpts = root.querySelector('.esg-upopts'), upHint = root.querySelector('.esg-uphint'), thrEl = root.querySelector('.esg-thr');
+    var srcImg = null, upInk = 0;
+    function renderUpload() {
+      if (!srcImg) return;
+      var W = upCv.width, H = upCv.height, c = upCv.getContext('2d');
+      var tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H;
+      var t = tmp.getContext('2d'); t.fillStyle = '#fff'; t.fillRect(0, 0, W, H);
+      var k = Math.min(W / srcImg.width, H / srcImg.height, 1.5), dw = srcImg.width * k, dh = srcImg.height * k;
+      t.drawImage(srcImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      var data = t.getImageData(0, 0, W, H), px = data.data, n = W * H, lum = new Uint8Array(n), hist = new Array(256).fill(0);
+      for (var i = 0; i < n; i++) { var l = Math.round(0.299 * px[i * 4] + 0.587 * px[i * 4 + 1] + 0.114 * px[i * 4 + 2]); lum[i] = l; hist[l]++; }
+      // Otsu threshold: the level that best separates dark ink from light paper
+      var sum = 0; for (var s = 0; s < 256; s++) sum += s * hist[s];
+      var wB = 0, sB = 0, best = 0, thr = 128;
+      for (var th = 0; th < 256; th++) { wB += hist[th]; if (!wB) continue; var wF = n - wB; if (!wF) break; sB += th * hist[th]; var mB = sB / wB, mF = (sum - sB) / wF, v = wB * wF * (mB - mF) * (mB - mF); if (v > best) { best = v; thr = th; } }
+      thr = Math.max(40, Math.min(215, thr + parseInt(thrEl.value, 10)));
+      var out = c.createImageData(W, H), o = out.data; upInk = 0;
+      var hex = INK.replace('#', ''), r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
+      for (var j = 0; j < n; j++) {
+        var a = Math.max(0, Math.min(255, Math.round((thr - lum[j]) * 255 / 40))); // soft edge over 40 levels
+        o[j * 4] = r; o[j * 4 + 1] = g; o[j * 4 + 2] = b; o[j * 4 + 3] = a; if (a > 40) upInk++;
+      }
+      c.clearRect(0, 0, W, H); c.putImageData(out, 0, 0);
+      var ratio = upInk / n;
+      upHint.style.display = ratio < 0.002 || ratio > 0.5 ? '' : 'none';
+      upHint.textContent = ratio > 0.5 ? 'L’image est trop sombre : refaites la photo sur du papier blanc, bien éclairé.' : (ratio < 0.002 ? 'Aucune signature détectée : rapprochez-vous ou augmentez la netteté.' : '');
+      changed();
+    }
+    fileEl.addEventListener('change', function () {
+      var f = fileEl.files && fileEl.files[0]; if (!f) return;
+      if (!/^image\/(png|jpe?g|webp)$/.test(f.type)) { alert('Choisissez une image PNG, JPEG ou WebP.'); fileEl.value = ''; return; }
+      if (f.size > 8 * 1024 * 1024) { alert('Image trop lourde (8 Mo maximum).'); fileEl.value = ''; return; }
+      var rd = new FileReader();
+      rd.onload = function () {
+        var im = new Image();
+        im.onload = function () { srcImg = im; dropEl.hidden = true; upBox.hidden = false; upOpts.hidden = false; thrEl.value = 0; renderUpload(); };
+        im.onerror = function () { alert('Cette image ne peut pas être lue. Essayez un JPEG ou un PNG.'); };
+        im.src = rd.result;
+      };
+      rd.readAsDataURL(f);
+    });
+    thrEl.addEventListener('input', renderUpload);
+    root.querySelector('.esg-upclear').addEventListener('click', function () {
+      srcImg = null; upInk = 0; fileEl.value = ''; dropEl.hidden = false; upBox.hidden = true; upOpts.hidden = true; upCv.getContext('2d').clearRect(0, 0, upCv.width, upCv.height); changed();
     });
 
     root.querySelectorAll('.esg-tabs button').forEach(function (b) {
       b.addEventListener('click', function () {
         mode = b.dataset.mode;
         root.querySelectorAll('.esg-tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
-        typedPane.hidden = mode !== 'typed'; drawnPane.hidden = mode !== 'drawn';
+        Object.keys(panes).forEach(function (k) { panes[k].hidden = mode !== k; });
         if (mode === 'typed') renderTypedSoon();
         changed();
       });
@@ -202,8 +306,8 @@
     return {
       onChange: function (fn) { listeners.push(fn); },
       setName: function (n) { if (!nameEl.value.trim()) { nameEl.value = n || ''; refreshSamples(); renderTypedSoon(); changed(); } },
-      isReady: function () { return mode === 'typed' ? nameEl.value.trim().length >= 2 : hasInk; },
-      clear: function () { nameEl.value = ''; refreshSamples(); drawTyped(); pctx.clearRect(0, 0, padCv.width, padCv.height); hasInk = false; drawnHint.style.display = ''; changed(); },
+      isReady: function () { return mode === 'typed' ? nameEl.value.trim().length >= 2 : mode === 'drawn' ? hasInk() : (!!srcImg && upInk > 60); },
+      clear: function () { nameEl.value = ''; refreshSamples(); drawTyped(); wipe(); },
       /** The signature as the server expects it, or null when nothing is signed yet. */
       getSignature: function () {
         if (mode === 'typed') {
@@ -215,9 +319,14 @@
             return img ? { type: 'typed', name: text, font: font, image: img } : null;
           });
         }
-        if (!hasInk) return Promise.resolve(null);
-        var img = maskFromCanvas(padCv);
-        return Promise.resolve(img ? { type: 'drawn', image: img } : null);
+        if (mode === 'drawn') {
+          if (!hasInk()) return Promise.resolve(null);
+          var d = maskFromCanvas(padCv);
+          return Promise.resolve(d ? { type: 'drawn', image: d } : null);
+        }
+        if (!srcImg) return Promise.resolve(null);
+        var u = maskFromCanvas(upCv);
+        return Promise.resolve(u ? { type: 'uploaded', image: u } : null);
       }
     };
   }
