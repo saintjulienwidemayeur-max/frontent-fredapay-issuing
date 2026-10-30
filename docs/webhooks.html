@@ -301,7 +301,8 @@
             <tr><td><code>card.funded</code></td><td>Une carte a été rechargée. Les données contiennent <code>amount</code>, <code>fee</code>, <code>total_debited</code> (montant + frais prélevés sur le Master Wallet) et le nouveau <code>balance</code>.</td></tr>
             <tr><td><code>card.withdrawn</code></td><td>Des fonds ont été retirés d'une carte vers le Master Wallet. Les données contiennent <code>amount</code>, <code>fee</code>, <code>net_credited</code> et le nouveau <code>balance</code>.</td></tr>
             <tr><td><code>webhook.test</code></td><td>Événement de test envoyé à votre demande (<a href="/docs/tester-ma-cle-api#tester">Tester ma clé API</a> ou <code>POST /v1/webhooks/test</code>).</td></tr>
-            <tr><td><code>card.transaction</code></td><td>Un mouvement a eu lieu sur une carte (achat, remboursement, refus). Les données contiennent <code>card_id</code>, <code>type</code>, <code>amount</code>, <code>merchant_name</code>, jamais le numéro de carte.</td></tr>
+            <tr><td><code>card.balance_updated</code></td><td>Le solde d'une carte a été corrigé (alignement avec le fournisseur ou correction). Les données contiennent <code>id</code>, <code>reference</code>, le nouveau <code>balance</code>, <code>previous_balance</code> et <code>reason</code> (<code>correction</code>, <code>partner_sync</code>, <code>aligned</code> ou <code>requested</code>).</td></tr>
+            <tr><td><code>card.transaction</code></td><td>Un mouvement a eu lieu sur une carte (achat, remboursement, refus). Les données contiennent <code>card_id</code>, <code>type</code>, <code>amount</code>, <code>card_balance</code> (le solde de la carte après le mouvement), <code>merchant_name</code>, jamais le numéro de carte.</td></tr>
           </table></div>
 
           <h3>Vérifier la signature</h3>
@@ -368,7 +369,7 @@
   </main>
 </div>
 
-<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 26 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
+<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 30 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
