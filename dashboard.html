@@ -372,6 +372,10 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         Vue d'ensemble
       </div>
+      <div class="sb-link" data-section="crypto" onclick="showSection('crypto')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 8h3.5a2 2 0 0 1 0 4H9.5m0 0H13a2 2 0 0 1 0 4H9.5M9.5 8v8M11 6.5V8m0 8v1.5"/></svg>
+        Wallet crypto
+      </div>
       <div class="sb-link" data-section="verification" onclick="showSection('verification')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
         Vérification
@@ -510,6 +514,12 @@
 
     <!-- ===== Overview ===== -->
     <section class="section active" id="sec-overview">
+      <div class="card" id="ovCryptoCard" style="margin-bottom:20px">
+        <div class="section-title" style="display:flex;align-items:center;gap:8px">Wallet crypto <span class="tag tag-green mode-tag" style="font-weight:700">USDT · USDC</span></div>
+        <div class="section-desc" style="margin-bottom:14px">Votre wallet crypto : recevez et envoyez des stablecoins, ou convertissez-les en USD vers votre Master Wallet.</div>
+        <div id="ovCryptoBody"><div class="sub">Chargement…</div></div>
+      </div>
+
       <div class="grid-stats">
         <div class="stat-card">
           <div class="label">Statut du compte</div>
@@ -549,12 +559,6 @@
             <button class="btn btn-sm" onclick="showSection('balances')">Gérer le wallet</button>
           </div>
         </div>
-      </div>
-
-      <div class="card" id="ovCryptoCard" style="margin-bottom:20px">
-        <div class="section-title" style="display:flex;align-items:center;gap:8px">Wallet crypto <span class="tag tag-green mode-tag" style="font-weight:700">USDT · USDC</span></div>
-        <div class="section-desc" style="margin-bottom:14px">Votre wallet crypto : recevez et envoyez des stablecoins, ou convertissez-les en USD vers votre Master Wallet.</div>
-        <div id="ovCryptoBody"><div class="sub">Chargement…</div></div>
       </div>
 
       <div class="card" id="ovVerifCard">
@@ -689,6 +693,27 @@
     </section>
 
     <!-- ===== Balances & Wallet ===== -->
+    <section class="section" id="sec-crypto">
+      <div class="card" style="margin-bottom:20px">
+        <div class="section-title" style="display:flex;align-items:center;gap:8px">Wallet crypto <span class="tag tag-green mode-tag" style="font-weight:700">USDT · USDC</span></div>
+        <div class="section-desc" style="margin-bottom:14px">Vos wallets crypto : recevez et envoyez des stablecoins, ou convertissez-les en USD vers votre Master Wallet.</div>
+        <div id="cryptoPageBalances" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px"></div>
+        <div id="cryptoPageActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+          <div class="section-title" style="margin:0">Mes wallets</div>
+          <button class="btn btn-sm" onclick="cryptoNewWallet()">+ Créer un nouveau wallet</button>
+        </div>
+        <div class="section-desc" style="margin-bottom:10px">Chaque wallet est une adresse de dépôt pour une cryptomonnaie sur une chaîne.</div>
+        <div id="cryptoPageWallets"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Historique crypto</div>
+        <div id="cryptoPageHistory" style="margin-top:8px"></div>
+      </div>
+    </section>
+
     <section class="section" id="sec-balances">
       <div class="bal-grid">
 
@@ -2090,7 +2115,7 @@
     document.getElementById('sec-'+view).classList.add('active');
     document.querySelectorAll('.sb-link').forEach(l => l.classList.toggle('active', l.dataset.section===name));
     const titles = {
-      overview:"Vue d'ensemble", verification:"Vérification", balances:"Soldes & Wallet",
+      overview:"Vue d'ensemble", crypto:"Wallet crypto", verification:"Vérification", balances:"Soldes & Wallet",
       contracts:"Contrats", payments:"Paiements", transactions:"Transactions", performance:"Performance du mois", links:"Liens de paiement", 'cards-business':"Cartes business", 'cards-individual':"Cartes utilisateurs", billing:"Facturation", settings:"Paramètres",
       keys:"Clés API", plugins:"Plugins et SDK", quickstart:"Démarrage rapide",
       testdata:"Données de test", webhooks:"Webhooks"
@@ -2103,6 +2128,7 @@
   /* ===== Data is loaded for the section being opened, not all at once at start ===== */
   const SECTION_LOADERS = {
     overview: () => [loadCryptoCard, refreshBalances, loadGatewaySummary, loadCards, loadIssuingAccessStatus, loadOverviewCardTransactions, loadPayments],
+    crypto: () => [loadCryptoPage],
     verification: () => [loadVerificationHistory],
     balances: () => [refreshBalances, loadWalletSummary, loadBankAccount, loadGatewaySummary],
     payments: () => [loadPayments, loadPayouts],
@@ -2119,7 +2145,7 @@
   };
   let loadedSections = new Set();
   const loadedAt = {};
-  const SECTION_REFRESHABLE = new Set(['payments','transactions','balances','cards-business','cards-individual','contracts','overview']); // data lists that change without the user (forms and settings are not reloaded)
+  const SECTION_REFRESHABLE = new Set(['crypto','payments','transactions','balances','cards-business','cards-individual','contracts','overview']); // data lists that change without the user (forms and settings are not reloaded)
   const SECTION_REFRESH_MS = 30000; // reopening a section after this delay reloads its data
   function ensureSection(name, force){
     const loaders = (SECTION_LOADERS[name] || (() => []))();
@@ -3040,9 +3066,40 @@
       const bal = ['USDT', 'USDC'].map(c => '<div style="flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)">' + cryptoImg(c, 18) + c + '</div><div class="bal-figure" style="margin:4px 0 0;font-size:1.4rem">' + cryptoFmt(d.balances[c]) + '</div></div>').join('');
       box.innerHTML = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">' + bal + '</div>' +
         (hasWallet
-          ? '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" onclick="openCryptoModal(\'receive\')">Recevoir</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'send\')">Envoyer</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'convert\')">Convertir en USD</button><button class="btn btn-ghost btn-sm" onclick="openCryptoModal(\'history\')">Historique</button></div>'
+          ? '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" onclick="openCryptoModal(\'receive\')">Recevoir</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'send\')">Envoyer</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'convert\')">Convertir en USD</button><button class="btn btn-ghost btn-sm" onclick="showSection(\'crypto\')">Mes wallets</button></div>'
           : '<button class="btn btn-sm" onclick="openCryptoModal(\'receive\')">Créer mon wallet crypto</button>');
     }catch(err){ /* the modal reports errors when opened */ }
+  }
+
+  /* Crypto page: every wallet (address) the merchant has created, and a way to create new ones */
+  async function loadCryptoPage(){
+    try{
+      const d = await cryptoReload();
+      const bal = document.getElementById('cryptoPageBalances'); if(!bal) return;
+      if(d.enabled === false){
+        bal.innerHTML = '<div class="sub">' + esc(d.message || 'Disponible en mode Sandbox pour le moment.') + '</div>';
+        document.getElementById('cryptoPageActions').innerHTML = '';
+        document.getElementById('cryptoPageWallets').innerHTML = '';
+        document.getElementById('cryptoPageHistory').innerHTML = '';
+        return;
+      }
+      bal.innerHTML = ['USDT', 'USDC'].map(c => '<div style="flex:1;min-width:170px;border:1px solid var(--line);border-radius:12px;padding:10px 14px"><div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)">' + cryptoImg(c, 18) + c + '</div><div class="bal-figure" style="margin:4px 0 0;font-size:1.5rem">' + cryptoFmt(d.balances[c]) + '</div></div>').join('');
+      document.getElementById('cryptoPageActions').innerHTML = '<button class="btn btn-sm" onclick="cryptoNewWallet()">Recevoir</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'send\')">Envoyer</button><button class="btn btn-sm btn-ghost" onclick="openCryptoModal(\'convert\')">Convertir en USD</button>';
+      document.getElementById('cryptoPageWallets').innerHTML = d.addresses.length
+        ? d.addresses.map(a => '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)"><div style="position:relative;width:42px;height:42px;flex-shrink:0">' + cryptoImg(a.coin, 38) + '<span style="position:absolute;right:-3px;bottom:-3px;background:#fff;border-radius:50%;line-height:0;border:2px solid #fff">' + cryptoImg(a.chain, 18) + '</span></div><div style="flex:1;min-width:0"><div style="font-weight:700">' + esc(a.coin) + ' · ' + esc(a.chain_label) + '</div><div style="font-family:ui-monospace,Menlo,monospace;font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis">' + esc(a.address) + '</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-sm btn-ghost" onclick="cryptoCopyAddr(\'' + esc(a.address) + '\')">Copier</button><button class="btn btn-sm" onclick="cryptoShowWallet(\'' + esc(a.id) + '\')">Recevoir</button></div></div>').join('')
+        : '<div class="sub" style="padding:10px 0">Vous n\'avez pas encore de wallet crypto. Créez-en un pour recevoir des USDT ou des USDC.</div>';
+      document.getElementById('cryptoPageHistory').innerHTML = cryptoHistoryHtml(d);
+    }catch(err){ showToast(err.message || 'Impossible de charger le wallet crypto.', 'error'); }
+  }
+  function cryptoCopyAddr(addr){
+    const fail = () => showToast('Copie impossible : sélectionnez l\'adresse à la main.', 'error');
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(addr).then(() => showToast('Adresse copiée', 'success'), fail); else fail();
+  }
+  async function cryptoNewWallet(){ await openCryptoModal('receive'); }
+  async function cryptoShowWallet(id){
+    await openCryptoModal('receive');
+    const a = (cryptoState.data && cryptoState.data.addresses || []).find(x => x.id === id);
+    if(a){ cryptoState.coin = a.coin; cryptoState.address = a; renderCrypto(); }
   }
 
   async function openCryptoModal(tab){
@@ -3059,7 +3116,7 @@
       renderCrypto();
     }catch(err){ closeCryptoModal(); showToast(err.message || 'Impossible de charger le portefeuille crypto.', 'error'); }
   }
-  function closeCryptoModal(){ document.getElementById('cryptoModal').classList.remove('open'); loadCryptoCard(); }
+  function closeCryptoModal(){ document.getElementById('cryptoModal').classList.remove('open'); loadCryptoCard(); if(currentSection === 'crypto') loadCryptoPage(); }
   function cryptoTab(t){ cryptoState.tab = t; cryptoState.address = null; renderCrypto(); }
   function cryptoSetCoin(c){ cryptoState.coin = c; cryptoState.address = null; renderCrypto(); }
 
@@ -4367,7 +4424,7 @@
   }
 
   /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
-  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
   const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
   function lockViewerControls(){
     if(currentUserRole !== 'viewer') return;
@@ -4419,7 +4476,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
