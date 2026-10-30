@@ -1866,7 +1866,7 @@
       const d = await apiFetch('/dashboard/cards/transactions', { method: 'GET' });
       const table = document.getElementById('ovCardTxTable');
       const empty = document.getElementById('ovCardTxEmpty');
-      if(!d.transactions.length){ table.innerHTML = ''; empty.hidden = false; return; }
+      if(!(d.transactions || []).length){ table.innerHTML = ''; empty.hidden = false; return; }
       empty.hidden = true;
       table.innerHTML = '<tr><th>Carte</th><th>Type</th><th>Montant</th><th>Marchand</th><th>Date</th></tr>' +
         d.transactions.map(t => `<tr>
@@ -2730,8 +2730,8 @@
   }
 
   /* ===== Balances ===== */
-  function fmtHTG(n){ return n.toLocaleString('fr-FR') + ' HTG'; }
-  function fmtUSD(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' $'; }
+  function fmtHTG(n){ return (Number(n) || 0).toLocaleString('fr-FR') + ' HTG'; }
+  function fmtUSD(n){ return (Number(n) || 0).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' $'; }
 
   function toggleForm(id){
     if(id === 'withdrawForm') setTimeout(onWithdrawMethodChange, 0);
@@ -3455,6 +3455,7 @@
       document.getElementById('cardAmount').value = '';
       document.getElementById('cardBusinessName').value = '';
       loadCards();
+      refreshBalances(); // the prefunding is debited from the Master Wallet right away
       pollCardStatus(card.id);
     }catch(err){
       showToast('Échec : ' + err.message, 'error');
@@ -3463,7 +3464,7 @@
 
   async function pollCardStatus(cardId, attempt){
     attempt = attempt || 0;
-    if(attempt > 40) return;
+    if(attempt > 40){ showToast('La carte est encore en cours de création. Elle apparaîtra dans la liste dès qu\'elle sera prête.', 'info'); loadCards(); return; }
     try{
       const card = await apiFetch('/dashboard/cards/' + cardId, { method: 'GET' });
       if(card.status === 'pending'){
@@ -3472,7 +3473,7 @@
       }
       loadCards();
       await refreshBalances();
-      if(card.status === 'active') showToast('Carte ' + card.brand + ' active : ' + card.masked_pan, 'success');
+      if(card.status === 'active') showToast('Carte ' + (card.brand || '') + ' active' + (card.masked_pan ? ' : ' + card.masked_pan : ''), 'success');
       else showToast('La création de la carte a échoué : ' + (card.failure_reason || 'raison inconnue.'), 'error');
     }catch(err){
       setTimeout(() => pollCardStatus(cardId, attempt + 1), 4000);
@@ -3488,7 +3489,9 @@
         page++;
       }while(data.pagination && data.pagination.has_more && page <= 20);
       renderCardsList(all);
-    }catch(err){ /* silent */ }
+    }catch(err){
+      showToast('Impossible de charger les cartes : ' + err.message, 'error');
+    }
   }
 
   function updateCardsOverviewSummary(cardsArr){
@@ -3855,6 +3858,7 @@
       const labels = { fund:'Fonds ajoutés.', withdraw:'Retrait effectué.', freeze:'Carte gelée.', unfreeze:'Carte dégelée.', terminate:'Carte supprimée.' };
       showToast(isSimulate ? 'Transaction simulée, actualisation…' : (labels[action] || 'Action effectuée.'), 'success');
       if(action === 'terminate') closeCardDetail();
+      loadedSections.delete('balances'); loadedSections.delete('overview'); // wallet figures, movements and card totals changed: reload them when those pages are opened
       await loadCards();
       if(document.getElementById('cardDetailModal').classList.contains('open') && currentCardsById[cardId]){
         openCardDetail(cardId); // refresh the open modal with the new state (also reloads transactions)
