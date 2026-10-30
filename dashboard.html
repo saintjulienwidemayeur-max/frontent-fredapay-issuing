@@ -3672,20 +3672,23 @@
         list.innerHTML = '<p style="font-size:.82rem;color:var(--muted)">Aucune transaction pour le moment.</p>';
         return;
       }
-      list.innerHTML = data.transactions.map(t => {
+      const rows = data.transactions.map(t => {
         const isCredit = t.mode === 'CREDIT';
-        const sign = isCredit ? '+' : '−';
-        const color = isCredit ? 'var(--green,#16a34a)' : 'var(--ink)';
-        const label = esc(t.merchant_name || (t.type || 'Transaction'));
+        const failed = /DECLIN|FAIL|REJECT/i.test(String(t.status || '')) || t.type === 'DECLINE';
+        const sign = failed ? '' : (isCredit ? '+' : '−');
+        const color = failed ? '#b91c1c' : (isCredit ? 'var(--green,#16a34a)' : 'var(--ink)');
+        const what = t.label || t.type || 'Transaction';
+        const label = esc(t.merchant_name ? what + ' · ' + t.merchant_name : what);
         return `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:.83rem">
             <div>
               <div style="font-weight:600">${label}</div>
-              <div style="color:var(--muted);font-size:.74rem">${t.date ? fmtDate(t.date) : ''}${t.merchant_city ? ' · ' + esc(t.merchant_city) : ''}</div>
+              <div style="color:var(--muted);font-size:.74rem">${t.date ? fmtDate(t.date) : ''}${t.merchant_city ? ' · ' + esc(t.merchant_city) : ''}${failed ? ' · non débité' : ''}</div>
             </div>
-            <div style="font-weight:700;color:${color}">${sign}${Math.abs(t.amount).toLocaleString('fr-FR',{minimumFractionDigits:2})} $</div>
+            <div style="font-weight:700;color:${color};${failed ? 'text-decoration:line-through;opacity:.7' : ''}">${sign}${Math.abs(t.amount).toLocaleString('fr-FR',{minimumFractionDigits:2})} $</div>
           </div>`;
       }).join('');
+      list.innerHTML = rows + (data.complete === false ? '<p style="font-size:.74rem;color:var(--muted);margin-top:8px">Liste affichée à partir des notifications reçues. Elle sera complétée dès que le service de cartes répondra.</p>' : '');
     }catch(err){
       list.innerHTML = '<p style="font-size:.82rem;color:var(--red)">Impossible de charger les transactions.</p>';
     }
