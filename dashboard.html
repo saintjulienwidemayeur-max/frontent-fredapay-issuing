@@ -349,6 +349,7 @@
   .hint-text{font-size:.78rem;color:var(--muted);margin:2px 0 12px}
   .tag-info{background:#eef2ff;color:#3730a3}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
 </head>
 <body>
 
@@ -1422,7 +1423,46 @@
         <div class="picker-icon" style="background:#fff;border:1px solid var(--line)"><img src="https://play-lh.googleusercontent.com/VSzs3X7r3DNthDl1jvhmtrAY7p1jX2LeX3i7l9uZsolwVU85CapsmKYPdPzkp4ZQrEKf6nsHmuk9qUbbZWKp2bc=s256" alt="Natcash" style="width:100%;height:100%;object-fit:cover;border-radius:9px"></div>
         <div><div class="picker-name">Natcash</div><div class="picker-sub">Crédité automatiquement</div></div>
       </div>
+      <div class="picker-card" onclick="openCryptoModal()">
+        <div class="picker-icon" style="background:#fff;border:1px solid var(--line);padding:5px"><img src="/images/crypto/usdt.svg" alt="USDT" style="width:100%;height:100%;object-fit:contain"></div>
+        <div><div class="picker-name">Crypto (USDT / USDC)</div><div class="picker-sub">Converti en USD et crédité automatiquement</div></div>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ===== Crypto wallet modal: stablecoin deposit, converted to USD and credited to the Master Wallet ===== -->
+<div class="modal-overlay" id="cryptoModal" onclick="if(event.target===this) closeCryptoModal()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-head">
+      <h3 id="cryptoTitle">Dépôt crypto</h3>
+      <button class="modal-close" onclick="closeCryptoModal()">&times;</button>
+    </div>
+    <div id="cryptoStepPick">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Envoyez un stablecoin : il est converti en USD et crédité sur votre Master Wallet, sans validation manuelle.</p>
+      <div id="cryptoCoins" style="display:flex;gap:8px;margin-bottom:12px"></div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px">Choisir la chaîne</div>
+      <div class="picker-grid" id="cryptoChains"></div>
+      <div id="cryptoPickNote" style="font-size:.78rem;color:var(--muted);margin-top:12px"></div>
+    </div>
+    <div id="cryptoStepAddr" style="display:none">
+      <button class="btn btn-sm btn-outline" onclick="cryptoBack()" style="margin-bottom:12px">&larr; Changer de chaîne</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="position:relative;width:44px;height:44px;flex-shrink:0"><img id="cryptoCoinLogo" alt="" style="width:40px;height:40px"><img id="cryptoChainLogo" alt="" style="position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #fff"></div>
+        <div><div id="cryptoAddrTitle" style="font-weight:800"></div><div id="cryptoAddrSub" style="font-size:.78rem;color:var(--muted)"></div></div>
+      </div>
+      <div style="text-align:center;margin-bottom:12px"><div id="cryptoQr" style="display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px"></div></div>
+      <div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:4px">Adresse de dépôt</div>
+      <div id="cryptoAddress" style="font-family:ui-monospace,Menlo,monospace;font-size:.8rem;word-break:break-all;background:var(--bg,#f6f6f8);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px"></div>
+      <button class="btn" style="width:100%;margin-bottom:12px" onclick="cryptoCopy()">Copier l'adresse</button>
+      <div id="cryptoWarn" style="background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:.78rem;margin-bottom:12px"></div>
+      <div style="border:1px solid var(--line);border-radius:12px;padding:12px">
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:6px">Combien allez-vous recevoir ?</div>
+        <div style="display:flex;gap:8px;align-items:center"><input id="cryptoQuoteAmount" type="number" min="0" step="any" value="100" oninput="cryptoQuote()" style="flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px"><span id="cryptoQuoteCoin" style="font-weight:700;font-size:.85rem"></span></div>
+        <div id="cryptoQuoteOut" style="font-size:.82rem;color:var(--muted);margin-top:8px"></div>
+      </div>
+    </div>
+    <div id="cryptoHistory" style="margin-top:16px"></div>
   </div>
 </div>
 
@@ -2994,6 +3034,94 @@
     document.getElementById(method+'Modal').classList.remove('open');
   }
 
+  /* ===== Crypto wallet: stablecoin deposit address, converted to USD by the server and credited to the Master Wallet ===== */
+  const CRYPTO_LOGOS = { USDT: '/images/crypto/usdt.svg', USDC: '/images/crypto/usdc.svg', solana: '/images/crypto/sol.svg', ethereum: '/images/crypto/eth.svg', polygon: '/images/crypto/matic.svg', bsc: '/images/crypto/bnb.svg', tron: '/images/crypto/trx.svg' };
+  let cryptoState = { data: null, coin: 'USDT', current: null };
+  let cryptoQuoteTimer = null;
+
+  async function openCryptoModal(){
+    closeTopupPicker();
+    document.getElementById('cryptoModal').classList.add('open');
+    cryptoBack();
+    try{
+      cryptoState.data = await apiFetch('/dashboard/crypto', { method: 'GET' });
+      if(cryptoState.data.enabled === false){
+        closeCryptoModal();
+        showToast(cryptoState.data.message || 'Le portefeuille crypto est disponible en mode Sandbox pour le moment.', 'info');
+        return;
+      }
+      renderCryptoPick();
+      renderCryptoHistory();
+    }catch(err){ showToast(err.message || 'Impossible de charger le portefeuille crypto.', 'error'); }
+  }
+  function closeCryptoModal(){ document.getElementById('cryptoModal').classList.remove('open'); }
+  function cryptoBack(){
+    document.getElementById('cryptoStepPick').style.display = '';
+    document.getElementById('cryptoStepAddr').style.display = 'none';
+    document.getElementById('cryptoTitle').textContent = 'Dépôt crypto';
+  }
+  function renderCryptoPick(){
+    const d = cryptoState.data; if(!d) return;
+    document.getElementById('cryptoCoins').innerHTML = d.coins.map(c =>
+      '<button type="button" class="btn btn-sm ' + (c === cryptoState.coin ? '' : 'btn-outline') + '" style="display:flex;align-items:center;gap:6px" onclick="cryptoSetCoin(\'' + esc(c) + '\')"><img src="' + CRYPTO_LOGOS[c] + '" alt="" style="width:18px;height:18px">' + esc(c) + '</button>').join('');
+    document.getElementById('cryptoChains').innerHTML = d.chains.filter(ch => ch.coins.includes(cryptoState.coin)).map(ch =>
+      '<div class="picker-card" onclick="cryptoPickChain(\'' + esc(ch.key) + '\')"><div class="picker-icon" style="background:#fff;border:1px solid var(--line);padding:6px"><img src="' + CRYPTO_LOGOS[ch.key] + '" alt="' + esc(ch.label) + '" style="width:100%;height:100%;object-fit:contain"></div><div><div class="picker-name">' + esc(ch.label) + '</div><div class="picker-sub">Arrive en quelques minutes</div></div></div>').join('');
+    document.getElementById('cryptoPickNote').textContent = 'Frais de conversion : ' + d.fees.conversion_pct + ' %. Dépôt minimum : ' + d.fees.min_deposit_usd + ' $. Assurez-vous de choisir la bonne chaîne, sinon vos fonds pourraient être perdus.';
+  }
+  function cryptoSetCoin(c){ cryptoState.coin = c; renderCryptoPick(); }
+  async function cryptoPickChain(chain){
+    const d = cryptoState.data;
+    try{
+      const a = await apiFetch('/dashboard/crypto/addresses', { method: 'POST', body: { chain: chain, coin: cryptoState.coin } });
+      cryptoState.current = a;
+      document.getElementById('cryptoStepPick').style.display = 'none';
+      document.getElementById('cryptoStepAddr').style.display = '';
+      document.getElementById('cryptoTitle').textContent = 'Dépôt ' + a.coin;
+      document.getElementById('cryptoCoinLogo').src = CRYPTO_LOGOS[a.coin];
+      document.getElementById('cryptoChainLogo').src = CRYPTO_LOGOS[a.chain];
+      document.getElementById('cryptoAddrTitle').textContent = a.coin + ' · ' + a.chain_label;
+      document.getElementById('cryptoAddrSub').textContent = 'Converti en USD et crédité sur le Master Wallet';
+      document.getElementById('cryptoAddress').textContent = a.address;
+      document.getElementById('cryptoWarn').textContent = 'Déposez uniquement du ' + a.coin + ' sur la chaîne ' + a.chain_label + ' à cette adresse. L\'envoi de tout autre actif ou sur une autre chaîne sera perdu.';
+      document.getElementById('cryptoQuoteCoin').textContent = a.coin;
+      cryptoRenderQr(a.address);
+      cryptoQuote();
+    }catch(err){ showToast(err.message || 'Adresse indisponible pour le moment.', 'error'); }
+  }
+  function cryptoRenderQr(text){
+    const box = document.getElementById('cryptoQr'); box.innerHTML = '';
+    try{
+      if(typeof qrcode !== 'function') throw new Error('no qr');
+      const q = qrcode(0, 'M'); q.addData(text); q.make();
+      box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0 });
+    }catch(e){ box.style.display = 'none'; return; }
+    box.style.display = 'inline-block';
+  }
+  function cryptoCopy(){
+    const a = cryptoState.current; if(!a) return;
+    const done = () => showToast('Adresse copiée', 'success');
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(a.address).then(done, () => showToast('Copie impossible : sélectionnez l\'adresse à la main.', 'error'));
+    else showToast('Copie impossible : sélectionnez l\'adresse à la main.', 'error');
+  }
+  function cryptoQuote(){
+    clearTimeout(cryptoQuoteTimer);
+    const out = document.getElementById('cryptoQuoteOut');
+    const amt = parseFloat(document.getElementById('cryptoQuoteAmount').value);
+    if(!(amt > 0)){ out.textContent = ''; return; }
+    cryptoQuoteTimer = setTimeout(async () => {
+      try{
+        const q = await apiFetch('/dashboard/crypto/quote?amount=' + encodeURIComponent(amt), { method: 'GET' });
+        out.innerHTML = 'Frais de service (' + esc(q.fee_pct) + ' %) : <b>' + fmtUSDFromApi(q.fee_usd) + '</b><br>Crédité sur le Master Wallet : <b>' + fmtUSDFromApi(q.credited_usd) + '</b>';
+      }catch(err){ out.textContent = ''; }
+    }, 300);
+  }
+  function renderCryptoHistory(){
+    const d = cryptoState.data; const box = document.getElementById('cryptoHistory');
+    if(!d || !d.deposits.length){ box.innerHTML = ''; return; }
+    box.innerHTML = '<div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px">Derniers dépôts crypto</div>' + d.deposits.slice(0, 5).map(x =>
+      '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.82rem"><img src="' + (CRYPTO_LOGOS[x.coin] || '') + '" alt="" style="width:18px;height:18px"><span style="flex:1">' + esc(x.coin) + ' · ' + esc(x.chain) + '<br><span style="color:var(--muted);font-size:.74rem">' + esc(new Date(x.created_at).toLocaleString('fr-FR')) + '</span></span><b>+ ' + fmtUSDFromApi(x.credited_usd) + '</b></div>').join('');
+  }
+
   function updateTopupPreview(method){
     const amt = parseFloat(document.getElementById(method+'Amount').value);
     const el = document.getElementById(method+'Preview');
@@ -4157,7 +4285,7 @@
   }
 
   /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
-  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
   const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
   function lockViewerControls(){
     if(currentUserRole !== 'viewer') return;
@@ -4209,7 +4337,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoBack','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoQuote','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
