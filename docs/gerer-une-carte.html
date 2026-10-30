@@ -279,7 +279,7 @@
         <tr><td>Retirer des fonds</td><td><span class="verb post">POST</span> <code>/cards/:id/withdraw</code></td><td><code>{ "amount": 5, "reference": "WD-001" }</code>. Recrédite le Master Wallet (montant moins les frais de retrait). La réponse ajoute <code>fee</code> et <code>net_credited</code>. Même règle d'idempotence que <code>/fund</code>. Solde insuffisant : <code>400 INSUFFICIENT_CARD_BALANCE</code>.</td></tr>
         <tr><td>Geler</td><td><span class="verb post">POST</span> <code>/cards/:id/freeze</code></td><td>Bloque tout achat <strong>et</strong> tout ajout/retrait de fonds.</td></tr>
         <tr><td>Dégeler</td><td><span class="verb post">POST</span> <code>/cards/:id/unfreeze</code></td><td>Réactive la carte.</td></tr>
-        <tr><td>Fermer définitivement</td><td><span class="verb post">POST</span> <code>/cards/:id/terminate</code></td><td>Irréversible. La carte est fermée, son solde restant est reversé au Master Wallet, puis son statut passe à <code>terminated</code>.</td></tr>
+        <tr><td>Fermer définitivement</td><td><span class="verb post">POST</span> <code>/cards/:id/terminate</code></td><td>Irréversible. La carte est fermée, son solde restant est reversé au Master Wallet après des frais de fermeture de 0,50 $ (jamais plus que ce qui reste sur la carte), puis son statut passe à <code>terminated</code>. La réponse et le webhook <code>card.terminated</code> donnent <code>refunded_usd</code> (le montant reversé) et <code>closure_fee_usd</code> (les frais).</td></tr>
         <tr><td>Simuler une transaction <span class="tag" style="font-size:.62rem;vertical-align:middle">SANDBOX</span></td><td><span class="verb post">POST</span> <code>/cards/:id/simulate-transaction</code></td><td><code>{ "amount": 12.5, "type": "DEBIT" }</code> (ou <code>CREDIT</code>). Pour tester l'historique. Refusé en mode Live.</td></tr>
         <tr><td>Voir le numéro complet</td><td><span class="verb post">POST</span> <code>/cards/:id/reveal</code></td><td>Réponse : <code>{ number, cvv, expiry_month, expiry_year, holder_name }</code>. Dans le tableau de bord, seules les cartes business ont un bouton Détails : les détails d'une carte individuelle ne sont jamais visibles par vos équipes. Par l'API, cette route sert uniquement à afficher la carte à son titulaire ; ne stockez ni ne journalisez jamais le numéro ni le CVV.</td></tr>
       </table></div>
@@ -329,7 +329,7 @@
   </main>
 </div>
 
-<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 26 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
+<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 30 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -432,7 +432,7 @@
       "GET .../cards/:id/transactions : historique { transactions: [{ id, type, mode: 'CREDIT'|'DEBIT', amount, currency, merchant_name, merchant_city, date }], month_spend, currency }.",
       "POST .../cards/:id/fund { amount, reference? } : ajoute des fonds (débite le Master Wallet : montant + frais de recharge) ; la réponse contient la carte plus fee et total_debited. POST .../cards/:id/withdraw { amount, reference? } : retire des fonds (recrédite le Master Wallet, moins les frais du plan) ; la réponse contient la carte plus fee et net_credited (erreur 400 INSUFFICIENT_CARD_BALANCE si le solde de la carte est insuffisant). reference (ou l'en-tête Idempotency-Key, 64 caractères max) rend l'opération rejouable : la même clé ne débite jamais deux fois (idempotent_replay: true), la même clé avec un autre montant renvoie 409 IDEMPOTENCY_MISMATCH. Toujours envoyer une reference unique par opération.",
       "POST .../cards/:id/freeze et /unfreeze (sans corps) : bloque/débloque la carte. Une carte gelée renvoie 409 CARD_FROZEN sur fund/withdraw.",
-      "POST .../cards/:id/terminate (sans corps) : suppression définitive : la carte est fermée, le solde restant est reversé au Master Wallet, et elle disparaît de vos listes.",
+      "POST .../cards/:id/terminate (sans corps) : suppression définitive : la carte est fermée, le solde restant est reversé au Master Wallet après 0,50 $ de frais de fermeture (refunded_usd et closure_fee_usd dans la réponse), et elle disparaît de vos listes.",
       "POST .../cards/:id/reveal (sans corps) : renvoie { number, cvv, expiry_month, expiry_year, holder_name }, le numéro complet et le CVV. Réservé au titulaire du compte pour ses propres achats - ne jamais l'afficher à un tiers ni le logger/stocker.",
       "Montre-moi comment lister mes cartes avec pagination, afficher le solde et l'historique de chacune, et gérer les erreurs CARD_FROZEN et CARD_NOT_READY (carte encore 'pending').",
     ].join("\n"),
