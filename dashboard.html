@@ -3835,7 +3835,7 @@
   function cardTerminateConfirm(cardId){
     openConfirm(
       'Supprimer cette carte ?',
-      'La carte sera définitivement fermée et supprimée. Son solde restant, s\'il y en a un, sera reversé sur votre Master Wallet. Cette action est irréversible.',
+      'La carte sera définitivement fermée et supprimée. Son solde restant, s\'il y en a un, sera reversé sur votre Master Wallet, après des frais de fermeture de 0,50 $. Cette action est irréversible.',
       () => cardAction('terminate', cardId),
       'Supprimer la carte'
     );
