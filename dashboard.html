@@ -2730,8 +2730,8 @@
   }
 
   /* ===== Balances ===== */
-  function fmtHTG(n){ return n.toLocaleString('fr-FR') + ' HTG'; }
-  function fmtUSD(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' $'; }
+  function fmtHTG(n){ return (Number(n) || 0).toLocaleString('fr-FR') + ' HTG'; }
+  function fmtUSD(n){ return (Number(n) || 0).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' $'; }
 
   function toggleForm(id){
     if(id === 'withdrawForm') setTimeout(onWithdrawMethodChange, 0);
@@ -3464,7 +3464,7 @@
 
   async function pollCardStatus(cardId, attempt){
     attempt = attempt || 0;
-    if(attempt > 40) return;
+    if(attempt > 40){ showToast('La carte est encore en cours de création. Elle apparaîtra dans la liste dès qu\'elle sera prête.', 'info'); loadCards(); return; }
     try{
       const card = await apiFetch('/dashboard/cards/' + cardId, { method: 'GET' });
       if(card.status === 'pending'){
@@ -3473,7 +3473,7 @@
       }
       loadCards();
       await refreshBalances();
-      if(card.status === 'active') showToast('Carte ' + card.brand + ' active : ' + card.masked_pan, 'success');
+      if(card.status === 'active') showToast('Carte ' + (card.brand || '') + ' active' + (card.masked_pan ? ' : ' + card.masked_pan : ''), 'success');
       else showToast('La création de la carte a échoué : ' + (card.failure_reason || 'raison inconnue.'), 'error');
     }catch(err){
       setTimeout(() => pollCardStatus(cardId, attempt + 1), 4000);
