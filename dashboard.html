@@ -551,6 +551,22 @@
         </div>
       </div>
 
+      <div class="card" id="ovCryptoCard" style="margin-bottom:20px">
+        <div class="section-title" style="display:flex;align-items:center;gap:8px">Wallet crypto <span class="tag tag-green mode-tag" style="font-weight:700" id="ovCryptoTag">USDT · USDC</span></div>
+        <div class="section-desc" style="margin-bottom:14px">Recevez des stablecoins : ils sont convertis en USD et crédités automatiquement sur votre Master Wallet.</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px">
+          <div>
+            <div class="sub" style="margin-bottom:2px">Solde utilisable (Master Wallet)</div>
+            <div class="bal-figure" style="margin:0" id="ovCryptoBalance">-</div>
+            <div class="sub" style="margin-top:4px" id="ovCryptoReceived">Aucun dépôt crypto pour le moment</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-sm" id="ovCryptoBtn" onclick="openCryptoModal()">Créer mon wallet crypto</button>
+          </div>
+        </div>
+        <div id="ovCryptoAddrs" style="margin-top:14px"></div>
+      </div>
+
       <div class="card" id="ovVerifCard">
         <div class="section-title">Vérification du compte</div>
         <div class="section-desc" id="ovVerifDesc">Statut actuel de votre KYC et KYB.</div>
@@ -2122,7 +2138,7 @@
 
   /* ===== Data is loaded for the section being opened, not all at once at start ===== */
   const SECTION_LOADERS = {
-    overview: () => [refreshBalances, loadGatewaySummary, loadCards, loadIssuingAccessStatus, loadOverviewCardTransactions, loadPayments],
+    overview: () => [loadCryptoCard, refreshBalances, loadGatewaySummary, loadCards, loadIssuingAccessStatus, loadOverviewCardTransactions, loadPayments],
     verification: () => [loadVerificationHistory],
     balances: () => [refreshBalances, loadWalletSummary, loadBankAccount, loadGatewaySummary],
     payments: () => [loadPayments, loadPayouts],
@@ -3039,6 +3055,30 @@
   let cryptoState = { data: null, coin: 'USDT', current: null };
   let cryptoQuoteTimer = null;
 
+  /* Overview card: the merchant creates the crypto wallet here and sees the balance it feeds (deposits are converted to USD) */
+  async function loadCryptoCard(){
+    const btn = document.getElementById('ovCryptoBtn'); if(!btn) return;
+    try{
+      const d = await apiFetch('/dashboard/crypto', { method: 'GET' });
+      if(d.enabled === false){
+        document.getElementById('ovCryptoBalance').textContent = '-';
+        document.getElementById('ovCryptoReceived').textContent = d.message || 'Disponible en mode Sandbox pour le moment.';
+        document.getElementById('ovCryptoAddrs').innerHTML = '';
+        btn.disabled = true; btn.textContent = 'Bientôt en Live';
+        return;
+      }
+      btn.disabled = false;
+      document.getElementById('ovCryptoBalance').textContent = fmtUSDFromApi(d.master_wallet_usd);
+      const received = (d.deposits || []).reduce((t, x) => t + (Number(x.credited_usd) || 0), 0);
+      document.getElementById('ovCryptoReceived').textContent = d.deposits.length
+        ? fmtUSDFromApi(received) + ' reçus en crypto (' + d.deposits.length + ' dépôt' + (d.deposits.length > 1 ? 's' : '') + ')'
+        : 'Aucun dépôt crypto pour le moment';
+      btn.textContent = d.addresses.length ? 'Ajouter / voir mes adresses' : 'Créer mon wallet crypto';
+      document.getElementById('ovCryptoAddrs').innerHTML = d.addresses.map(a =>
+        '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:.82rem"><img src="' + (CRYPTO_LOGOS[a.coin] || '') + '" alt="" style="width:22px;height:22px"><img src="' + (CRYPTO_LOGOS[a.chain] || '') + '" alt="" style="width:16px;height:16px;margin-left:-14px;margin-top:12px;border-radius:50%;background:#fff;border:1px solid #fff"><div style="flex:1;min-width:0"><b>' + esc(a.coin) + '</b> · ' + esc(a.chain_label) + '<div style="color:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:.74rem;overflow:hidden;text-overflow:ellipsis">' + esc(a.address) + '</div></div></div>').join('');
+    }catch(err){ /* the modal reports errors when opened */ }
+  }
+
   async function openCryptoModal(){
     closeTopupPicker();
     document.getElementById('cryptoModal').classList.add('open');
@@ -3054,7 +3094,7 @@
       renderCryptoHistory();
     }catch(err){ showToast(err.message || 'Impossible de charger le portefeuille crypto.', 'error'); }
   }
-  function closeCryptoModal(){ document.getElementById('cryptoModal').classList.remove('open'); }
+  function closeCryptoModal(){ document.getElementById('cryptoModal').classList.remove('open'); loadCryptoCard(); }
   function cryptoBack(){
     document.getElementById('cryptoStepPick').style.display = '';
     document.getElementById('cryptoStepAddr').style.display = 'none';
@@ -3074,6 +3114,7 @@
     try{
       const a = await apiFetch('/dashboard/crypto/addresses', { method: 'POST', body: { chain: chain, coin: cryptoState.coin } });
       cryptoState.current = a;
+      loadCryptoCard();
       document.getElementById('cryptoStepPick').style.display = 'none';
       document.getElementById('cryptoStepAddr').style.display = '';
       document.getElementById('cryptoTitle').textContent = 'Dépôt ' + a.coin;
