@@ -3045,6 +3045,11 @@
     cryptoBack();
     try{
       cryptoState.data = await apiFetch('/dashboard/crypto', { method: 'GET' });
+      if(cryptoState.data.enabled === false){
+        closeCryptoModal();
+        showToast(cryptoState.data.message || 'Le portefeuille crypto est disponible en mode Sandbox pour le moment.', 'info');
+        return;
+      }
       renderCryptoPick();
       renderCryptoHistory();
     }catch(err){ showToast(err.message || 'Impossible de charger le portefeuille crypto.', 'error'); }
