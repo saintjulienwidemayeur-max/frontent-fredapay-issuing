@@ -784,6 +784,7 @@
           <div class="section-title" style="display:flex;align-items:center;gap:8px">Master Wallet <span class="tag tag-green mode-tag" style="font-weight:700">Actif en sandbox</span></div>
           <div class="section-desc" style="margin-bottom:0">Finance l'émission de cartes et le chargement des soldes de vos porteurs.</div>
           <div class="bal-figure" id="walletBalanceFigure">-</div>
+          <div id="walletGuaranteeNote" style="font-size:.78rem;color:var(--muted);margin-top:4px"></div>
           <div class="bal-sub-row"><span>Réservé sur cartes actives</span><span id="walletReservedFigure">-</span></div>
           <div class="bal-sub-row"><span>Ajout total (<span class="mw">sandbox</span>)</span><span id="walletTotalFigure">-</span></div>
           <button class="btn btn-sm" style="margin-top:16px" onclick="openTopupPicker()">Ajouter des fonds</button>
@@ -1849,6 +1850,10 @@
       document.getElementById('ov-wallet-balance').textContent = walletText;
       const g2 = document.getElementById('gatewayBalanceFigure'); if(g2) g2.textContent = gatewayText;
       const w2 = document.getElementById('walletBalanceFigure'); if(w2) w2.textContent = walletText;
+      const gn = document.getElementById('walletGuaranteeNote');
+      if(gn && bal.master_wallet.guarantee_usd != null){
+        gn.textContent = 'Dépôt de garantie bloqué : ' + fmtUSDFromApi(bal.master_wallet.guarantee_usd) + ' · Utilisable : ' + fmtUSDFromApi(bal.master_wallet.spendable_usd);
+      }
       const w3 = document.getElementById('ov-wallet-balance-2'); if(w3) w3.textContent = walletText;
       const w4 = document.getElementById('billingWalletBalance'); if(w4) w4.textContent = walletText;
     }catch(err){
