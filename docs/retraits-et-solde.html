@@ -408,7 +408,7 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
           <ul class="plain">
             <li><strong>gateway</strong> (HTG) : l'argent reçu par MonCash et Natcash, frais déduits. C'est ce solde que vous retirez avec les retraits.</li>
             <li><strong>gateway_usd</strong> (USD) : l'argent reçu par carte bancaire, frais déduits. Il se retire par virement bancaire ou Zelle depuis le tableau de bord. <code class="inline">gateway_balances</code> regroupe les deux : <code class="inline">{ "HTG": ..., "USD": ... }</code>.</li>
-            <li><strong>master_wallet</strong> (USD) : les fonds que vous avez déposés pour émettre des cartes et payer votre abonnement.</li>
+            <li><strong>master_wallet</strong> (USD) : les fonds que vous avez déposés pour émettre des cartes et payer votre abonnement. <code class="inline">available</code> est le total ; <code class="inline">guarantee_usd</code> reste bloqué et <code class="inline">spendable_usd</code> est utilisable. Pour le détail, voir <a href="#master-wallet">Vérifier son Master Wallet</a>.</li>
           </ul>
           <div class="ask-ai">Intégrer cet appel avec
             <button class="ask-btn" onclick="askAI('claude','balance')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
@@ -431,11 +431,47 @@ payout = r.<span class="c-f">json</span>()  <span class="c-c"># status: "pending
       </div>
     </section>
 
+<section class="doc-section" id="master-wallet">
+      <div class="two-col">
+        <div>
+          <h2>Vérifier son Master Wallet (émetteurs de cartes)</h2>
+          <div class="endpoint"><span class="verb get">GET</span>/v1/master-wallet</div>
+          <p>Pour les comptes qui émettent des cartes : renvoie en un appel l'état du Master Wallet, pour savoir si vous pouvez créer ou recharger des cartes avant d'essayer. Une clé Live donne l'argent réel, une clé de test donne l'argent de test.</p>
+          <ul class="plain">
+            <li><strong>balance</strong> (USD) : le solde total du Master Wallet.</li>
+            <li><strong>guarantee_usd</strong> : le dépôt de garantie, toujours bloqué (50 $ par défaut, l'équipe Freda Pay Issuing peut l'ajuster pour votre compte).</li>
+            <li><strong>spendable_usd</strong> : ce que vous pouvez utiliser maintenant, c'est-à-dire <code class="inline">balance</code> moins <code class="inline">guarantee_usd</code>. Une création, une recharge ou un plan dont le coût dépasse cette somme est refusé avec <code class="inline">BELOW_MINIMUM_BALANCE</code>.</li>
+            <li><strong>reserved_on_cards_usd</strong> et <strong>active_cards</strong> : l'argent déjà placé sur vos cartes actives et leur nombre.</li>
+            <li><strong>low_balance</strong> : <code class="inline">true</code> quand le solde approche du dépôt de garantie (garantie + 100 $). Rechargez avant d'être bloqué.</li>
+          </ul>
+          <p>Le même chiffre est visible dans votre tableau de bord, sous le solde du Master Wallet, et l'équipe le consulte dans son panneau d'administration.</p>
+        </div>
+        <div class="sticky-col">
+          <div class="code-block">
+            <div class="code-tabs"><span class="code-title">Requête et réponse</span><button class="copy-code" onclick="copyCode(this)">Copier</button></div>
+<pre>curl https://api.fredapay.com/v1/master-wallet \
+  -H <span class="c-s">"Authorization: Bearer sk_live_VOTRE_CLE"</span>
+
+{
+  <span class="c-s">"mode"</span>: <span class="c-s">"live"</span>,
+  <span class="c-s">"currency"</span>: <span class="c-s">"USD"</span>,
+  <span class="c-s">"balance"</span>: <span class="c-n">320.5</span>,
+  <span class="c-s">"guarantee_usd"</span>: <span class="c-n">50</span>,
+  <span class="c-s">"spendable_usd"</span>: <span class="c-n">270.5</span>,
+  <span class="c-s">"reserved_on_cards_usd"</span>: <span class="c-n">140</span>,
+  <span class="c-s">"active_cards"</span>: <span class="c-n">6</span>,
+  <span class="c-s">"low_balance"</span>: <span class="c-k">false</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="pn"><a href="/docs/tester-ma-cle-api"><small>Précédent</small>Tester ma clé API</a><a href="/docs/titulaires-de-cartes" style="text-align:right"><small>Suivant</small>Titulaires de cartes</a></div>
   </main>
 </div>
 
-<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 26 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
+<footer><p style="margin:0 0 6px">Dernière mise à jour de cette page : 30 octobre 2026. <a href="/docs">Retour à la documentation</a>.</p>© <span id="year"></span> Freda Pay LLC. <a href="/terms">Conditions d'utilisation</a> et <a href="/privacy">politique de confidentialité</a>.</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

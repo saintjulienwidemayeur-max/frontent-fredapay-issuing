@@ -42,7 +42,7 @@ Entreprises et marchands du monde entier, y compris en Afrique et en Haïti : e-
 - API REST en JSON : https://api.fredapay.com/v1. Authentification : en-tête Authorization: Bearer sk_test_... (Sandbox) ou sk_live_... (production).
 - Créer un paiement : POST /v1/payments avec amount, method (moncash, natcash, moncash_ussd, all ou carte), reference, et pour la carte currency USD, customer_name, customer_email, return_url. La réponse contient checkout_url, vers laquelle rediriger le client.
 - Confirmer un paiement : webhook signé payment.succeeded / payment.failed (en-tête X-Freda-Signature, HMAC-SHA256 du corps brut) ou GET /v1/payments/:id.
-- Autres endpoints : /v1/payouts (retraits vers MonCash, Natcash), /v1/balance, /v1/cards (cartes virtuelles), /v1/cards/holders, /v1/webhooks.
+- Autres endpoints : /v1/payouts (retraits vers MonCash, Natcash), /v1/balance, /v1/master-wallet (solde, dépôt de garantie et montant utilisable du Master Wallet), /v1/cards (cartes virtuelles), /v1/cards/holders, /v1/webhooks.
 - SDK Node.js et PHP, plugins WordPress/WooCommerce et Wix, bouton de paiement pour sites sans code.
 - Mode test gratuit : clé sk_test_..., carte de test 4242 4242 4242 4242, date 05/27, CVV 088. Aucun argent réel n'est débité. En Live, le paiement par carte demande une activation (contactez issuing@fredapay.com).
 - Documentation : https://issuing.fredapay.com/docs
