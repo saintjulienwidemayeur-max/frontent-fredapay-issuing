@@ -1866,7 +1866,7 @@
       const d = await apiFetch('/dashboard/cards/transactions', { method: 'GET' });
       const table = document.getElementById('ovCardTxTable');
       const empty = document.getElementById('ovCardTxEmpty');
-      if(!d.transactions.length){ table.innerHTML = ''; empty.hidden = false; return; }
+      if(!(d.transactions || []).length){ table.innerHTML = ''; empty.hidden = false; return; }
       empty.hidden = true;
       table.innerHTML = '<tr><th>Carte</th><th>Type</th><th>Montant</th><th>Marchand</th><th>Date</th></tr>' +
         d.transactions.map(t => `<tr>
@@ -3455,6 +3455,7 @@
       document.getElementById('cardAmount').value = '';
       document.getElementById('cardBusinessName').value = '';
       loadCards();
+      refreshBalances(); // the prefunding is debited from the Master Wallet right away
       pollCardStatus(card.id);
     }catch(err){
       showToast('Échec : ' + err.message, 'error');
@@ -3488,7 +3489,9 @@
         page++;
       }while(data.pagination && data.pagination.has_more && page <= 20);
       renderCardsList(all);
-    }catch(err){ /* silent */ }
+    }catch(err){
+      showToast('Impossible de charger les cartes : ' + err.message, 'error');
+    }
   }
 
   function updateCardsOverviewSummary(cardsArr){
@@ -3855,6 +3858,7 @@
       const labels = { fund:'Fonds ajoutés.', withdraw:'Retrait effectué.', freeze:'Carte gelée.', unfreeze:'Carte dégelée.', terminate:'Carte supprimée.' };
       showToast(isSimulate ? 'Transaction simulée, actualisation…' : (labels[action] || 'Action effectuée.'), 'success');
       if(action === 'terminate') closeCardDetail();
+      loadedSections.delete('balances'); loadedSections.delete('overview'); // wallet figures, movements and card totals changed: reload them when those pages are opened
       await loadCards();
       if(document.getElementById('cardDetailModal').classList.contains('open') && currentCardsById[cardId]){
         openCardDetail(cardId); // refresh the open modal with the new state (also reloads transactions)
