@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto wallet API: USDT and USDC | Freda Pay Issuing</title>
+<meta name="description" content="Create USDT and USDC crypto wallets with an API: receive, send and convert to USD credited to your Master Wallet. For fintechs and platforms. Free test mode.">
+<meta name="keywords" content="crypto wallet API, USDT wallet API, USDC wallet API, stablecoin API, create a crypto wallet by API, receive USDT Haiti, convert USDT to USD, fintech crypto wallet, Freda Pay Issuing">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://issuing.fredapay.com/en/crypto-wallet-api">
+<link rel="alternate" hreflang="fr" href="https://issuing.fredapay.com/wallet-crypto-api">
+<link rel="alternate" hreflang="en" href="https://issuing.fredapay.com/en/crypto-wallet-api">
+<link rel="alternate" hreflang="x-default" href="https://issuing.fredapay.com/wallet-crypto-api">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Freda Pay Issuing">
+<meta property="og:title" content="Crypto wallet API: USDT and USDC | Freda Pay Issuing">
+<meta property="og:description" content="Create USDT and USDC crypto wallets with an API: receive, send and convert to USD credited to your Master Wallet. For fintechs and platforms. Free test mode.">
+<meta property="og:url" content="https://issuing.fredapay.com/en/crypto-wallet-api">
+<meta property="og:image" content="https://issuing.fredapay.com/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crypto wallet API: USDT and USDC | Freda Pay Issuing">
+<meta name="twitter:description" content="Create USDT and USDC crypto wallets with an API: receive, send and convert to USD credited to your Master Wallet. For fintechs and platforms. Free test mode.">
+<meta name="twitter:image" content="https://issuing.fredapay.com/og-image.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/en/crypto-wallet-api#page", "url": "https://issuing.fredapay.com/en/crypto-wallet-api", "name": "Crypto wallet API: USDT and USDC | Freda Pay Issuing", "description": "Create USDT and USDC crypto wallets with an API: receive, send and convert to USD credited to your Master Wallet. For fintechs and platforms. Free test mode.", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website"}, "primaryImageOfPage": {"@type": "ImageObject", "url": "https://issuing.fredapay.com/og-image.png", "contentUrl": "https://issuing.fredapay.com/og-image.png", "creditText": "Freda Pay LLC"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://issuing.fredapay.com/en/"}, {"@type": "ListItem", "position": 2, "name": "Crypto wallet API", "item": "https://issuing.fredapay.com/en/crypto-wallet-api"}]}, {"@type": "Service", "@id": "https://issuing.fredapay.com/en/crypto-wallet-api#service", "name": "Crypto wallet API: USDT and USDC", "serviceType": "Crypto wallet API", "description": "Create USDT and USDC crypto wallets with an API: receive, send and convert to USD credited to your Master Wallet. For fintechs and platforms. Free test mode.", "provider": {"@type": "Organization", "name": "Freda Pay LLC", "url": "https://issuing.fredapay.com/"}, "areaServed": ["HT", "Worldwide"], "audience": {"@type": "BusinessAudience", "audienceType": "Fintechs, platforms, marketplaces, merchants"}, "availableChannel": {"@type": "ServiceChannel", "serviceUrl": "https://issuing.fredapay.com/docs/portefeuille-crypto"}}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a crypto wallet API?", "acceptedAnswer": {"@type": "Answer", "text": "It is an interface that lets your application create cryptocurrency deposit addresses, read their balance, send funds and convert them, without running the blockchain yourself. With Freda Pay Issuing you do it with REST calls and your API key."}}, {"@type": "Question", "name": "Which cryptocurrencies and networks are supported?", "acceptedAnswer": {"@type": "Answer", "text": "The USDT and USDC stablecoins, on Solana, Ethereum, Polygon, BSC and Tron. Sending is available on Solana for now."}}, {"@type": "Question", "name": "How do I convert my USDT to dollars?", "acceptedAnswer": {"@type": "Answer", "text": "Call POST /v1/crypto/convert (or use the dashboard). Your crypto balance is debited and your Master Wallet is credited in USD, after the conversion rate and your plan's fee. Use /v1/crypto/quote to see the breakdown first."}}, {"@type": "Question", "name": "Is the crypto wallet linked to the Master Wallet?", "acceptedAnswer": {"@type": "Answer", "text": "No. The crypto wallet has its own balance. It only touches the Master Wallet when you ask to convert to USD."}}, {"@type": "Question", "name": "Can I test without real money?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. With an sk_test_ key, Sandbox mode lets you try the API without real money."}}, {"@type": "Question", "name": "What are the fees?", "acceptedAnswer": {"@type": "Answer", "text": "Deposit 0.50%. Send 2% under 6,000 and 3% above. Conversion to USD 0.70%, then your plan's fee for adding money to the Master Wallet. The exact breakdown is shown before each operation."}}, {"@type": "Question", "name": "Who can use the crypto wallet API?", "acceptedAnswer": {"@type": "Answer", "text": "Fintechs, platforms, marketplaces and merchants with a Freda Pay Issuing account, in Haiti, Africa and worldwide. US dollar (USD) accounts for fintechs are coming soon."}}, {"@type": "Question", "name": "Is Freda Pay Issuing a bank?", "acceptedAnswer": {"@type": "Answer", "text": "No. Freda Pay LLC is a company registered in the State of Wyoming (USA) and is not a bank. Freda Pay Issuing is not affiliated with FedaPay (fedapay.com), a different company."}}]}]}</script>
+<style>
+:root{--ink:#111;--pink:#ff4081;--muted:#5f5560;--line:#ece4e8;--soft:#faf6f8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.65;background:#fff}
+a{color:var(--pink)}img{max-width:100%}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:10}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:800;letter-spacing:.01em}
+.logo img{width:32px;height:32px;border-radius:8px}.logo b{color:var(--pink)}
+nav{display:flex;gap:18px;align-items:center;font-size:.92rem;flex-wrap:wrap}
+nav a{color:var(--ink);text-decoration:none;font-weight:600}nav a:hover{color:var(--pink)}
+.btn{display:inline-block;background:var(--ink);color:#fff !important;padding:11px 20px;border-radius:10px;text-decoration:none;font-weight:700;font-size:.92rem}
+.btn.ghost{background:#fff;color:var(--ink) !important;border:1px solid var(--ink)}
+.hero{padding:64px 0 40px}
+/* .wrap.hero: the hero padding must not erase the page's side margins */
+.wrap.hero{padding-left:22px;padding-right:22px}
+.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pink)}
+h1{font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1.15;margin:10px 0 16px;letter-spacing:-.02em}
+.lead{font-size:1.1rem;color:var(--muted);max-width:720px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+section{padding:40px 0;border-top:1px solid var(--line)}
+h2{font-size:1.6rem;margin:0 0 12px;letter-spacing:-.01em}h3{font-size:1.1rem;margin:22px 0 6px}
+p{margin:0 0 14px}ul,ol{padding-left:20px;margin:0 0 14px}li{margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff}.card h3{margin-top:0}
+pre{background:#1a1216;color:#f4eef1;padding:18px;border-radius:12px;overflow-x:auto;font-size:.86rem;line-height:1.55}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}p code,li code,td code{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:6px;font-size:.88em}
+table{border-collapse:collapse;width:100%;font-size:.93rem;margin:12px 0}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}th{background:var(--soft)}
+.tbl{overflow-x:auto}
+details{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}summary{cursor:pointer;font-weight:700}details p{margin:10px 0 0;color:var(--muted)}
+.note{background:var(--soft);border-left:3px solid var(--pink);padding:12px 16px;border-radius:8px;font-size:.93rem;margin:16px 0}
+.crumbs{font-size:.84rem;color:var(--muted);padding-top:18px}.crumbs a{color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:32px 0;font-size:.88rem;color:var(--muted)}footer a{color:var(--muted)}
+.flinks{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}nav a.hide{display:none}}
+/* mobile: the sticky header keeps one line, the call-to-action stays compact, and the content keeps its side margins */
+.btn{white-space:nowrap}
+@media(max-width:620px){
+  nav a.hide{display:none}
+  .bar{gap:10px;height:58px}
+  .logo{font-size:.86rem;gap:8px;white-space:nowrap;min-width:0}
+  .logo img{width:28px;height:28px}
+  nav .btn{padding:8px 13px;font-size:.8rem;border-radius:9px}
+  .hero{padding-top:36px;padding-bottom:28px}
+}
+@media(max-width:360px){.logo span{font-size:.78rem}nav .btn{padding:7px 10px;font-size:.76rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a class="logo" href="/en/"><img src="/logo-64.png" alt="Freda Pay Issuing logo" width="32" height="32"><span>FREDA PAY <b>ISSUING</b></span></a>
+  <nav>
+    <a class="hide" href="/en/card-payments-haiti">Card payments in Haiti</a>
+    <a class="hide" href="/docs/portefeuille-crypto">API docs</a>
+    <a class="hide" href="/wallet-crypto-api" hreflang="fr" lang="fr">Français</a>
+    <a class="btn" href="/signup">Create an account</a>
+  </nav>
+</div></header>
+<main>
+<div class="wrap crumbs"><a href="/en/">Home</a> / Crypto wallet API</div>
+<div class="wrap hero">
+  <span class="eyebrow">Crypto wallet API · USDT and USDC stablecoins</span>
+  <h1>Crypto wallet API: create USDT and USDC wallets for your users</h1>
+  <p class="lead">The Freda Pay Issuing crypto wallet API lets a fintech, a platform or a merchant create stablecoin wallets (USDT and USDC), receive and send cryptocurrency, then convert it to US dollars (USD) credited automatically to its Master Wallet.</p>
+  <div class="cta"><a class="btn" href="/signup">Create a free account</a><a class="btn ghost" href="/docs/portefeuille-crypto">Read the documentation</a></div>
+</div>
+
+<div class="wrap"><section>
+  <h2>At a glance: crypto wallet API</h2>
+  <div class="tbl"><table><tr><th scope="row">What is it?</th><td>A REST API to create and use stablecoin crypto wallets, kept separate from the USD Master Wallet.</td></tr><tr><th scope="row">Cryptocurrencies</th><td>USDT and USDC.</td></tr><tr><th scope="row">Chains (networks)</th><td>Solana, Ethereum, Polygon, BSC and Tron. Sending is available on Solana for now.</td></tr><tr><th scope="row">Actions</th><td>Create a wallet, receive, read the balance, send, convert to USD, history.</td></tr><tr><th scope="row">Conversion to USD</th><td>On demand: the crypto balance is debited and the Master Wallet credited in USD, after fees.</td></tr><tr><th scope="row">Authentication</th><td>Secret API key (sk_test_… in Sandbox, sk_live_… in Live), Authorization: Bearer header.</td></tr><tr><th scope="row">Availability</th><td>Sandbox and Live. USD accounts for fintechs are coming soon.</td></tr><tr><th scope="row">Who is it for?</th><td>Fintechs, platforms, marketplaces and merchants, in Haiti, Africa and worldwide.</td></tr></table></div>
+</section></div>
+<div class="wrap"><section>
+  <h2>What the crypto wallet API does</h2>
+  <p>Each wallet is a deposit address for one cryptocurrency on one chain. The crypto wallet keeps its own balance, separate from your Master Wallet. You keep the funds in crypto, send them out, or convert them to dollars when you decide.</p><div class="grid"><div class="card"><h3>Create wallets</h3><p>One <code>POST /v1/crypto/wallets</code> call creates the deposit address of a user or of your company for USDT or USDC on the chain you choose.</p></div><div class="card"><h3>Receive and send</h3><p>Receive stablecoins on the wallet address, read the balance by API, then send to an external address with an idempotency key that prevents double sends.</p></div><div class="card"><h3>Convert to USD</h3><p>Convert your crypto balance to dollars: the amount lands on your Master Wallet at once, ready to fund your virtual cards.</p></div></div>
+</section></div>
+<div class="wrap"><section>
+  <h2>Create a crypto wallet with the API</h2>
+  <pre><code># 1. Create a USDT wallet on Solana
+curl -X POST https://api.fredapay.com/v1/crypto/wallets \
+  -H "Authorization: Bearer sk_test_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"coin": "USDT", "chain": "solana"}'
+
+# 2. Read the crypto balance
+curl https://api.fredapay.com/v1/crypto/balance \
+  -H "Authorization: Bearer sk_test_YOUR_KEY"
+
+# 3. Convert 100 USDT to USD into the Master Wallet
+curl -X POST https://api.fredapay.com/v1/crypto/convert \
+  -H "Authorization: Bearer sk_test_YOUR_KEY" \
+  -H "Idempotency-Key: conv-0001" \
+  -H "Content-Type: application/json" \
+  -d '{"coin": "USDT", "amount": 100}'</code></pre><p>The endpoints are <code>/v1/crypto/wallets</code>, <code>/v1/crypto/balance</code>, <code>/v1/crypto/transactions</code>, <code>/v1/crypto/quote</code>, <code>/v1/crypto/send</code> and <code>/v1/crypto/convert</code>. See the <a href="/docs/portefeuille-crypto">full documentation</a> (in French) and the OpenAPI specification.</p>
+</section></div>
+<div class="wrap"><section>
+  <h2>How it works</h2>
+  <ol><li>You create an account and get your API key (free test mode in Sandbox).</li><li>You create a wallet for one cryptocurrency and one chain: the API returns the deposit address.</li><li>Your user sends USDT or USDC to that address. The crypto balance updates.</li><li>You send the cryptocurrency elsewhere, or convert it to USD into your Master Wallet, with the fee breakdown calculated beforehand by <code>/v1/crypto/quote</code>.</li></ol>
+</section></div>
+<div class="wrap"><section>
+  <h2>Crypto wallet pricing</h2>
+  <div class="tbl"><table><tr><th>Operation</th><th>Fee</th></tr><tr><td>Deposit</td><td>0.50%</td></tr><tr><td>Send</td><td>2% under 6,000, 3% above (on top of the amount)</td></tr><tr><td>Conversion to USD</td><td>0.70%, then your plan's fee for adding money to the Master Wallet (4.5% Startup, 3.0% Pro, 2.5% Premium)</td></tr></table></div><p>These are the current rates: the exact breakdown is shown before every send or conversion, and <code>/v1/crypto/quote</code> returns it by API.</p>
+</section></div>
+<div class="wrap"><section>
+  <h2>Security and compliance</h2>
+  <p>The provider may ask once for the identity details of the account owner to create your first wallet. They are stored securely and never returned by the API. Every send and every conversion takes an idempotency key: replaying the same request neither sends nor converts twice. Sends are irreversible: always check the address.</p>
+</section></div>
+
+<div class="wrap"><section>
+  <h2>Frequently asked questions about the crypto wallet API</h2>
+  <details><summary>What is a crypto wallet API?</summary><p>It is an interface that lets your application create cryptocurrency deposit addresses, read their balance, send funds and convert them, without running the blockchain yourself. With Freda Pay Issuing you do it with REST calls and your API key.</p></details>
+  <details><summary>Which cryptocurrencies and networks are supported?</summary><p>The USDT and USDC stablecoins, on Solana, Ethereum, Polygon, BSC and Tron. Sending is available on Solana for now.</p></details>
+  <details><summary>How do I convert my USDT to dollars?</summary><p>Call POST /v1/crypto/convert (or use the dashboard). Your crypto balance is debited and your Master Wallet is credited in USD, after the conversion rate and your plan&#x27;s fee. Use /v1/crypto/quote to see the breakdown first.</p></details>
+  <details><summary>Is the crypto wallet linked to the Master Wallet?</summary><p>No. The crypto wallet has its own balance. It only touches the Master Wallet when you ask to convert to USD.</p></details>
+  <details><summary>Can I test without real money?</summary><p>Yes. With an sk_test_ key, Sandbox mode lets you try the API without real money.</p></details>
+  <details><summary>What are the fees?</summary><p>Deposit 0.50%. Send 2% under 6,000 and 3% above. Conversion to USD 0.70%, then your plan&#x27;s fee for adding money to the Master Wallet. The exact breakdown is shown before each operation.</p></details>
+  <details><summary>Who can use the crypto wallet API?</summary><p>Fintechs, platforms, marketplaces and merchants with a Freda Pay Issuing account, in Haiti, Africa and worldwide. US dollar (USD) accounts for fintechs are coming soon.</p></details>
+  <details><summary>Is Freda Pay Issuing a bank?</summary><p>No. Freda Pay LLC is a company registered in the State of Wyoming (USA) and is not a bank. Freda Pay Issuing is not affiliated with FedaPay (fedapay.com), a different company.</p></details>
+  <div class="note">Freda Pay LLC is a company registered in the State of Wyoming (USA) and is not a bank. Cryptocurrencies carry risks: always check addresses and networks before sending.</div>
+</section></div>
+
+</main>
+<footer><div class="wrap">
+  <div class="flinks">
+    <a href="/en/">Home</a><a href="/en/crypto-wallet-api">Crypto wallet API</a><a href="/en/card-payments-haiti">Card payments in Haiti</a><a href="/docs/portefeuille-crypto">API documentation</a><a href="/wallet-crypto-api" hreflang="fr" lang="fr">Français</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a>
+  </div>
+  <div>© 2026 Freda Pay LLC · <a href="mailto:issuing@fredapay.com">issuing@fredapay.com</a></div>
+</div></footer>
+<script src="/analytics.js" defer></script>
+</body>
+</html>

@@ -35,6 +35,14 @@ Montant minimum par carte : 0,50 USD ; par MonCash/Natcash : 20 HTG. Les frais p
 | Premium | 500 $ / mois | 2,50 $ | 1,10 $ (puis 2 %) | 1,10 $ | 2,5 % |
 Transactions en devise étrangère : 2,5 % + 0,60 $ sur tous les plans. Entretien mensuel des cartes : 0 $.
 
+## Wallet crypto : USDT et USDC (API et tableau de bord)
+Le wallet crypto permet de créer des wallets en stablecoins (USDT et USDC) sur Solana, Ethereum, Polygon, BSC et Tron. Chaque wallet est une adresse de dépôt pour une cryptomonnaie sur une chaîne ; il garde son propre solde, séparé du Master Wallet en USD.
+- Actions : créer un wallet, recevoir, lire le solde, envoyer (sur Solana pour le moment), convertir en USD, historique.
+- Conversion en USD : à la demande. Le solde crypto est débité et le Master Wallet est crédité en USD tout de suite, après le taux de conversion et les frais de l'abonnement Issuing pour ajouter de l'argent au Master Wallet.
+- Frais actuels : dépôt 0,50 % ; envoi 2 % sous 6 000 et 3 % au-delà (en plus du montant) ; conversion en USD 0,70 %, puis 4,5 % (Startup), 3,0 % (Pro) ou 2,5 % (Premium) pour l'ajout au Master Wallet. Le détail exact est affiché avant chaque opération et renvoyé par GET /v1/crypto/quote.
+- API : POST /v1/crypto/wallets, GET /v1/crypto/wallets, GET /v1/crypto/balance, GET /v1/crypto/transactions, GET /v1/crypto/quote, POST /v1/crypto/send, POST /v1/crypto/convert (clé API, en-tête Idempotency-Key pour l'envoi et la conversion). Documentation : https://issuing.fredapay.com/docs/portefeuille-crypto ; page de présentation : https://issuing.fredapay.com/wallet-crypto-api (English: https://issuing.fredapay.com/en/crypto-wallet-api).
+- Disponibilité : Sandbox et Live. Le fournisseur peut demander une seule fois l'identité du propriétaire du compte pour créer le premier wallet ; elle est conservée de façon sécurisée et jamais renvoyée par l'API. Les comptes en dollars (USD) pour les fintechs arrivent bientôt.
+
 ## Pour qui ?
 Entreprises et marchands du monde entier, y compris en Afrique et en Haïti : e-commerce, services financiers, SaaS, marketplaces, éducation, voyage et tourisme, dons et ONG, services numériques, et bien d'autres.
 
@@ -74,6 +82,8 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 - https://issuing.fredapay.com/api-moncash-natcash
 - https://issuing.fredapay.com/paiement-par-carte-haiti
 - https://issuing.fredapay.com/cartes-virtuelles-haiti
+- https://issuing.fredapay.com/wallet-crypto-api
+- https://issuing.fredapay.com/en/crypto-wallet-api
 - https://issuing.fredapay.com/docs
 - https://issuing.fredapay.com/regulatory-disclosure
 - https://issuing.fredapay.com/notre-equipe
