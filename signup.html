@@ -579,6 +579,43 @@
               </div>
             </div>
 
+            <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+              <div style="font-weight:800;margin-bottom:4px">Responsable du compte</div>
+              <p style="font-size:.8rem;color:var(--muted);margin-bottom:12px">Ces informations servent à vous ouvrir le wallet crypto et les cartes sans vous les redemander. Elles sont conservées de façon sécurisée.</p>
+              <div class="field-row">
+                <div class="field">
+                  <label for="ownerDob">Date de naissance</label>
+                  <input type="date" id="ownerDob" autocomplete="bday">
+                </div>
+                <div class="field">
+                  <label for="ownerIdNumber">N° de pièce d'identité <span class="hint">(CIN, passeport, permis)</span></label>
+                  <input type="text" id="ownerIdNumber" autocomplete="off" placeholder="Ex : 01-02-03-1990-01-00001">
+                </div>
+              </div>
+              <div class="field">
+                <label for="ownerStreet">Adresse (rue)</label>
+                <input type="text" id="ownerStreet" autocomplete="street-address" placeholder="Numéro et rue">
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="ownerCity">Ville</label>
+                  <input type="text" id="ownerCity" autocomplete="address-level2">
+                </div>
+                <div class="field">
+                  <label for="ownerState">Département / État</label>
+                  <input type="text" id="ownerState" autocomplete="address-level1">
+                </div>
+                <div class="field">
+                  <label for="ownerPostal">Code postal</label>
+                  <input type="text" id="ownerPostal" autocomplete="postal-code">
+                </div>
+              </div>
+              <div class="field">
+                <label for="signupWebsite">Site web <span class="hint">(facultatif)</span></label>
+                <input type="text" id="signupWebsite" placeholder="monsite.com" autocomplete="url" inputmode="url">
+              </div>
+            </div>
+
             <div class="error-msg" id="infoError">Merci de remplir les champs requis.</div>
 
             <div class="btn-row">
@@ -871,7 +908,7 @@
       } else {
         required.push('indFirstName','indLastName');
       }
-      required.push('repName','signupCountry','signupEmail','signupPhone','phoneCountry');
+      required.push('repName','signupCountry','signupEmail','signupPhone','phoneCountry','ownerDob','ownerIdNumber','ownerStreet','ownerCity','ownerState','ownerPostal');
       required.forEach(id=>{
         const el = document.getElementById(id);
         if(!el.value.trim()){ ok=false; el.classList.add('field-error'); }
@@ -881,6 +918,12 @@
       if(emEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emEl.value.trim())){ ok=false; emEl.classList.add('field-error'); }
       const phEl = document.getElementById('signupPhone');
       if(phEl.value.trim() && phEl.value.replace(/\D/g,'').length < 7){ ok=false; phEl.classList.add('field-error'); }
+      const dobEl = document.getElementById('ownerDob');
+      if(dobEl.value){
+        const age = (Date.now() - new Date(dobEl.value + 'T00:00:00Z').getTime()) / (365.25 * 24 * 3600 * 1000);
+        if(!(age >= 18 && age < 120)){ ok=false; dobEl.classList.add('field-error'); document.getElementById('infoError').textContent = 'Le propriétaire du compte doit avoir au moins 18 ans.'; }
+        else document.getElementById('infoError').textContent = 'Merci de remplir les champs requis.';
+      }
       document.getElementById('infoError').classList.toggle('show', !ok);
       return ok;
     }
@@ -1041,7 +1084,12 @@
       email: document.getElementById('signupEmail').value.trim(),
       phone: dialCode ? (dialCode + phoneDigits) : phoneDigits,
       password: document.getElementById('signupPassword').value,
-      onboarding: collectOnboarding(),
+      onboarding: Object.assign({}, collectOnboarding(), (document.getElementById('signupWebsite').value.trim() ? { website: document.getElementById('signupWebsite').value.trim() } : {})),
+      owner: {
+        date_of_birth: document.getElementById('ownerDob').value,
+        identification_number: document.getElementById('ownerIdNumber').value.trim(),
+        address: { street: document.getElementById('ownerStreet').value.trim(), city: document.getElementById('ownerCity').value.trim(), state: document.getElementById('ownerState').value.trim(), postal_code: document.getElementById('ownerPostal').value.trim(), country: document.getElementById('signupCountry').value },
+      },
     };
 
     const btn = document.getElementById('submitBtn');
