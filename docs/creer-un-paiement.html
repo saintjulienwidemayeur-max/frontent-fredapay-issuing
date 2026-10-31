@@ -397,13 +397,13 @@ payment = r.<span class="c-f">json</span>()
   const API_BASE = window.FREDA_API_BASE_URL || 'https://api.fredapay.com';
 
   /* ===== Prompts for AI assistants ===== */
-  const SERVICE_QUESTION = "0) quel service je veux intégrer : le Payment Gateway seul (encaisser par MonCash/Natcash), l'Issuing de cartes seul (créer des cartes virtuelles, sans paiement MonCash/Natcash), ou les deux ; ";
-  const SERVICE_SCOPED = "Ce prompt ne concerne qu'un seul service. N'ajoute rien de l'autre service (Payment Gateway ou Issuing de cartes) sauf si je le demande.";
+  const SERVICE_QUESTION = "0) quel service je veux intégrer : le Payment Gateway seul (encaisser par MonCash/Natcash), l'Issuing de cartes seul (créer des cartes virtuelles, sans paiement MonCash/Natcash), le Wallet crypto seul (wallets USDT/USDC), ou plusieurs ; ";
+  const SERVICE_SCOPED = "Ce prompt ne concerne qu'un seul service. N'ajoute rien des autres services (Payment Gateway, Issuing de cartes ou Wallet crypto) sauf si je le demande.";
 
   const COMMON = [
     "Tu es un développeur expérimenté et patient. Aide-moi à intégrer l'API de paiement Freda Pay Issuing dans mon projet. Je suis peut-être débutant : explique chaque étape simplement et donne du code complet, prêt à copier.",
     "",
-    "Freda Pay Issuing propose DEUX services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance) et l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards). Je peux n'avoir besoin que de l'un des deux, ou des deux. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
+    "Freda Pay Issuing propose TROIS services indépendants : le Payment Gateway (encaisser par carte Visa/Mastercard, MonCash et Natcash, retraits, soldes : /v1/payments, /v1/payouts, /v1/balance), l'Issuing de cartes (titulaires et cartes virtuelles Visa/Mastercard : /v1/cards/holders, /v1/cards) et le Wallet crypto (wallets USDT/USDC, envoi, conversion en USD vers le Master Wallet : /v1/crypto/...). Je peux n'avoir besoin que d'un seul, ou de plusieurs. N'intègre que ce que je demande : si je veux seulement le Payment Gateway, ne parle ni de cartes, ni de titulaires, ni de Master Wallet ; si je veux seulement l'Issuing de cartes, n'ajoute aucun code de paiement, de retrait ou de checkout.",
     "",
     "Avant d'écrire du code, pose-moi ces questions : " + SERVICE_QUESTION + "1) quel langage ou quelle plateforme j'utilise (PHP, Node.js, Python, WordPress, Laravel, Django, autre) ; 2) ce que je vends ou encaisse ; 3) si j'ai déjà un serveur ou seulement un site vitrine (dans ce cas propose-moi les liens de paiement ou le bouton de paiement, sans code serveur).",
     "",
@@ -494,18 +494,40 @@ payment = r.<span class="c-f">json</span>()
       "POST .../cards/:id/reveal (sans corps) : renvoie { number, cvv, expiry_month, expiry_year, holder_name }, le numéro complet et le CVV. Réservé au titulaire du compte pour ses propres achats - ne jamais l'afficher à un tiers ni le logger/stocker.",
       "Montre-moi comment lister mes cartes avec pagination, afficher le solde et l'historique de chacune, et gérer les erreurs CARD_FROZEN et CARD_NOT_READY (carte encore 'pending').",
     ].join("\n"),
+    crypto_wallets: [
+      "SUJET : le Wallet crypto (USDT et USDC). Chaque wallet est une adresse de dépôt pour une cryptomonnaie sur une chaîne ; il garde son propre solde, séparé du Master Wallet. Même clé API qu'ailleurs : sk_test_... = Sandbox, sk_live_... = Live (le Live demande l'accès Issuing Live approuvé et un titulaire de carte vérifié, sinon 403 LIVE_NOT_ENABLED ou 400 IDENTITY_REQUIRED).",
+      "ENDPOINTS : POST /v1/crypto/wallets (créer), GET /v1/crypto/wallets (lister), GET /v1/crypto/balance (solde par cryptomonnaie), GET /v1/crypto/transactions (dépôts, envois, conversions).",
+      "Corps de POST /v1/crypto/wallets : coin ('USDT' ou 'USDC', requis) ; chain ('solana', 'ethereum', 'polygon', 'bsc' ou 'tron', requis). Réponse 201 : { id, object: 'crypto_wallet', coin, chain, address, mode, created_at }. Redemander le même coin et la même chain renvoie le même wallet (200).",
+      "Règle importante : la cryptomonnaie envoyée doit être celle du wallet et sur sa chaîne ; un autre actif ou une autre chaîne est perdu. Affiche clairement l'adresse, la cryptomonnaie et la chaîne à l'utilisateur, avec un bouton pour copier l'adresse (et un QR code).",
+      "Les dépôts arrivent dans le solde crypto (frais de dépôt 0,50 %). Pour être prévenu, interroge GET /v1/crypto/balance ou GET /v1/crypto/transactions.",
+      "Montre-moi comment créer un wallet pour mon utilisateur, afficher son adresse et son solde, et lister ses opérations.",
+    ].join("\n"),
+    crypto_send: [
+      "ENDPOINT : POST /v1/crypto/send. Envoyer de la cryptomonnaie vers une adresse externe depuis mon wallet crypto.",
+      "Corps JSON : coin ('USDT' ou 'USDC'), chain ('solana' uniquement pour le moment), address (une VRAIE adresse de la chaîne, vérifiée avant l'envoi), amount (nombre, 1 minimum), reference (clé unique obligatoire, ou en-tête Idempotency-Key : rejouer la même clé ne débite pas deux fois).",
+      "Frais : ils s'ajoutent au montant (2 % sous 6 000, 3 % au-delà ; GET /v1/crypto/quote?action=send&amount=... les donne avant l'envoi). L'envoi est irréversible : demande une confirmation claire à l'utilisateur.",
+      "Réponse 201 : { id, type: 'send', coin, chain, address, amount, fee, tx_hash, status: 'completed' }. Erreurs : INVALID_ADDRESS, SEND_NOT_AVAILABLE, INSUFFICIENT_CRYPTO_BALANCE, SEND_REFUSED (rien n'est débité), SEND_PENDING (502 : réponse pas claire, les fonds restent bloqués jusqu'à vérification : ne renvoie pas avec une autre clé), REFERENCE_REUSED (409).",
+    ].join("\n"),
+    crypto_convert: [
+      "ENDPOINT : POST /v1/crypto/convert. Convertir de la cryptomonnaie en USD : le solde crypto est débité et le Master Wallet crédité en USD, immédiatement.",
+      "Corps JSON : coin ('USDT' ou 'USDC'), amount (nombre, 1 minimum), reference (clé unique obligatoire, ou en-tête Idempotency-Key).",
+      "Frais : le taux de conversion (0,70 %), puis les frais de l'abonnement Issuing du marchand pour ajouter de l'argent au Master Wallet. GET /v1/crypto/quote?action=convert&amount=... donne conversion_fee, funding_fee et usd_credited avant la conversion : affiche ce détail à l'utilisateur.",
+      "Réponse 201 : { id, type: 'convert', coin, amount, fee, usd_credited, status: 'completed' }. Erreurs : INSUFFICIENT_CRYPTO_BALANCE, AMOUNT_TOO_SMALL, REFERENCE_REUSED (409).",
+    ].join("\n"),
   };
 
   const CARD_KEYS = ['cards_profile', 'cards_create', 'cards_manage'];
+  const CRYPTO_KEYS = ['crypto_wallets', 'crypto_send', 'crypto_convert'];
 
   function buildPrompt(key){
     if(key === 'global'){
-      const gatewayKeys = Object.keys(ENDPOINTS).filter(k => k !== 'auth' && CARD_KEYS.indexOf(k) === -1);
+      const gatewayKeys = Object.keys(ENDPOINTS).filter(k => k !== 'auth' && CARD_KEYS.indexOf(k) === -1 && CRYPTO_KEYS.indexOf(k) === -1);
       return COMMON + "\n\nENDPOINTS DU PAYMENT GATEWAY (à inclure seulement si je veux le Gateway) :\n\n" + gatewayKeys.map(k => ENDPOINTS[k]).join("\n\n")
         + "\n\nENDPOINTS DE L'ISSUING DE CARTES (à inclure seulement si je veux les cartes) :\n\n" + CARD_KEYS.map(k => ENDPOINTS[k]).join("\n\n")
+        + "\n\nENDPOINTS DU WALLET CRYPTO (à inclure seulement si je veux le wallet crypto) :\n\n" + CRYPTO_KEYS.map(k => ENDPOINTS[k]).join("\n\n")
         + "\n\nFlux Payment Gateway : 1) le serveur crée le paiement ; 2) le client est redirigé vers checkout_url ; 3) le serveur vérifie le statut jusqu'à 'succeeded' ; 4) la commande est livrée."
         + "\nFlux Issuing de cartes : 1) le serveur crée le titulaire (POST /v1/cards/holders, avec sa pièce d'identité) et garde son id ; 2) le serveur crée la carte avec holder_id (POST /v1/cards) ; 3) il attend status 'active' (GET ou webhook) ; 4) il gère la carte (geler, recharger, historique)."
-        + "\n\nCommence par me demander quel service je veux (Gateway seul, cartes seules, ou les deux), puis pose-moi tes autres questions.";
+        + "\n\nFlux Wallet crypto : 1) le serveur crée le wallet (POST /v1/crypto/wallets) et affiche l'adresse ; 2) l'utilisateur envoie la cryptomonnaie sur la bonne chaîne ; 3) le solde crypto se lit avec GET /v1/crypto/balance ; 4) le serveur envoie (POST /v1/crypto/send) ou convertit en USD (POST /v1/crypto/convert), avec une reference unique.\n\nCommence par me demander quel service je veux (Gateway seul, cartes seules, wallet crypto seul, ou plusieurs), puis pose-moi tes autres questions.";
     }
     return COMMON.replace(SERVICE_QUESTION, '') + "\n\n" + SERVICE_SCOPED + "\n\n" + ENDPOINTS[key] + "\n\nCommence par me poser tes questions, puis donne-moi le code complet pour cet endpoint.";
   }
