@@ -3167,29 +3167,43 @@
       await cryptoReload();
       renderCrypto();
     }catch(err){
-      if(err.code === 'PROFILE_REQUIRED'){ cryptoProfileForm(chain, err.message, !!profile); return; }
+      if(err.code === 'PROFILE_REQUIRED'){ cryptoProfileForm(chain, err.message, !!profile, err.data && err.data.required); return; }
       showToast(err.message || 'Adresse indisponible pour le moment.', 'error');
     }
   }
 
-  /* The provider asks for the identity details of the account holder once, for the first wallet: the merchant is asked here. */
-  function cryptoProfileForm(chain, message, retry){
+  /* The provider asks for the identity details of the account's owner once. We already know some (the account's phone and country, a card
+     holder already enrolled), so only what is missing is asked. What is typed is kept by the server: nobody types it twice. */
+  const CP_FIELDS = {
+    date_of_birth: ['cpDob', 'Date de naissance', 'type="date"'],
+    identification_number: ['cpId', "Numéro de pièce d'identité", 'placeholder="CIN, passeport, permis…" autocomplete="off"'],
+    phone: ['cpPhone', "Téléphone (avec l'indicatif)", 'type="tel" placeholder="+50937001234"'],
+    'address.street': ['cpStreet', 'Adresse (rue)', 'autocomplete="street-address"'],
+    'address.city': ['cpCity', 'Ville', ''],
+    'address.state': ['cpState', 'Département / État', ''],
+    'address.postal_code': ['cpPostal', 'Code postal', ''],
+    'address.country': ['cpCountry', 'Pays (code à 2 lettres)', 'maxlength="2" value="HT"'],
+  };
+  function cryptoProfileForm(chain, message, retry, required){
     cryptoState.pendingChain = chain;
-    const inp = (id, label, extra) => '<label style="display:block;font-size:.78rem;font-weight:700;margin-bottom:10px">' + label + '<input id="' + id + '" ' + (extra || '') + ' style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-weight:400"></label>';
+    const need = (required && required.length) ? required : Object.keys(CP_FIELDS);
+    cryptoState.profileNeeded = need;
+    const inp = k => { const f = CP_FIELDS[k]; return '<div style="flex:1;min-width:200px"><label style="display:block;font-size:.78rem;font-weight:700;margin-bottom:10px">' + f[1] + '<input id="' + f[0] + '" ' + f[2] + ' style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-weight:400"></label></div>'; };
+    const text = retry ? 'Certaines informations sont manquantes ou invalides. Vérifiez-les.' : "Pour créer votre premier wallet crypto, nous avons besoin de quelques informations d'identité du propriétaire du compte. Nous utilisons déjà celles que nous avons.";
     document.getElementById('cryptoBody').innerHTML =
       '<button class="btn btn-sm btn-ghost" onclick="cryptoState.pendingChain=null;renderCrypto()" style="margin-bottom:12px">&larr; Retour</button>' +
-      '<div style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:10px 12px;font-size:.8rem;margin-bottom:12px">' + esc((retry ? 'Certaines informations sont manquantes ou invalides. Vérifiez-les.' : (message || "Pour créer votre premier wallet crypto, nous avons besoin des informations d'identité du titulaire du compte.")).replace(/[.!?]*$/, '.')) + ' Elles ne sont demandées qu\'une fois.</div>' +
-      inp('cpDob', 'Date de naissance', 'type="date"') +
-      inp('cpId', 'Numéro de pièce d\'identité', 'placeholder="CIN, passeport, permis…" autocomplete="off"') +
-      inp('cpPhone', 'Téléphone (avec l\'indicatif)', 'type="tel" placeholder="+50937001234"') +
-      inp('cpStreet', 'Adresse (rue)', 'autocomplete="street-address"') +
-      '<div style="display:flex;gap:8px">' + '<div style="flex:1">' + inp('cpCity', 'Ville') + '</div><div style="flex:1">' + inp('cpState', 'Département / État') + '</div></div>' +
-      '<div style="display:flex;gap:8px">' + '<div style="flex:1">' + inp('cpPostal', 'Code postal') + '</div><div style="flex:1">' + inp('cpCountry', 'Pays (code à 2 lettres)', 'maxlength="2" value="HT"') + '</div></div>' +
+      '<div style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:10px 12px;font-size:.8rem;margin-bottom:12px">' + esc(text) + ' Elles ne sont demandées qu\'une fois et sont conservées de façon sécurisée.</div>' +
+      '<div style="display:flex;flex-wrap:wrap;column-gap:10px">' + need.filter(k => CP_FIELDS[k]).map(inp).join('') + '</div>' +
       '<button class="btn" style="width:100%" onclick="cryptoSubmitProfile()">Continuer et créer mon wallet</button>';
   }
   function cryptoSubmitProfile(){
-    const v = id => (document.getElementById(id).value || '').trim();
-    const profile = { date_of_birth: v('cpDob'), identification_number: v('cpId'), phone: v('cpPhone'), address: { street: v('cpStreet'), city: v('cpCity'), state: v('cpState'), postal_code: v('cpPostal'), country: v('cpCountry').toUpperCase() } };
+    const v = id => { const el = document.getElementById(id); return el ? (el.value || '').trim() : ''; };
+    const profile = { address: {} };
+    (cryptoState.profileNeeded || []).forEach(k => {
+      const f = CP_FIELDS[k]; if(!f) return;
+      const val = v(f[0]);
+      if(k.indexOf('address.') === 0) profile.address[k.slice(8)] = k === 'address.country' ? val.toUpperCase() : val; else profile[k] = val;
+    });
     return cryptoPickChain(cryptoState.pendingChain, profile);
   }
   function cryptoRenderQr(text){
