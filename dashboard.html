@@ -1757,7 +1757,11 @@
     let data = null;
     try{ data = await res.json(); }catch(e){}
     if(res.status === 401){ clearSession(); window.location.href = pageUrl('signup'); throw new Error('Session expirée'); }
-    if(!res.ok){ throw new Error((data && data.error && data.error.message) || ('Erreur HTTP ' + res.status)); }
+    if(!res.ok){
+      const e = new Error((data && data.error && data.error.message) || ('Erreur HTTP ' + res.status));
+      e.status = res.status; e.code = data && data.error && data.error.code; e.data = data && data.error;
+      throw e;
+    }
     return data;
   }
 
@@ -3155,12 +3159,38 @@
       '<div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px">Choisir la chaîne</div><div class="picker-grid">' + chains + '</div>' +
       '<div style="font-size:.78rem;color:var(--muted);margin-top:12px">Frais de dépôt : ' + esc(d.fees.deposit_pct) + ' %. Dépôt minimum : ' + esc(d.fees.min_deposit) + '. Assurez-vous de choisir la bonne chaîne, sinon vos fonds pourraient être perdus.</div>';
   }
-  async function cryptoPickChain(chain){
+  async function cryptoPickChain(chain, profile){
     try{
-      cryptoState.address = await apiFetch('/dashboard/crypto/addresses', { method: 'POST', body: { chain: chain, coin: cryptoState.coin } });
+      const body = { chain: chain, coin: cryptoState.coin };
+      if(profile) body.profile = profile;
+      cryptoState.address = await apiFetch('/dashboard/crypto/addresses', { method: 'POST', body: body });
       await cryptoReload();
       renderCrypto();
-    }catch(err){ showToast(err.message || 'Adresse indisponible pour le moment.', 'error'); }
+    }catch(err){
+      if(err.code === 'PROFILE_REQUIRED'){ cryptoProfileForm(chain, err.message, !!profile); return; }
+      showToast(err.message || 'Adresse indisponible pour le moment.', 'error');
+    }
+  }
+
+  /* The provider asks for the identity details of the account holder once, for the first wallet: the merchant is asked here. */
+  function cryptoProfileForm(chain, message, retry){
+    cryptoState.pendingChain = chain;
+    const inp = (id, label, extra) => '<label style="display:block;font-size:.78rem;font-weight:700;margin-bottom:10px">' + label + '<input id="' + id + '" ' + (extra || '') + ' style="width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-weight:400"></label>';
+    document.getElementById('cryptoBody').innerHTML =
+      '<button class="btn btn-sm btn-ghost" onclick="cryptoState.pendingChain=null;renderCrypto()" style="margin-bottom:12px">&larr; Retour</button>' +
+      '<div style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:10px 12px;font-size:.8rem;margin-bottom:12px">' + esc((retry ? 'Certaines informations sont manquantes ou invalides. Vérifiez-les.' : (message || "Pour créer votre premier wallet crypto, nous avons besoin des informations d'identité du titulaire du compte.")).replace(/[.!?]*$/, '.')) + ' Elles ne sont demandées qu\'une fois.</div>' +
+      inp('cpDob', 'Date de naissance', 'type="date"') +
+      inp('cpId', 'Numéro de pièce d\'identité', 'placeholder="CIN, passeport, permis…" autocomplete="off"') +
+      inp('cpPhone', 'Téléphone (avec l\'indicatif)', 'type="tel" placeholder="+50937001234"') +
+      inp('cpStreet', 'Adresse (rue)', 'autocomplete="street-address"') +
+      '<div style="display:flex;gap:8px">' + '<div style="flex:1">' + inp('cpCity', 'Ville') + '</div><div style="flex:1">' + inp('cpState', 'Département / État') + '</div></div>' +
+      '<div style="display:flex;gap:8px">' + '<div style="flex:1">' + inp('cpPostal', 'Code postal') + '</div><div style="flex:1">' + inp('cpCountry', 'Pays (code à 2 lettres)', 'maxlength="2" value="HT"') + '</div></div>' +
+      '<button class="btn" style="width:100%" onclick="cryptoSubmitProfile()">Continuer et créer mon wallet</button>';
+  }
+  function cryptoSubmitProfile(){
+    const v = id => (document.getElementById(id).value || '').trim();
+    const profile = { date_of_birth: v('cpDob'), identification_number: v('cpId'), phone: v('cpPhone'), address: { street: v('cpStreet'), city: v('cpCity'), state: v('cpState'), postal_code: v('cpPostal'), country: v('cpCountry').toUpperCase() } };
+    return cryptoPickChain(cryptoState.pendingChain, profile);
   }
   function cryptoRenderQr(text){
     const box = document.getElementById('cryptoQr'); if(!box) return; box.innerHTML = '';
@@ -4424,7 +4454,7 @@
   }
 
   /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
-  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|cryptoSubmitProfile|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
   const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
   function lockViewerControls(){
     if(currentUserRole !== 'viewer') return;
@@ -4476,7 +4506,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
