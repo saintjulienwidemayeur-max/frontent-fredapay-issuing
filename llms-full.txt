@@ -86,6 +86,7 @@ R : Non, chacun s'utilise seul ou avec l'autre.
 - https://issuing.fredapay.com/docs/webhooks
 - https://issuing.fredapay.com/docs/tester-ma-cle-api
 - https://issuing.fredapay.com/docs/retraits-et-solde
+- https://issuing.fredapay.com/docs/portefeuille-crypto
 - https://issuing.fredapay.com/docs/titulaires-de-cartes
 - https://issuing.fredapay.com/docs/creer-une-carte
 - https://issuing.fredapay.com/docs/gerer-une-carte
