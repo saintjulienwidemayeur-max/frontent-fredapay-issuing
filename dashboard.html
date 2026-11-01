@@ -4442,7 +4442,7 @@
   function twofaDrawQr(box, uri){
     box.innerHTML = '';
     box.style.position = 'relative';
-    if(window.QRCode){ new QRCode(box, { text: uri, width: 176, height: 176, correctLevel: QRCode.CorrectLevel.H }); }
+    if(window.QRCode){ new QRCode(box, { text: uri, width: 176, height: 176, correctLevel: QRCode.CorrectLevel.M }); }
     const logo = document.createElement('img');
     logo.src = 'logo-64.png'; logo.alt = 'Freda Pay Issuing';
     logo.style.cssText = 'position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:8px;background:#fff;padding:3px;box-sizing:border-box';
