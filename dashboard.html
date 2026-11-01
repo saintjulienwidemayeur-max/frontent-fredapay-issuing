@@ -472,6 +472,10 @@
   <!-- ===== Main ===== -->
   <main class="main">
     <div class="plan-banner" id="roleBanner" hidden>Accès en lecture seule : vous pouvez consulter ce compte, mais pas le modifier.</div>
+    <div class="plan-banner" id="twofaBanner" hidden>
+      <span><strong>Activez l'authentification à deux facteurs.</strong> Ce site ne fonctionne qu'avec la 2FA, car les outils peuvent déplacer de l'argent.</span>
+      <button class="btn btn-sm" onclick="showSection('settings');setTimeout(function(){var e=document.getElementById('twofaCard');if(e)e.scrollIntoView({behavior:'smooth'})},200)">Activer maintenant</button>
+    </div>
     <div class="plan-banner" id="issuingAccessNotice" hidden>
       <span>Vous êtes en mode Live pour les paiements. L'émission de cartes en Live nécessite une demande d'accès séparée.</span>
       <button class="btn btn-sm" id="issuingAccessBtn" onclick="requestIssuingAccess()">Demander l'accès Issuing Live</button>
@@ -1183,6 +1187,37 @@
         <button class="btn btn-sm" onclick="changePasswordSettings()">Mettre à jour le mot de passe</button>
       </div>
 
+      <div class="card" id="twofaCard" style="margin-bottom:20px">
+        <div class="section-title">Authentification à deux facteurs <span class="tag tag-green" id="twofaTag" hidden>Activée</span></div>
+        <div class="section-desc" id="twofaDesc">Ce site ne fonctionne qu'avec la 2FA, car les outils peuvent déplacer de l'argent. Votre code d'authentification est demandé à chaque connexion.</div>
+        <div id="twofaOn" hidden>
+          <div class="note" style="margin-bottom:14px">✅ <strong>Authentification à deux facteurs Activée.</strong> <span id="twofaMeta"></span></div>
+          <div class="field" style="max-width:320px">
+            <label>Code actuel (pour générer de nouveaux codes de secours)</label>
+            <input type="text" id="twofaRecCode" inputmode="numeric" maxlength="12" placeholder="000000" autocomplete="one-time-code">
+          </div>
+          <button class="btn btn-sm" onclick="twofaNewRecovery()">Nouveaux codes de secours</button>
+          <pre id="twofaRecList" hidden style="margin-top:14px;background:rgba(127,127,127,.12);padding:14px;border-radius:10px;line-height:1.8"></pre>
+        </div>
+        <div id="twofaOff" hidden>
+          <button class="btn btn-sm" id="twofaStartBtn" onclick="twofaStart()">Activer la 2FA</button>
+          <div id="twofaSetup" hidden style="margin-top:16px">
+            <ol style="margin:0 0 14px 18px;padding:0;line-height:1.7;font-size:.92rem">
+              <li>Installez Google Authenticator, Authy ou 1Password sur votre téléphone.</li>
+              <li>Scannez ce QR code (ou saisissez la clé).</li>
+              <li>Entrez le code à 6 chiffres affiché.</li>
+            </ol>
+            <div id="twofaQr" style="background:#fff;padding:10px;border-radius:10px;display:inline-block;margin-bottom:8px"></div>
+            <div><code id="twofaSecret" style="word-break:break-all;user-select:all"></code></div>
+            <div class="field" style="max-width:320px;margin-top:12px">
+              <label>Code à 6 chiffres</label>
+              <input type="text" id="twofaCode" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+            </div>
+            <button class="btn btn-sm" onclick="twofaEnable()">Confirmer et activer</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card" id="teamCard">
         <div class="table-toolbar">
           <div>
@@ -1808,6 +1843,7 @@
       applyUserRole(me.user);
     }catch(err){ /* apiFetch already redirects on auth failure */ return; }
 
+    loadTwofa(); // the reminder banner shows on every page until 2FA is on
     resetLoadedSections(); // a new mode (or a fresh start) means every section loads again when it is opened
     await ensureSection(currentSection);
   }
@@ -2143,7 +2179,7 @@
     'cards-business': () => [loadCards, loadIssuingAccessStatus, loadBillingPlans],
     'cards-individual': () => [loadCards, loadHolderProfile, loadIssuingAccessStatus, loadBillingPlans],
     billing: () => [refreshBalances, loadBillingPlans],
-    settings: () => [loadTeam],
+    settings: () => [loadTeam, loadTwofa],
     keys: () => [loadApiKeys],
     webhooks: () => [loadWebhook],
   };
@@ -4389,6 +4425,47 @@
       showToast(err.message, 'error');
     }
   }
+  /* ===== Two-factor authentication ===== */
+  async function loadTwofa(){
+    try{
+      const st = await apiFetch('/dashboard/security/2fa');
+      const on = !!st.enabled;
+      document.getElementById('twofaTag').hidden = !on;
+      document.getElementById('twofaOn').hidden = !on;
+      document.getElementById('twofaOff').hidden = on || st.available === false;
+      document.getElementById('twofaBanner').hidden = on || st.available === false || !st.required;
+      if(on) document.getElementById('twofaMeta').textContent = st.recovery_codes_left + ' code(s) de secours restant(s).';
+    }catch(e){ /* the panel simply stays hidden */ }
+  }
+  async function twofaStart(){
+    try{
+      const d = await apiFetch('/dashboard/security/2fa/setup', { method: 'POST', body: {} });
+      document.getElementById('twofaSecret').textContent = d.secret.replace(/(.{4})/g, '$1 ').trim();
+      const box = document.getElementById('twofaQr'); box.innerHTML = '';
+      if(window.QRCode){ new QRCode(box, { text: d.otpauth_uri, width: 168, height: 168 }); } else { box.innerHTML = '<a href="' + d.otpauth_uri + '">Ouvrir dans l\'application</a>'; }
+      document.getElementById('twofaSetup').hidden = false;
+      document.getElementById('twofaStartBtn').hidden = true;
+    }catch(err){ showToast(err.message, 'error'); }
+  }
+  async function twofaEnable(){
+    try{
+      const d = await apiFetch('/dashboard/security/2fa/enable', { method: 'POST', body: { code: document.getElementById('twofaCode').value.trim() } });
+      await loadTwofa();
+      const pre = document.getElementById('twofaRecList');
+      pre.textContent = 'Codes de secours (affichés une seule fois, conservez-les) :\n' + d.recovery_codes.join('\n'); pre.hidden = false;
+      document.getElementById('twofaOn').hidden = false;
+      showToast('Authentification à deux facteurs activée.', 'success');
+    }catch(err){ showToast(err.message, 'error'); }
+  }
+  async function twofaNewRecovery(){
+    try{
+      const d = await apiFetch('/dashboard/security/2fa/recovery-codes', { method: 'POST', body: { code: document.getElementById('twofaRecCode').value.trim() } });
+      const pre = document.getElementById('twofaRecList');
+      pre.textContent = 'Nouveaux codes de secours (les anciens ne marchent plus) :\n' + d.recovery_codes.join('\n'); pre.hidden = false;
+      document.getElementById('twofaRecCode').value = '';
+    }catch(err){ showToast(err.message, 'error'); }
+  }
+
   /* ===== Team ===== */
   let currentUserRole = 'owner';
   const ROLE_LABELS = { owner:'Propriétaire', admin:'Administrateur', viewer:'Lecture seule' };
@@ -4520,7 +4597,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
@@ -4778,5 +4855,6 @@
     render([]); setTimeout(poll, 2500); timer = setInterval(poll, 30000);
   })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </body>
 </html>

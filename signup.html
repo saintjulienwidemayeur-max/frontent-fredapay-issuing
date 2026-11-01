@@ -273,6 +273,55 @@
           </p>
         </div>
 
+
+        <!-- 2FA: authenticator code asked at every login -->
+        <div id="loginTotpBlock" hidden>
+          <h2 style="font-size:1.25rem;margin:4px 0 8px">Code d'authentification</h2>
+          <p class="auth-sub" style="margin-bottom:18px">Ouvrez votre application d'authentification (Google Authenticator, Authy…) et entrez le code à 6 chiffres. Ce code est demandé à chaque connexion. Vous pouvez aussi utiliser un code de secours.</p>
+          <form onsubmit="return handleLoginTotp(event)">
+            <div class="field">
+              <label for="loginTotpCode">Code d'authentification</label>
+              <input type="text" id="loginTotpCode" maxlength="12" placeholder="000000" style="text-align:center;letter-spacing:.3em;font-size:1.3rem;font-weight:700" autocomplete="one-time-code" required>
+            </div>
+            <div class="auth-error" id="loginTotpError"></div>
+            <button type="submit" class="btn btn-primary" id="loginTotpBtn"><span class="btn-label">Se connecter</span><span class="spinner"></span></button>
+          </form>
+          <p class="alt-action" style="margin-top:16px"><a href="#" onclick="backToLogin(event)">Retour</a></p>
+        </div>
+
+        <!-- 2FA: mandatory enrolment (first login after the email code) -->
+        <div id="loginSetupBlock" hidden>
+          <h2 style="font-size:1.25rem;margin:4px 0 8px">Activez l'authentification à deux facteurs</h2>
+          <p class="auth-sub" style="margin-bottom:14px">Ce site ne fonctionne qu'avec la 2FA, car les outils peuvent déplacer de l'argent. Votre code d'authentification sera demandé à chaque connexion.</p>
+          <ol style="margin:0 0 14px 18px;padding:0;line-height:1.7;font-size:.92rem">
+            <li>Installez <strong>Google Authenticator</strong>, <strong>Authy</strong> ou <strong>1Password</strong> sur votre téléphone.</li>
+            <li>Scannez ce QR code (ou saisissez la clé).</li>
+            <li>Entrez le code à 6 chiffres affiché.</li>
+          </ol>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:14px">
+            <div id="twofaQr" style="background:#fff;padding:10px;border-radius:10px;min-height:60px"></div>
+            <div style="font-size:.78rem;opacity:.75">Clé de configuration manuelle</div>
+            <code id="twofaSecret" style="word-break:break-all;text-align:center;font-size:.95rem;letter-spacing:.08em;user-select:all"></code>
+          </div>
+          <form onsubmit="return handleTwofaEnable(event)">
+            <div class="field">
+              <label for="twofaCode">Code à 6 chiffres</label>
+              <input type="text" id="twofaCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000" style="text-align:center;letter-spacing:.4em;font-size:1.3rem;font-weight:700" autocomplete="one-time-code" required>
+            </div>
+            <div class="auth-error" id="twofaError"></div>
+            <button type="submit" class="btn btn-primary" id="twofaBtn"><span class="btn-label">Activer la 2FA</span><span class="spinner"></span></button>
+          </form>
+        </div>
+
+        <!-- 2FA: recovery codes, shown once -->
+        <div id="loginRecoveryBlock" hidden>
+          <h2 style="font-size:1.25rem;margin:4px 0 8px">Authentification à deux facteurs activée</h2>
+          <p class="auth-sub" style="margin-bottom:14px">Conservez ces <strong>codes de secours</strong> en lieu sûr : chacun sert une seule fois si vous perdez votre téléphone. Ils ne seront plus affichés.</p>
+          <pre id="recoveryList" style="background:rgba(127,127,127,.12);padding:14px;border-radius:10px;font-size:1rem;line-height:1.8;text-align:center;user-select:all"></pre>
+          <button type="button" class="btn" style="margin-bottom:10px;width:100%" onclick="copyRecovery()">Copier les codes</button>
+          <button type="button" class="btn btn-primary" style="width:100%" onclick="finishTwofa()"><span class="btn-label">J'ai conservé mes codes, continuer</span></button>
+        </div>
+
         <p class="alt-action" id="loginSignupHint">Pas encore de compte&nbsp;? <a href="#" onclick="switchTab('signup');return false;">Créer un compte</a></p>
       </div>
 
@@ -1200,11 +1249,7 @@
         showError('loginError', (data.error && data.error.message) || 'Connexion échouée.');
         return false;
       }
-      if(data.otp_required){
-        // Correct password: now ask for the code that was just emailed.
-        showLoginOtp(data);
-        return false;
-      }
+      if(routeLogin(data)) return false;
       saveSession(data.session_token, data.merchant);
       window.location.href = pageUrl('dashboard');
     }catch(err){
@@ -1235,9 +1280,8 @@
     if(e) e.preventDefault();
     loginChallengeId = null;
     clearInterval(loginResendTimer);
-    document.getElementById('loginOtpBlock').hidden = true;
-    document.getElementById('loginForm').hidden = false;
-    document.getElementById('loginSignupHint').hidden = false;
+    twofaToken = null;
+    showLoginBlock('loginForm');
     document.getElementById('loginPassword').value = '';
   }
 
@@ -1273,6 +1317,7 @@
         }
         return false;
       }
+      if(routeLogin(data)) return false;
       saveSession(data.session_token, data.merchant);
       window.location.href = pageUrl('dashboard');
     }catch(err){
@@ -1299,6 +1344,102 @@
     }catch(err){
       showError('loginOtpError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
     }
+  }
+
+
+  /* ===== Two-factor authentication (authenticator app) ===== */
+  let twofaToken = null, twofaSession = null;
+  const LOGIN_BLOCKS = ['loginForm','loginOtpBlock','loginTotpBlock','loginSetupBlock','loginRecoveryBlock'];
+  function showLoginBlock(id){
+    LOGIN_BLOCKS.forEach(b => { document.getElementById(b).hidden = (b !== id); });
+    document.getElementById('loginSignupHint').hidden = (id !== 'loginForm');
+  }
+  /* Returns true when the answer is another step (code / enrolment), false when it already holds a session. */
+  function routeLogin(data){
+    if(data.otp_required){ showLoginOtp(data); return true; }
+    if(data.twofa_required){
+      twofaToken = data.challenge_token;
+      showLoginBlock('loginTotpBlock');
+      document.getElementById('loginTotpCode').value = '';
+      hideError('loginTotpError');
+      setTimeout(() => document.getElementById('loginTotpCode').focus(), 50);
+      return true;
+    }
+    if(data.twofa_setup_required){ startTwofaSetup(data.setup_token); return true; }
+    return false;
+  }
+  async function handleLoginTotp(e){
+    e.preventDefault();
+    hideError('loginTotpError');
+    const btn = document.getElementById('loginTotpBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/login/2fa', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ challenge_token: twofaToken, code: document.getElementById('loginTotpCode').value.trim() }),
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showError('loginTotpError', (data.error && data.error.message) || 'Code invalide.');
+        if(data.error && data.error.code === 'TWOFA_TOKEN_INVALID'){ setTimeout(() => backToLogin(), 1500); }
+        return false;
+      }
+      saveSession(data.session_token, data.merchant);
+      window.location.href = pageUrl('dashboard');
+    }catch(err){
+      showError('loginTotpError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{ setLoading(btn, false); }
+    return false;
+  }
+  async function startTwofaSetup(setupToken){
+    twofaToken = setupToken;
+    showLoginBlock('loginSetupBlock');
+    hideError('twofaError');
+    document.getElementById('twofaCode').value = '';
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/2fa/setup', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ setup_token: setupToken }),
+      });
+      const data = await res.json();
+      if(!res.ok){ showError('twofaError', (data.error && data.error.message) || 'Configuration impossible.'); return; }
+      document.getElementById('twofaSecret').textContent = data.secret.replace(/(.{4})/g, '$1 ').trim();
+      const box = document.getElementById('twofaQr');
+      box.innerHTML = '';
+      if(window.QRCode){ new QRCode(box, { text: data.otpauth_uri, width: 168, height: 168 }); }
+      else { box.innerHTML = '<a href="' + data.otpauth_uri + '">Ouvrir dans l\'application</a>'; }
+    }catch(err){
+      showError('twofaError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }
+  }
+  async function handleTwofaEnable(e){
+    e.preventDefault();
+    hideError('twofaError');
+    const btn = document.getElementById('twofaBtn');
+    setLoading(btn, true);
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/2fa/enable', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ setup_token: twofaToken, code: document.getElementById('twofaCode').value.trim() }),
+      });
+      const data = await res.json();
+      if(!res.ok){ showError('twofaError', (data.error && data.error.message) || 'Code invalide.'); return false; }
+      twofaSession = { token: data.session_token, merchant: data.merchant };
+      document.getElementById('recoveryList').textContent = (data.recovery_codes || []).join('\n');
+      showLoginBlock('loginRecoveryBlock');
+    }catch(err){
+      showError('twofaError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
+    }finally{ setLoading(btn, false); }
+    return false;
+  }
+  function copyRecovery(){
+    const t = document.getElementById('recoveryList').textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
+  }
+  function finishTwofa(){
+    if(!twofaSession) return;
+    saveSession(twofaSession.token, twofaSession.merchant);
+    window.location.href = pageUrl('dashboard');
   }
 
   /* ===== Show / hide password ===== */
@@ -1426,5 +1567,6 @@
 </script>
 
 <script src="/analytics.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </body>
 </html>
