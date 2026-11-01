@@ -304,6 +304,18 @@
             <code id="twofaSecret" style="word-break:break-all;text-align:center;font-size:.95rem;letter-spacing:.08em;user-select:all"></code>
             <a id="twofaOpenApp" class="btn btn-sm" href="#" style="text-decoration:none;text-align:center">Je suis sur mon téléphone : ajouter dans mon application</a>
             <div style="font-size:.75rem;opacity:.7;text-align:center">Le compte s'appellera « Freda Pay Issuing » dans l'application.</div>
+            <details style="margin-top:10px;font-size:.85rem;text-align:left;width:100%">
+              <summary style="cursor:pointer;font-weight:600">iPhone (app « Mots de passe ») : comment faire</summary>
+              <ol style="margin:8px 0 0 18px;padding:0;line-height:1.7">
+                <li>Dans « Mots de passe », créez une entrée (+) avec ces valeurs :
+                  <div>Titre : <code>Freda Pay Issuing</code> <a href="#" onclick="twofaCopy('Freda Pay Issuing');return false">copier</a></div>
+                  <div>Nom d'utilisateur : <code id="twofaAcct"></code> <a href="#" onclick="twofaCopy(document.getElementById('twofaAcct').textContent);return false">copier</a></div>
+                  <div>Site web : <code id="twofaSite"></code> <a href="#" onclick="twofaCopy(document.getElementById('twofaSite').textContent);return false">copier</a></div>
+                </li>
+                <li>Ouvrez l'entrée → <em>Options de mot de passe</em> → <em>Configurer le code de vérification</em> → <em>Saisir la clé de configuration</em>, et collez la clé ci-dessus <a href="#" onclick="twofaCopy(document.getElementById('twofaSecret').textContent.replace(/ /g,''));return false">copier la clé</a>.</li>
+              </ol>
+            </details>
+
           </div>
           <form onsubmit="return handleTwofaEnable(event)">
             <div class="field">
@@ -1393,6 +1405,8 @@
     }finally{ setLoading(btn, false); }
     return false;
   }
+  function twofaCopy(t){ if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){}); }
+  function twofaFillHelp(d){ var a=document.getElementById('twofaAcct'), s=document.getElementById('twofaSite'); if(a) a.textContent=d.account||''; if(s) s.textContent=d.site||''; }
   function twofaDrawQr(box, uri){
     box.innerHTML = '';
     box.style.position = 'relative';
@@ -1417,7 +1431,7 @@
       const data = await res.json();
       if(!res.ok){ showError('twofaError', (data.error && data.error.message) || 'Configuration impossible.'); return; }
       document.getElementById('twofaSecret').textContent = data.secret.replace(/(.{4})/g, '$1 ').trim();
-      twofaDrawQr(document.getElementById('twofaQr'), data.otpauth_uri);
+      twofaDrawQr(document.getElementById('twofaQr'), data.otpauth_uri); twofaFillHelp(data);
     }catch(err){
       showError('twofaError', 'Impossible de contacter le serveur. Réessayez dans un instant.');
     }

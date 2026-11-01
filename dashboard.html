@@ -1211,6 +1211,18 @@
             <div><code id="twofaSecret" style="word-break:break-all;user-select:all"></code></div>
             <div style="margin-top:8px"><a id="twofaOpenApp" class="btn btn-sm" href="#" style="text-decoration:none">Je suis sur mon téléphone : ajouter dans mon application</a></div>
             <div style="font-size:.78rem;opacity:.7;margin-top:6px">Le compte s'appellera « Freda Pay Issuing » dans l'application.</div>
+            <details style="margin-top:10px;font-size:.85rem;text-align:left;width:100%">
+              <summary style="cursor:pointer;font-weight:600">iPhone (app « Mots de passe ») : comment faire</summary>
+              <ol style="margin:8px 0 0 18px;padding:0;line-height:1.7">
+                <li>Dans « Mots de passe », créez une entrée (+) avec ces valeurs :
+                  <div>Titre : <code>Freda Pay Issuing</code> <a href="#" onclick="twofaCopy('Freda Pay Issuing');return false">copier</a></div>
+                  <div>Nom d'utilisateur : <code id="twofaAcct"></code> <a href="#" onclick="twofaCopy(document.getElementById('twofaAcct').textContent);return false">copier</a></div>
+                  <div>Site web : <code id="twofaSite"></code> <a href="#" onclick="twofaCopy(document.getElementById('twofaSite').textContent);return false">copier</a></div>
+                </li>
+                <li>Ouvrez l'entrée → <em>Options de mot de passe</em> → <em>Configurer le code de vérification</em> → <em>Saisir la clé de configuration</em>, et collez la clé ci-dessus <a href="#" onclick="twofaCopy(document.getElementById('twofaSecret').textContent.replace(/ /g,''));return false">copier la clé</a>.</li>
+              </ol>
+            </details>
+
             <div class="field" style="max-width:320px;margin-top:12px">
               <label>Code à 6 chiffres</label>
               <input type="text" id="twofaCode" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
@@ -4439,6 +4451,8 @@
       if(on) document.getElementById('twofaMeta').textContent = st.recovery_codes_left + ' code(s) de secours restant(s).';
     }catch(e){ /* the panel simply stays hidden */ }
   }
+  function twofaCopy(t){ if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){}); }
+  function twofaFillHelp(d){ var a=document.getElementById('twofaAcct'), s=document.getElementById('twofaSite'); if(a) a.textContent=d.account||''; if(s) s.textContent=d.site||''; }
   function twofaDrawQr(box, uri){
     box.innerHTML = '';
     box.style.position = 'relative';
@@ -4454,7 +4468,7 @@
     try{
       const d = await apiFetch('/dashboard/security/2fa/setup', { method: 'POST', body: {} });
       document.getElementById('twofaSecret').textContent = d.secret.replace(/(.{4})/g, '$1 ').trim();
-      twofaDrawQr(document.getElementById('twofaQr'), d.otpauth_uri);
+      twofaDrawQr(document.getElementById('twofaQr'), d.otpauth_uri); twofaFillHelp(d);
       document.getElementById('twofaSetup').hidden = false;
       document.getElementById('twofaStartBtn').hidden = true;
     }catch(err){ showToast(err.message, 'error'); }
