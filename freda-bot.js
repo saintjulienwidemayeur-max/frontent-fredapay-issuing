@@ -4,14 +4,15 @@
  * Elle regarde la souris, cligne des yeux, change d'humeur (contente, fâchée avec les sourcils froncés, curieuse, surprise,
  * endormie), vient voir de près ce que fait l'utilisateur, puis retourne à sa place. Aucune dépendance.
  *
- * Réglages facultatifs, AVANT ce script :  window.FREDA_BOT = { lang: 'fr' | 'ht', onClick: function () {}, size: 72 }
+ * Il s'appelle Bali. À la première visite il vient se présenter et montre les endroits importants de la page.
+ * Réglages facultatifs, AVANT ce script :  window.FREDA_BOT = { lang: 'fr' | 'ht' | 'en', context: 'dashboard' | 'landing' | 'admin', onClick: function () {}, size: 72, name: 'Bali', intro: true }
  */
 (function () {
   'use strict';
   if (window.__fredaBotLoaded) return;
   window.__fredaBotLoaded = true;
 
-  var cfg = Object.assign({ lang: 'fr', size: 72, onClick: null }, window.FREDA_BOT || {});
+  var cfg = Object.assign({ lang: 'fr', size: 72, onClick: null, name: 'Bali', context: 'dashboard', intro: true, introKey: 'freda_bot_intro_v1', sleepAfterMs: 180000, chatter: true }, window.FREDA_BOT || {});
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var LINES = {
@@ -27,9 +28,26 @@
       error: ['Oups… on va régler ça 😬', 'Aïe. Respirez, on recommence 😅'],
       success: ['Bravo ! 🎉', 'Parfait 👌', 'Joli travail !'],
       typing: ['Je lis par-dessus votre épaule… 👀', 'Prenez votre temps, je surveille 😏', 'Hmm, bon choix 🤔'],
+      sleepy: ['Zzz… je ferme les yeux deux secondes 😴', 'Je fais une petite sieste… 💤'],
       fastscroll: ['Wouh, pas si vite ! 😵'],
       clicks: ['Doucement avec la souris ! 😤'],
       peek: ["Qu'est-ce que c'est que ça ? 🧐", 'Je viens voir de plus près… 👀'],
+    },
+    en: {
+      happy: ['All good! 😄', 'I love it when things work 🎉', 'Hehe 😁'],
+      angry: ['Hmph. 😤', "I'm frowning… for no reason 😠"],
+      curious: ['Hmm… what are we doing here? 🤔', 'Just looking… 👀', 'Interesting…'],
+      surprised: ['Oh! 😮', 'Whoa!', 'Huh?!'],
+      sad: ['Oops… 😕', 'It happens.'],
+      wake: ["What? I wasn't sleeping! 😳"],
+      click: ['Need help? Click again to talk to me 💬'],
+      tickle: ['Hehe, that tickles! 😆'],
+      error: ['Oops… we will fix it 😬'],
+      success: ['Well done! 🎉', 'Perfect 👌'],
+      typing: ['Reading over your shoulder… 👀', 'Take your time 😏'],
+      fastscroll: ['Whoa, slow down! 😵'],
+      clicks: ['Easy on the mouse! 😤'],
+      peek: ['What is that? 🧐', 'Coming closer to look… 👀'],
     },
     ht: {
       happy: ['Tout bagay anfòm ! 😄', 'Mwen renmen lè l mache 🎉', 'Ou an fòm jodi a !', 'Hihi 😁'],
@@ -43,13 +61,96 @@
       error: ["Oups… n ap regle sa 😬", 'Aye. Respire, n ap rekòmanse 😅'],
       success: ['Bravo ! 🎉', 'Pafè 👌', 'Bèl travay !'],
       typing: ["M ap li dèyè zepòl ou… 👀", "Pran tan ou, m ap veye 😏", 'Hmm, bon chwa 🤔'],
+      sleepy: ['Zzz… m fèmen je m de segonn 😴', 'M ap fè yon ti dòmi… 💤'],
       fastscroll: ['Wouy, dousman ! 😵'],
       clicks: ['Dousman ak sourit la ! 😤'],
       peek: ['Sa sa ye la a ? 🧐', "M vin gade pi pre… 👀"],
     },
   };
+
+  var TIPS = {
+    fr: {
+      dashboard: ["Astuce : le Master Wallet paie vos cartes et leurs frais 💡", "Saviez-vous que je peux vous aider dans le chat ? Double-cliquez sur moi 💬", "Un solde bas ? Pensez à recharger le Master Wallet 💰", "Les frais de chaque opération sont dans Facturation 🧾", "Activez la 2FA pour protéger votre argent 🔐", "Je surveille vos paiements… enfin, je regarde 👀", "Besoin d'une clé API ? Section « Clés API » 🔑", "Vous pouvez tester en Sandbox sans risque 🧪", "Moi je ne dors jamais… enfin presque 😴", "Une question ? Je connais la réponse (ou je transmets à l'équipe) 😎"],
+      landing: ["Créez un compte en 2 minutes, c'est gratuit 🚀", "Cartes virtuelles Visa et Mastercard par API 💳", "MonCash, Natcash et carte, un seul checkout 📲", "Regardez les tarifs : pas de frais cachés 🧾", "Le mode Sandbox est gratuit pour tout tester 🧪", "Une question ? Écrivez-nous, je transmets 💬", "Je suis la mascotte la plus mignonne de la fintech 😎", "Faites défiler, il y a plein de choses à voir 👇"],
+      admin: ["Pensez à regarder les brouillons de l'agent IA ✍️", "Un dossier KYC attend peut-être 🛂", "Tout va bien dans les calculs ? Demandez à l'agent 🧮", "Les alertes sécurité, c'est important 🚨", "Café ? ☕", "Je veille sur la plateforme 👀"],
+    },
+    ht: {
+      dashboard: ["Konsèy : Master Wallet la peye kat ou yo ak frè yo 💡", "Ou konnen mwen ka ede ou nan chat la ? Double-klike sou mwen 💬", "Balans ba ? Pense rechaje Master Wallet la 💰", "Ou jwenn frè chak operasyon nan Facturation 🧾", "Aktive 2FA pou pwoteje lajan ou 🔐", "M ap veye peman ou yo… enfin, m ap gade 👀", "Ou bezwen yon kle API ? Seksyon « Clés API » 🔑", "Ou ka teste nan Sandbox san danje 🧪", "Mwen pa janm dòmi… enfin prèske 😴", "Yon kesyon ? M konnen repons lan (oswa m transmèt ekip la) 😎"],
+      landing: ["Kreye yon kont nan 2 minit, se gratis 🚀", "Kat vityèl Visa ak Mastercard pa API 💳", "MonCash, Natcash ak kat, yon sèl checkout 📲", "Gade tarif yo : pa gen frè kache 🧾", "Mòd Sandbox la gratis pou teste tout bagay 🧪", "Yon kesyon ? Ekri nou, m transmèt 💬", "Mwen se mascotte ki pi bèl nan fintech la 😎", "Desann paj la, gen anpil bagay pou wè 👇"],
+      admin: ["Pa bliye gade bouyon ajan IA a ✍️", "Gen petèt yon dosye KYC k ap tann 🛂", "Tout bagay bon nan kalkil yo ? Mande ajan an 🧮", "Alèt sekirite yo enpòtan 🚨", "Yon kafe ? ☕", "M ap veye platfòm lan 👀"],
+    },
+    en: {
+      dashboard: ["Tip: the Master Wallet pays for your cards and fees 💡", "Double-click me to open the chat 💬", "Low balance? Top up the Master Wallet 💰", "I never sleep… almost 😴"],
+      landing: ["Create an account in 2 minutes, it's free 🚀", "Virtual Visa and Mastercard cards by API 💳", "MonCash, Natcash and card, one checkout 📲", "Sandbox is free to test everything 🧪", "Scroll down, there is a lot to see 👇", "I'm the cutest mascot in fintech 😎"],
+      admin: ["Check the AI agent's drafts ✍️", "A KYC file may be waiting 🛂", "Coffee? ☕"],
+    },
+  };
+  var INTRO = {
+    fr: {
+      dashboard: [
+        { line: "Bonjour ! Moi, c'est {name} 👋 Je suis la mascotte de Freda Pay Issuing. Je vous fais visiter ?", mood: 'happy', ms: 4200 },
+        { sel: '[data-section="balances"]', line: "Ici : vos soldes et votre Master Wallet. C'est lui qui paie vos cartes 💰", ms: 4200 },
+        { sel: '[data-section="cards-business"]', line: "Ici, vous créez vos cartes virtuelles 💳", ms: 3800 },
+        { sel: '[data-section="payments"]', line: "Et là, vos paiements MonCash, Natcash et carte 📲", ms: 3800 },
+        { sel: '[data-section="settings"]', line: "Dans Paramètres : activez la 2FA, c'est obligatoire pour protéger votre argent 🔐", ms: 4200 },
+        { sel: '#chatFab', line: "Un souci ? Écrivez dans le chat : l'assistant répond 24h/24 💬", ms: 4200 },
+        { line: "Voilà ! Je reste dans mon coin. Double-cliquez sur moi quand vous voulez de l'aide 😉", mood: 'happy', ms: 4200 },
+      ],
+      landing: [
+        { line: "Bonjour ! Moi, c'est {name} 👋 Bienvenue chez Freda Pay Issuing !", mood: 'happy', ms: 4000 },
+        { sel: '#tarifs h2', line: "Ici, nos tarifs, sans frais cachés 🧾", ms: 3800 },
+        { sel: 'a[href="/signup"]', line: "Et ici, vous créez votre compte en 2 minutes 🚀", ms: 4000 },
+        { line: "Je reste dans le coin si vous avez besoin de moi 😉", mood: 'happy', ms: 3600 },
+      ],
+      admin: [
+        { line: "Salut chef ! Moi, c'est {name} 🤖 Je veille sur la plateforme avec l'agent IA.", mood: 'happy', ms: 4200 },
+        { sel: '[data-section="agent"]', line: "Ici : l'agent IA (emails, chat, KYC, rapports) ✍️", ms: 4200 },
+        { line: "Double-clique sur moi pour l'ouvrir 😎", mood: 'happy', ms: 3600 },
+      ],
+    },
+    ht: {
+      dashboard: [
+        { line: "Bonjou ! Mwen se {name} 👋 Mwen se mascotte Freda Pay Issuing. Ou vle m fè ou vizite ?", mood: 'happy', ms: 4200 },
+        { sel: '[data-section="balances"]', line: "Isit la : balans ou yo ak Master Wallet ou. Se li ki peye kat ou yo 💰", ms: 4200 },
+        { sel: '[data-section="cards-business"]', line: "Isit la, ou kreye kat vityèl ou yo 💳", ms: 3800 },
+        { sel: '[data-section="payments"]', line: "Epi la a, peman MonCash, Natcash ak kat ou yo 📲", ms: 3800 },
+        { sel: '[data-section="settings"]', line: "Nan Paramètres : aktive 2FA, li obligatwa pou pwoteje lajan ou 🔐", ms: 4200 },
+        { sel: '#chatFab', line: "Yon pwoblèm ? Ekri nan chat la : asistan an reponn 24è/24 💬", ms: 4200 },
+        { line: "Sa a ! M ap rete nan kwen m. Double-klike sou mwen lè ou bezwen èd 😉", mood: 'happy', ms: 4200 },
+      ],
+      landing: [
+        { line: "Bonjou ! Mwen se {name} 👋 Byenvini nan Freda Pay Issuing !", mood: 'happy', ms: 4000 },
+        { sel: '#tarifs h2', line: "Isit la, tarif nou yo, san frè kache 🧾", ms: 3800 },
+        { sel: 'a[href="/signup"]', line: "Epi isit la, ou kreye kont ou nan 2 minit 🚀", ms: 4000 },
+        { line: "M ap rete nan kwen an si ou bezwen m 😉", mood: 'happy', ms: 3600 },
+      ],
+      admin: [
+        { line: "Salit chèf ! Mwen se {name} 🤖 M ap veye platfòm lan ak ajan IA a.", mood: 'happy', ms: 4200 },
+        { sel: '[data-section="agent"]', line: "Isit la : ajan IA a (imèl, chat, KYC, rapò) ✍️", ms: 4200 },
+        { line: "Double-klike sou mwen pou ouvri l 😎", mood: 'happy', ms: 3600 },
+      ],
+    },
+    en: {
+      dashboard: [
+        { line: "Hi! I'm {name} 👋 the Freda Pay Issuing mascot. Shall I show you around?", mood: 'happy', ms: 4200 },
+        { sel: '[data-section="balances"]', line: "Your balances and Master Wallet are here. It pays for your cards 💰", ms: 4200 },
+        { sel: '[data-section="cards-business"]', line: "Create your virtual cards here 💳", ms: 3800 },
+        { sel: '#chatFab', line: "Stuck? Write in the chat: the assistant answers 24/7 💬", ms: 4200 },
+        { line: "That's it! Double-click me whenever you need help 😉", mood: 'happy', ms: 4000 },
+      ],
+      landing: [
+        { line: "Hi! I'm {name} 👋 Welcome to Freda Pay Issuing!", mood: 'happy', ms: 4000 },
+        { sel: '#tarifs h2', line: "Our pricing, no hidden fees 🧾", ms: 3800 },
+        { sel: 'a[href="/signup"]', line: "And here you create your account in 2 minutes 🚀", ms: 4000 },
+        { line: "I'll stay in the corner if you need me 😉", mood: 'happy', ms: 3600 },
+      ],
+      admin: [{ line: "Hi boss! I'm {name} 🤖", mood: 'happy', ms: 3800 }],
+    },
+  };
   var L = LINES[cfg.lang] || LINES.fr;
+  var CTX = cfg.context in { dashboard: 1, landing: 1, admin: 1 } ? cfg.context : 'dashboard';
   var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+  var clickLanding = function () { return cfg.lang === 'ht' ? 'Yon lòt klik epi m mennen ou kreye kont ou 🚀' : cfg.lang === 'en' ? 'One more click and I take you to create your account 🚀' : 'Encore un clic et je vous emmène créer votre compte 🚀'; };
   var rand = function (a, b) { return a + Math.random() * (b - a); };
 
   var css = [
@@ -151,6 +252,7 @@
     var away = false;      // visiting something away from its corner
     var lastActivity = Date.now();
     var moodTimer = null; var bubbleTimer = null; var returnTimer = null;
+    var introRunning = false;
     var lastVisit = 0; var lastTickle = 0; var clickArmedAt = 0;
 
     function size() {
@@ -256,7 +358,7 @@
 
     // Moods now and then, to keep it alive (and a frown once in a while, for nothing).
     function randomMood() {
-      if (root.dataset.mood === 'neutral' && !away && Date.now() - lastActivity < 40000) {
+      if (root.dataset.mood === 'neutral' && !away && !introRunning && Date.now() - lastActivity < cfg.sleepAfterMs) {
         var r = Math.random();
         if (r < 0.42) setMood('happy', 2600, Math.random() < 0.4 ? pick(L.happy) : null);
         else if (r < 0.62) setMood('curious', 2600, Math.random() < 0.3 ? pick(L.curious) : null);
@@ -264,25 +366,82 @@
         else if (r < 0.9) setMood('angry', 2200, Math.random() < 0.5 ? pick(L.angry) : null);
         else setMood('sad', 2000, null);
       }
-      setTimeout(randomMood, rand(16000, 36000));
+      setTimeout(randomMood, rand(9000, 20000));
     }
     // Sometimes it goes to look at something on the page by itself.
     function peek() {
-      if (!away && root.dataset.mood !== 'sleepy' && Date.now() - lastVisit > 30000 && Date.now() - lastActivity < 30000) {
+      if (!away && !introRunning && root.dataset.mood !== 'sleepy' && Date.now() - lastVisit > 30000 && Date.now() - lastActivity < cfg.sleepAfterMs) {
         var cand = [].slice.call(document.querySelectorAll('h1,h2,.card-title,.section-title,.stat-card,button.btn-primary,table'))
           .filter(function (el) { var r = el.getBoundingClientRect(); return visible(el) && r.top > 60 && r.bottom < window.innerHeight - 60 && !root.contains(el); });
         if (cand.length) visit(pick(cand), Math.random() < 0.6 ? pick(L.peek) : null, 3800);
       }
-      setTimeout(peek, rand(40000, 80000));
+      setTimeout(peek, rand(22000, 45000));
     }
     // Asleep after a while without anyone around.
     function sleepCheck() {
-      if (Date.now() - lastActivity > 45000 && root.dataset.mood !== 'sleepy') { if (away) goHome(); setMood('sleepy'); }
+      if (!introRunning && Date.now() - lastActivity > cfg.sleepAfterMs && root.dataset.mood !== 'sleepy') { if (away) goHome(); setMood('sleepy', 0, null); say(pick(L.sleepy || ['💤']), 2200); }
       setTimeout(sleepCheck, 5000);
     }
     function activity() {
       lastActivity = Date.now();
       if (root.dataset.mood === 'sleepy') { setMood('surprised', 900); boing(); setTimeout(function () { say(pick(L.wake)); }, 250); }
+    }
+
+    // It talks now and then, about the page it is on (tips, jokes), as long as someone is around.
+    function chatter() {
+      if (cfg.chatter && !introRunning && !away && root.dataset.mood !== 'sleepy' && Date.now() - lastActivity < cfg.sleepAfterMs && !document.hidden) {
+        var tips = (TIPS[cfg.lang] || TIPS.fr)[CTX] || [];
+        if (tips.length) {
+          var r = Math.random();
+          setMood(r < 0.5 ? 'happy' : r < 0.8 ? 'curious' : 'surprised', 2400, pick(tips));
+          if (r < 0.3) boing();
+        }
+      }
+      setTimeout(chatter, rand(13000, 26000));
+    }
+
+    // First visit: it comes to introduce itself and shows the important places, one after the other.
+    function seenIntro() { try { return !!localStorage.getItem(cfg.introKey + ':' + CTX); } catch (e) { return false; } }
+    function markIntro() { try { localStorage.setItem(cfg.introKey + ':' + CTX, String(Date.now())); } catch (e) { /* private mode: it will introduce itself again next time */ } }
+    function runIntro(force) {
+      var steps = ((INTRO[cfg.lang] || INTRO.fr)[CTX] || []).slice();
+      if (!steps.length || introRunning) return;
+      introRunning = true; clearTimeout(returnTimer); markIntro();
+      var small = window.innerWidth < 760 || reduceMotion;
+      var startY = window.scrollY;
+      var i = 0;
+      function next() {
+        if (i >= steps.length) { introRunning = false; goHome(); setMood('happy', 2200); boing(); try { window.scrollTo({ top: startY, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, startY); } return; }
+        var st = steps[i]; i += 1;
+        var line = String(st.line).replace('{name}', cfg.name);
+        var el = st.sel && !small ? document.querySelector(st.sel) : null;
+        if (el && visible(el)) {
+          // The place is scrolled into view first, then the bot goes next to it.
+          var r0 = el.getBoundingClientRect();
+          var offscreen = r0.top < 80 || r0.bottom > window.innerHeight - 80;
+          if (offscreen) { try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { el.scrollIntoView(); } }
+          setTimeout(function () {
+            var r = el.getBoundingClientRect();
+            var x = r.right + 14 + S <= window.innerWidth ? r.right + 14 : r.left - S - 14;
+            away = true; lookTarget = el; place(x, Math.min(window.innerHeight - S - 20, Math.max(80, r.top + Math.min(r.height, 120) / 2 - S / 2)));
+            setTimeout(function () { setMood(st.mood || 'curious', 0, line); say(line, st.ms || 4000); boing(); }, 650);
+          }, offscreen ? 850 : 0);
+          setTimeout(next, (st.ms || 4000) + 900 + (offscreen ? 850 : 0));
+        } else {
+          away = false; lookTarget = null;
+          if (i === 1) { var c = homePoint(); place(Math.max(20, c.x - 80), Math.max(80, c.y - 120)); } else goHome();
+          setMood(st.mood || 'happy', 0, line); say(line, st.ms || 4000); boing();
+          setTimeout(next, (st.ms || 4000) + 600);
+        }
+      }
+      setTimeout(next, force ? 100 : 400);
+    }
+    // The intro waits until the page is really there (a dashboard shows its login first).
+    function introWhenReady(tries) {
+      if (!cfg.intro || seenIntro()) return;
+      var ready = CTX === 'landing' ? true : !!document.querySelector('[data-section]') && visible(document.querySelector('[data-section]'));
+      if (ready) { setTimeout(function () { if (!seenIntro()) runIntro(); }, 1200); return; }
+      if (tries < 40) setTimeout(function () { introWhenReady(tries + 1); }, 1000);
     }
 
     var clicks = [];
@@ -319,7 +478,7 @@
       if (!el || root.contains(el) || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.type === 'password') return;
       clearTimeout(typingTimer);
       typingTimer = setTimeout(function () {
-        if (Date.now() - lastVisit > 25000 && document.activeElement === el) visit(el, Math.random() < 0.55 ? pick(L.typing) : null, 5000);
+        if (!introRunning && Date.now() - lastVisit > 25000 && document.activeElement === el) visit(el, Math.random() < 0.55 ? pick(L.typing) : null, 5000);
       }, 900);
     }, true);
     document.addEventListener('focusout', function (e) { if (away && lookTarget === e.target) { clearTimeout(returnTimer); returnTimer = setTimeout(function () { goHome(); }, 600); } }, true);
@@ -344,7 +503,7 @@
       activity(); boing();
       if (Date.now() - clickArmedAt < 4000 && typeof cfg.onClick === 'function') { clickArmedAt = 0; setMood('happy', 1500); cfg.onClick(); return; }
       clickArmedAt = Date.now();
-      setMood('happy', 2200, typeof cfg.onClick === 'function' ? pick(L.click) : pick(L.tickle));
+      setMood('happy', 2200, typeof cfg.onClick === 'function' ? (CTX === 'landing' ? clickLanding() : pick(L.click)) : pick(L.tickle));
     });
 
     size();
@@ -353,7 +512,9 @@
     requestAnimationFrame(track);
     setTimeout(blink, 1800);
     setTimeout(glance, 4000);
-    setTimeout(randomMood, 14000);
+    setTimeout(randomMood, 9000);
+    setTimeout(chatter, 9000);
+    introWhenReady(0);
     setTimeout(peek, 35000);
     setTimeout(sleepCheck, 10000);
     hookToasts(); setTimeout(hookToasts, 1500);
@@ -361,7 +522,7 @@
     // The chat window opening or closing moves its corner.
     setInterval(function () { if (!away) { var p = homePoint(); if (Math.abs(p.x - pos.x) > 4 || Math.abs(p.y - pos.y) > 4) place(p.x, p.y); } }, 700);
 
-    window.FredaBot = { mood: setMood, say: say, visit: visit, home: goHome };
+    window.FredaBot = { mood: setMood, say: say, visit: visit, home: goHome, intro: function () { runIntro(true); } };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

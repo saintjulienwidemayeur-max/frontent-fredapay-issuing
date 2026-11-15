@@ -130,5 +130,8 @@ footer{border-top:1px solid var(--line);padding:32px 0;font-size:.88rem;color:va
   <div>© 2026 Freda Pay LLC · <a href="mailto:issuing@fredapay.com">issuing@fredapay.com</a></div>
 </div></footer>
 <script src="/analytics.js" defer></script>
+<!-- Freda Bot : la mascotte (Bali). Elle se présente à la première visite ; deux clics mènent à la création de compte. -->
+<script>window.FREDA_BOT = { lang: 'en', context: 'landing', onClick: function () { location.href='/signup'; } };</script>
+<script src="/freda-bot.js" defer></script>
 </body>
 </html>
