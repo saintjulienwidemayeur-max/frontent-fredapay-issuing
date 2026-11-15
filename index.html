@@ -1399,5 +1399,8 @@ $payment = $freda->payments-><span class="tok-f">create</span>([
 <script>/* Opened from disk (file://)? The blog is rendered by the server, so send those links to the live site. */
 if(location.protocol==='file:'){document.querySelectorAll('a[href^="/blog"]').forEach(function(a){a.href='https://issuing.fredapay.com'+a.getAttribute('href');});}</script>
 <script src="/analytics.js" defer></script>
+<!-- Freda Bot : la mascotte (Bali). Elle se présente à la première visite ; deux clics mènent à la création de compte. -->
+<script>window.FREDA_BOT = { lang: 'fr', context: 'landing', onClick: function () { location.href='/signup'; } };</script>
+<script src="freda-bot.js" defer></script>
 </body>
 </html>
