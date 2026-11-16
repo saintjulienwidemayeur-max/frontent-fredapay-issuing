@@ -297,9 +297,45 @@
         <button class="ask-btn" onclick="askAI('claude','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/claude/D97757" alt="" width="15" height="15" loading="lazy" decoding="async">Claude</button>
         <button class="ask-btn" onclick="askAI('chatgpt','cards_manage')"><img onerror="logoFallback(this)" src="https://cdn.simpleicons.org/openai/000000" alt="" width="15" height="15" loading="lazy" decoding="async">ChatGPT</button>
       </div>
+      <div class="callout">
+        <strong>Règles à connaître</strong>
+        <ul style="margin:6px 0 0 18px;padding:0">
+          <li><strong>Retrait</strong> : au moins <strong>1 $</strong> doit rester sur la carte (<code class="inline">400 CARD_MINIMUM_BALANCE</code>).</li>
+          <li><strong>Fermeture</strong> : impossible <strong>le jour de la création</strong> de la carte (<code class="inline">400 CARD_TERMINATE_SAME_DAY</code>). Gelez-la, puis fermez-la le lendemain.</li>
+          <li><strong>Numéro complet</strong> (<code class="inline">/reveal</code>) : 30 fois par heure et par carte (<code class="inline">429 CARD_REVEAL_LIMIT</code>).</li>
+          <li><strong>Une opération à la fois</strong> par carte : une deuxième opération pendant la première renvoie <code class="inline">409 CARD_OPERATION_IN_PROGRESS</code>.</li>
+          <li><strong>Carte à usage unique</strong> : ni recharge ni retrait (<code class="inline">400 CARD_SINGLE_USE</code>).</li>
+          <li><strong>Gel automatique</strong> : après 3 paiements refusés en 24 h, la carte est gelée (<code class="inline">card.frozen</code>). Des refus répétés pour solde insuffisant peuvent la fermer (<code class="inline">card.terminated</code>) : gardez un solde suffisant.</li>
+        </ul>
+      </div>
       <div class="callout warn">
         <strong>Carte gelée</strong>
         <code class="inline">409 CARD_FROZEN</code> sur <code class="inline">/fund</code> ou <code class="inline">/withdraw</code> si la carte est <code class="inline">disabled</code>. Dégelez-la d'abord.
+      </div>
+    </section>
+
+<section class="doc-section" id="cards-wallets">
+      <h2>Ajouter la carte à Apple Pay ou Google Pay</h2>
+      <p>La carte est une vraie carte Visa ou Mastercard : son titulaire peut l'ajouter à son téléphone pour payer sans contact et en ligne. Il lui faut le <strong>numéro complet, la date d'expiration et le CVV</strong> (<code class="inline">POST /cards/:id/reveal</code>, à montrer uniquement au titulaire).</p>
+      <h3>iPhone (Apple Pay)</h3>
+      <ol>
+        <li>Ouvrir l'app <strong>Cartes</strong> (Wallet).</li>
+        <li>Toucher <strong>+</strong>, puis <strong>Carte de débit ou de crédit</strong>, puis <strong>Continuer</strong>.</li>
+        <li>Choisir <strong>Saisir manuellement</strong> et entrer le nom du titulaire, le numéro, la date d'expiration et le CVV.</li>
+        <li>Accepter les conditions. Si un code de vérification est demandé, suivre les instructions affichées.</li>
+        <li>La carte apparaît dans Cartes : elle s'utilise sans contact et sur les sites et apps qui affichent Apple Pay.</li>
+      </ol>
+      <h3>Android (Google Pay / Google Wallet)</h3>
+      <ol>
+        <li>Ouvrir <strong>Google Wallet</strong>.</li>
+        <li>Toucher <strong>Ajouter à Wallet</strong>, puis <strong>Carte de paiement</strong>, puis <strong>Nouvelle carte de crédit ou de débit</strong>.</li>
+        <li>Scanner ou saisir le numéro, la date d'expiration, le CVV, puis le nom et l'adresse du titulaire.</li>
+        <li>Accepter les conditions et terminer la vérification si elle est demandée.</li>
+        <li>Pour payer sans contact, Google Wallet doit être l'app de paiement par défaut et le NFC activé.</li>
+      </ol>
+      <div class="callout">
+        <strong>Bon à savoir</strong>
+        Le solde et le plafond (<code class="inline">spending_limit</code>) de la carte s'appliquent aussi à Apple Pay et Google Pay. Une carte gelée y est refusée ; une carte fermée doit être retirée du téléphone. Si l'ajout est refusé, vérifiez que le nom saisi est exactement celui du titulaire et réessayez ; sinon écrivez à <a href="mailto:issuing@fredapay.com">issuing@fredapay.com</a>.
       </div>
     </section>
 
