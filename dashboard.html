@@ -2083,6 +2083,7 @@
     const note = document.getElementById('programJoinNote'); note.textContent = ''; note.style.color = '';
     if(live && !p.open.live && p.open.sandbox) note.textContent = 'Passez en Sandbox pour l\'essayer dès maintenant.';
     document.getElementById('programModal').classList.add('open');
+    apiFetch('/dashboard/card-program/view', { method: 'POST', body: {} }).catch(() => {}); // lets the team know the program was looked at
   }
   function closeProgramModal(){ document.getElementById('programModal').classList.remove('open'); }
   async function joinProgram(){
