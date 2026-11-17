@@ -178,6 +178,10 @@
   .pg-wallets span{background:rgba(255,255,255,.16);border-radius:6px;padding:2px 7px;font-size:.66rem;letter-spacing:0;font-weight:700}
   .pg-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 14px}
   .pg-chips span{display:inline-flex;align-items:center;gap:6px;background:var(--bg-soft,#f4f4f5);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600}
+  .pg-mine{border:2px solid #7c3aed;border-radius:12px;padding:12px 14px;font-size:.84rem}
+  .pg-mine .nm{font-weight:800;margin-bottom:6px}
+  .pg-mine .ln{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px dashed var(--line)}
+  .pg-mine .ln b{text-align:right;font-weight:700;max-width:58%}
   .pg-plan .ln{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-top:1px dashed var(--line)}
   .pg-plan .ln b{white-space:nowrap;font-weight:700}
   .pg-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0 0 12px}
@@ -1523,7 +1527,7 @@
 
 <!-- ===== Detail modal (payments & cards) ===== -->
 <div class="modal-overlay" id="programModal" onclick="if(event.target===this) closeProgramModal()">
-  <div class="modal-box" style="max-width:800px;width:100%;overflow-wrap:normal">
+  <div class="modal-box" style="max-width:640px;width:100%;overflow-wrap:normal">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
       <h3 style="margin:0">Nouveau programme de cartes</h3>
       <button class="key-btn" onclick="closeProgramModal()" aria-label="Fermer">&times;</button>
@@ -2028,9 +2032,9 @@
 
 
   /* ===== Nouveau programme de cartes ===== */
-  let programState = null; let programChoice = 'startup';
+  let programState = null;
   const pgMoney = (n) => Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
-  const pgPct = (n) => Number(n || 0).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + ' %';
+  const pgPct = (n, d) => Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: d || 1, maximumFractionDigits: d || 1 }) + ' %';
   async function loadProgram(){
     try{
       programState = await apiFetch('/dashboard/card-program');
@@ -2040,46 +2044,41 @@
       document.getElementById('programBanner').hidden = !!member; // members already know it
     }catch(e){ /* the banner is optional */ }
   }
+  /** The lines of one plan, worded as in the official price list. */
+  function programLines(x){
+    const L = [];
+    L.push(['Abonnement mensuel', x.monthly_usd ? pgMoney(x.monthly_usd) + ' / mois' : 'Gratuit (0,00 $)']);
+    if(x.free_cards_per_month) L.push(['Cartes incluses', x.free_cards_per_month + ' cartes virtuelles gratuites chaque mois (puis ' + pgMoney(x.card_creation_usd) + ' par carte supplémentaire)']);
+    else L.push(["Création d'une carte virtuelle", pgMoney(x.card_creation_usd) + ' par carte']);
+    L.push(["Recharge d'une carte", pgMoney(x.card_recharge_usd) + ' par recharge']);
+    L.push(['Dépôt de fonds sur le MasterWallet', pgPct(x.deposit_pct)]);
+    L.push(['Retrait de fonds depuis une carte', pgPct(x.withdrawal_pct)]);
+    L.push(['Commission sur achats réussis', x.purchase_pct ? pgPct(x.purchase_pct) + " du montant de l'achat (prélevé sur la carte)" : 'Gratuit (0,0 %)']);
+    L.push(['Transactions internationales', pgPct(x.international_pct, 2) + ' + ' + pgMoney(x.international_fixed_usd) + ' (prélevé sur la carte)']);
+    L.push(['Maintenance mensuelle par carte active', x.maintenance_usd ? pgMoney(x.maintenance_usd) + ' par mois (prélevé sur la carte)' : 'Gratuit (0,00 $)']);
+    L.push(['Autorisation refusée ou non réglée', pgMoney(x.decline_usd) + ' par transaction (prélevé sur la carte)']);
+    return L;
+  }
   function renderProgramPlans(){
     const p = programState; const live = p.mode === 'live';
-    const current = live ? p.plan.live : p.plan.sandbox;
-    document.getElementById('programPlans').innerHTML = ['startup', 'pro', 'premium'].map(k => {
-      const x = p.plans[k];
-      return '<button type="button" class="pg-plan' + (programChoice === k ? ' on' : '') + '" onclick="pgChoose(\'' + k + '\')">' +
-        '<div class="nm">' + x.label + (current === k ? '<span class="cur">Votre plan</span>' : '') + '</div>' +
-        '<div class="pr">' + (x.monthly_usd ? pgMoney(x.monthly_usd) : '0 $') + '<small> /mois</small></div>' +
-        (x.free_cards_per_month ? '<span class="ln"><span>Cartes offertes</span><b>' + x.free_cards_per_month + ' / mois</b></span>' : '') +
-        '<span class="ln"><span>Création de carte</span><b>' + pgMoney(x.card_creation_usd) + '</b></span>' +
-        '<span class="ln"><span>Recharge de carte</span><b>' + pgMoney(x.card_recharge_usd) + '</b></span>' +
-        '<span class="ln"><span>Retrait sur carte</span><b>' + pgPct(x.withdrawal_pct) + '</b></span>' +
-        '<span class="ln"><span>Dépôt sur le Master Wallet</span><b>' + pgPct(x.deposit_pct) + '</b></span>' +
-        '<span class="ln"><span>Achats réussis</span><b>' + pgPct(x.purchase_pct) + '</b></span>' +
-        '<span class="ln"><span>Maintenance</span><b>' + (x.maintenance_usd ? pgMoney(x.maintenance_usd) + ' / mois' : 'offerte') + '</b></span>' +
-        '</button>';
-    }).join('');
+    const key = ['startup', 'pro', 'premium'].includes(p.plan) ? p.plan : 'startup';
+    const x = p.plans[key];
+    document.getElementById('programPlans').innerHTML = '<div class="pg-mine"><div class="nm">Vos tarifs du programme : plan ' + (p.plan === 'free' ? 'Offert (sans frais Freda Pay, seuls les frais prélevés sur la carte s\'appliquent)' : x.label) + '</div>' +
+      programLines(x).map(l => '<div class="ln"><span>' + l[0] + '</span><b>' + l[1] + '</b></div>').join('') +
+      '<div style="margin-top:8px;font-size:.78rem"><a href="/tarifs" target="_blank" rel="noopener">Voir les 3 plans (Startup, Pro, Premium)</a> · vous gardez votre plan actuel, que vous pouvez changer dans Facturation.</div></div>';
     const btn = document.getElementById('programJoinBtn'); const member = live ? p.member.live : p.member.sandbox;
-    const plan = p.plans[programChoice];
-    if(member){
-      btn.disabled = current === programChoice;
-      btn.textContent = current === programChoice ? 'Votre plan actuel' : ('Passer au plan ' + plan.label + (live && plan.monthly_usd ? ' (' + pgMoney(plan.monthly_usd) + ' maintenant)' : ''));
-    } else if(!(live ? p.open.live : p.open.sandbox)){
-      btn.disabled = true; btn.textContent = live ? 'Bientôt disponible en Live' : 'Bientôt disponible';
-    } else {
-      btn.disabled = false;
-      btn.textContent = live ? ('Rejoindre : ' + pgMoney(Number(p.join_fee_usd) + Number(plan.monthly_usd || 0)) + (plan.monthly_usd ? ' (entrée + 1er mois)' : '')) : 'Essayer gratuitement (Sandbox)';
-    }
+    if(member){ btn.disabled = true; btn.textContent = 'Vous êtes membre' + (live ? '' : ' (Sandbox)'); }
+    else if(!(live ? p.open.live : p.open.sandbox)){ btn.disabled = true; btn.textContent = live ? 'Bientôt disponible en Live' : 'Bientôt disponible'; }
+    else { btn.disabled = false; btn.textContent = live ? 'Rejoindre pour ' + pgMoney(p.join_fee_usd) : 'Essayer gratuitement (Sandbox)'; }
   }
-  function pgChoose(k){ programChoice = k; renderProgramPlans(); }
   function openProgramModal(){
     if(!programState){ loadProgram().then(() => programState && openProgramModal()); return; }
     const p = programState; const live = p.mode === 'live';
-    programChoice = (live ? p.plan.live : p.plan.sandbox) || 'startup';
     renderProgramPlans();
     document.getElementById('programRules').innerHTML = [
-      'Entrée : <strong>' + pgMoney(p.join_fee_usd) + '</strong> une seule fois, sur votre Master Wallet Live (gratuite en Sandbox).',
+      'Entrée : <strong>' + pgMoney(p.join_fee_usd) + '</strong> une seule fois, sur votre Master Wallet Live (gratuite en Sandbox). Aucun autre abonnement : votre plan actuel reste le même.',
       'Recharge minimum du Master Wallet : <strong>' + Number(p.min_topup_usd).toFixed(0) + ' $</strong>.',
-      'Vos cartes déjà créées gardent leurs prix. Les nouvelles cartes individuelles profitent du programme.',
-      'Transactions internationales 2,30 % + 0,50 $, maintenance et refus : prélevés sur la carte.',
+      'Vos cartes déjà créées gardent leurs prix. Les nouvelles cartes individuelles suivent ces tarifs.',
     ].map(t => '<li>' + t + '</li>').join('');
     const note = document.getElementById('programJoinNote'); note.textContent = ''; note.style.color = '';
     if(live && !p.open.live && p.open.sandbox) note.textContent = 'Passez en Sandbox pour l\'essayer dès maintenant.';
@@ -2088,25 +2087,18 @@
   function closeProgramModal(){ document.getElementById('programModal').classList.remove('open'); }
   async function joinProgram(){
     const p = programState || {}; const live = p.mode === 'live';
-    const member = live ? p.member.live : p.member.sandbox;
-    const plan = p.plans[programChoice];
-    const cost = member ? Number(plan.monthly_usd || 0) : Number(p.join_fee_usd) + Number(plan.monthly_usd || 0);
-    if(live && cost > 0 && !confirm(pgMoney(cost) + ' vont être prélevés sur votre Master Wallet Live (plan ' + plan.label + '). Continuer ?')) return;
+    if(live && !confirm(pgMoney(p.join_fee_usd) + ' vont être prélevés une seule fois sur votre Master Wallet Live pour rejoindre le programme. Continuer ?')) return;
     const note = document.getElementById('programJoinNote'); const btn = document.getElementById('programJoinBtn');
     btn.disabled = true; note.style.color = ''; note.textContent = 'Un instant…';
     try{
-      if(member){
-        await apiFetch('/dashboard/card-program/plan', { method: 'POST', body: { plan: programChoice } });
-        note.style.color = 'var(--green)'; note.textContent = 'Plan ' + plan.label + ' activé.';
-      } else {
-        await apiFetch('/dashboard/card-program/join', { method: 'POST', body: { plan: programChoice } });
-        note.style.color = 'var(--green)'; note.textContent = 'Bienvenue dans le programme ! Vos prochaines cartes individuelles en profitent.';
-        showToast('Programme de cartes rejoint (plan ' + plan.label + ')', 'success');
-      }
+      await apiFetch('/dashboard/card-program/join', { method: 'POST', body: {} });
+      note.style.color = 'var(--green)'; note.textContent = 'Bienvenue dans le programme ! Vos prochaines cartes individuelles en profitent.';
+      showToast('Programme de cartes rejoint', 'success');
       await loadProgram(); if(typeof refreshBalances === 'function') refreshBalances();
       renderProgramPlans();
     }catch(e){ btn.disabled = false; note.style.color = 'var(--red)'; note.textContent = e.message; }
   }
+
 
   async function initDashboard(){
     const token = getSessionToken();
@@ -4931,7 +4923,7 @@
         return result;
       };
     }
-    ['openProgramModal','closeProgramModal','joinProgram','renderProgramPlans','pgChoose','cardAction','cardRowAction','cardLimitPrompt','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['openProgramModal','closeProgramModal','joinProgram','renderProgramPlans','cardAction','cardRowAction','cardLimitPrompt','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
