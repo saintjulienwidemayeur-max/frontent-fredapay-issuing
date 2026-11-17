@@ -4222,6 +4222,7 @@
       <button class="cd-action-btn" onclick="cardFundPrompt('${esc(c.id)}')">${cdIcon('<path d="M12 5v14M5 12h14"/>')}Ajouter</button>
       <button class="cd-action-btn" onclick="cardWithdrawPrompt('${esc(c.id)}')">${cdIcon('<path d="M5 12h14M12 5l7 7-7 7"/>')}Retirer</button>
       ${freezeBtn}
+      ${c.single_use ? '' : `<button class="cd-action-btn" onclick="cardLimitPrompt('${esc(c.id)}')">${cdIcon('<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/>')}Plafond</button>`}
       <button class="cd-action-btn" onclick="cardTerminateConfirm('${esc(c.id)}')">${cdIcon('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/>')}Supprimer</button>
     `;
   }
@@ -4335,6 +4336,29 @@
     closeAmountModal();
     cardAction(amountModalAction, amountModalCardId, { amount: n });
     return false;
+  }
+
+  /** Changes or removes the card's spending limit (a single-use card has none). */
+  async function cardLimitPrompt(cardId){
+    const c = currentCardsById[cardId] || {};
+    const cur = c.spending_limit ? c.spending_limit.amount + ' $ ' + (c.spending_limit.interval === 'daily' ? 'par jour' : 'par achat') : 'aucun';
+    const raw = prompt('Plafond actuel : ' + cur + '.\nNouveau plafond en dollars (laisser vide pour retirer le plafond) :', c.spending_limit ? String(c.spending_limit.amount) : '');
+    if(raw === null) return;
+    let body;
+    if(raw.trim() === '') body = { spending_limit: null };
+    else {
+      const amount = parseFloat(raw.replace(',', '.'));
+      if(!(amount > 0)){ showToast('Plafond invalide.', 'error'); return; }
+      const perPurchase = confirm('Plafond PAR ACHAT ?\nOK = par achat, Annuler = par jour.');
+      body = { spending_limit: { amount, interval: perPurchase ? 'per_transaction' : 'daily' } };
+    }
+    try{
+      const updated = await apiFetch('/dashboard/cards/' + cardId + '/spending-limit', { method: 'POST', body });
+      currentCardsById[cardId] = Object.assign({}, c, updated);
+      showToast(updated.spending_limit ? 'Plafond enregistré : ' + updated.spending_limit.amount + ' $ ' + (updated.spending_limit.interval === 'daily' ? 'par jour' : 'par achat') + '.' : 'Plafond retiré.', 'success');
+      loadCards();
+      if(typeof openCardDetail === 'function' && currentOpenCardId === cardId) openCardDetail(cardId);
+    }catch(e){ showToast(e.message, 'error'); }
   }
 
   function cardTerminateConfirm(cardId){
@@ -4707,7 +4731,7 @@
   }
 
   /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
-  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|cryptoSubmitProfile|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardLimitPrompt|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|cryptoSubmitProfile|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
   const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
   function lockViewerControls(){
     if(currentUserRole !== 'viewer') return;
@@ -4759,7 +4783,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['cardAction','cardRowAction','cardLimitPrompt','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
