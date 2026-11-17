@@ -2053,7 +2053,7 @@
     L.push(["Recharge d'une carte", pgMoney(x.card_recharge_usd) + ' par recharge']);
     L.push(['Dépôt de fonds sur le MasterWallet', pgPct(x.deposit_pct)]);
     L.push(['Retrait de fonds depuis une carte', pgPct(x.withdrawal_pct)]);
-    L.push(['Commission sur achats réussis', x.purchase_pct ? pgPct(x.purchase_pct) + " du montant de l'achat (prélevé sur la carte)" : 'Gratuit (0,0 %)']);
+    L.push(['Commission sur achats réussis', x.purchase_pct ? pgPct(x.purchase_pct) + " du montant de l'achat (prélevé sur le MasterWallet)" : 'Gratuit (0,0 %)']);
     L.push(['Transactions internationales', pgPct(x.international_pct, 2) + ' + ' + pgMoney(x.international_fixed_usd) + ' (prélevé sur la carte)']);
     L.push(['Maintenance mensuelle par carte active', x.maintenance_usd ? pgMoney(x.maintenance_usd) + ' par mois (prélevé sur la carte)' : 'Gratuit (0,00 $)']);
     L.push(['Autorisation refusée ou non réglée', pgMoney(x.decline_usd) + ' par transaction (prélevé sur la carte)']);
