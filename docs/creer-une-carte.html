@@ -298,7 +298,7 @@
               <li><code class="inline">daily</code> : dès que les achats du jour (UTC) atteignent le plafond, la carte est <strong>gelée jusqu'au lendemain 00:00 UTC</strong>, puis dégelée automatiquement.</li>
               <li><code class="inline">per_transaction</code> : un achat égal ou supérieur au plafond gèle la carte ; vous la dégelez quand vous voulez (<code class="inline">POST /cards/:id/unfreeze</code>).</li>
             </ul>
-            Vous recevez le webhook <code class="inline">card.frozen</code> avec <code class="inline">reason: "spending_limit"</code> (puis <code class="inline">card.unfrozen</code> avec <code class="inline">reason: "spending_limit_reset"</code>). La carte indique <code class="inline">spending_limit</code>, <code class="inline">single_use</code> et, si elle est bloquée par le plafond du jour, <code class="inline">limit_reached_until</code>.
+            Selon l'émetteur de la carte, un achat qui dépasserait le plafond peut aussi être directement refusé (vous recevez alors un <code class="inline">card.transaction</code> refusé). Vous recevez le webhook <code class="inline">card.frozen</code> avec <code class="inline">reason: "spending_limit"</code> (puis <code class="inline">card.unfrozen</code> avec <code class="inline">reason: "spending_limit_reset"</code>). La carte indique <code class="inline">spending_limit</code>, <code class="inline">single_use</code> et, si elle est bloquée par le plafond du jour, <code class="inline">limit_reached_until</code>.
           </div>
           <div class="callout warn">
             <strong>Solde insuffisant ou échec de création</strong>
