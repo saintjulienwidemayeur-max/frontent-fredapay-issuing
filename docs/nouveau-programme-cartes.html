@@ -282,8 +282,8 @@
       <h2>Rejoindre le programme</h2>
       <ul>
         <li>Depuis votre tableau de bord : bandeau « Nouveau programme de cartes » puis <strong>Rejoindre</strong>.</li>
-        <li>Choisissez un plan : <strong>Startup</strong> (0 $/mois), <strong>Pro</strong> (150 $/mois) ou <strong>Premium</strong> (500 $/mois, 50 cartes offertes chaque mois). Voir <a href="/tarifs">les tarifs</a>.</li>
-        <li><strong>Entrée : 20 $, une seule fois</strong>, plus le premier mois du plan choisi, prélevés sur votre Master Wallet Live ; puis l'abonnement chaque mois. En Sandbox, tout est <strong>gratuit</strong> pour tester. Vous pouvez changer de plan depuis le tableau de bord.</li>
+        <li><strong>Entrée : 20 $, une seule fois</strong>, prélevés sur votre Master Wallet Live (gratuite en Sandbox). Vous gardez votre plan Issuing actuel (Startup, Pro ou Premium) : aucun autre abonnement.</li>
+        <li>Les nouvelles cartes suivent la colonne de votre plan dans la <a href="/tarifs">grille tarifaire</a>. Certains frais sont prélevés directement sur la carte : commission sur achats (Startup), transactions internationales, maintenance mensuelle, autorisation refusée.</li>
         <li>Membre du programme : <strong>chaque recharge du Master Wallet doit être d'au moins 200 $</strong> (erreur <code class="inline">400 BELOW_PROGRAM_MINIMUM</code> en dessous).</li>
       </ul>
 
@@ -291,7 +291,7 @@
       <div class="tbl-wrap"><table>
         <tr><th>Sujet</th><th>Cartes déjà créées</th><th>Nouvelles cartes du programme</th></tr>
         <tr><td>Émetteur</td><td>inchangé</td><td>nouveau partenaire</td></tr>
-        <tr><td>Prix (création, recharge, retrait…)</td><td>vos prix actuels</td><td>prix de votre plan du programme : création, recharge, retrait en % du montant, dépôt au Master Wallet en %, commission de 1 % sur les achats en Startup</td></tr>
+        <tr><td>Prix (création, recharge, retrait…)</td><td>vos prix actuels</td><td>grille du nouveau programme, colonne de votre plan : création, recharge, dépôt sur le MasterWallet en %, retrait depuis une carte en %, et frais prélevés sur la carte</td></tr>
         <tr><td>Cartes entreprise (<code>kind: business</code>)</td><td colspan="2">restent comme aujourd'hui</td></tr>
         <tr><td>Plafond <code>spending_limit</code></td><td>contrôlé après chaque achat (la carte est gelée quand il est atteint) ; modifiable</td><td>appliqué au paiement par l'émetteur ; fixé à la création (<code>409 CARD_LIMIT_NOT_EDITABLE</code> si vous essayez de le changer)</td></tr>
         <tr><td>Titulaire</td><td colspan="2">18 ans ou plus, recto + verso de la pièce (sauf passeport), voir <a href="/docs/titulaires-de-cartes">Titulaires</a></td></tr>
