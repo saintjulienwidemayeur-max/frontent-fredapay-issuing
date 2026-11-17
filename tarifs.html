@@ -21,7 +21,7 @@
 <meta name="twitter:title" content="Tarifs Freda Pay Issuing : paiements et cartes">
 <meta name="twitter:description" content="Tarifs de Freda Pay Issuing : frais carte, MonCash et Natcash, plans Standard, Pro et Business, et cartes virtuelles Visa et Mastercard.">
 <meta name="twitter:image" content="https://issuing.fredapay.com/og-image.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/tarifs#page", "url": "https://issuing.fredapay.com/tarifs", "name": "Tarifs Freda Pay Issuing : paiements et cartes", "description": "Tarifs de Freda Pay Issuing : frais carte, MonCash et Natcash, plans Standard, Pro et Business, et cartes virtuelles Visa et Mastercard.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website", "url": "https://issuing.fredapay.com/", "name": "Freda Pay Issuing"}, "dateModified": "2026-10-26"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "Tarifs", "item": "https://issuing.fredapay.com/tarifs"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Y a-t-il des frais d'installation ou un abonnement obligatoire ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Le plan Standard du Payment Gateway est à 0 HTG par mois, et le plan Startup de l'Issuing est à 0 $ par mois. Les plans Pro et Business apportent des frais plus bas et des versements plus rapides."}}, {"@type": "Question", "name": "Puis-je changer de plan ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, à tout moment depuis le tableau de bord, sans engagement."}}, {"@type": "Question", "name": "Les frais peuvent-ils être négociés ?", "acceptedAnswer": {"@type": "Answer", "text": "Les frais peuvent être personnalisés par l'équipe pour un marchand. Écrivez à issuing@fredapay.com."}}, {"@type": "Question", "name": "Comment tester avant de payer ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque compte a un mode test gratuit avec des clés sk_test_..., sans argent réel."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "https://issuing.fredapay.com/tarifs#page", "url": "https://issuing.fredapay.com/tarifs", "name": "Tarifs Freda Pay Issuing : paiements et cartes", "description": "Tarifs de Freda Pay Issuing : frais carte, MonCash et Natcash, plans Standard, Pro et Business, et cartes virtuelles Visa et Mastercard.", "inLanguage": "fr", "isPartOf": {"@type": "WebSite", "@id": "https://issuing.fredapay.com/#website", "url": "https://issuing.fredapay.com/", "name": "Freda Pay Issuing"}, "dateModified": "2026-11-17"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://issuing.fredapay.com/"}, {"@type": "ListItem", "position": 2, "name": "Tarifs", "item": "https://issuing.fredapay.com/tarifs"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Y a-t-il des frais d'installation ou un abonnement obligatoire ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Le plan Standard du Payment Gateway est à 0 HTG par mois, et le plan Startup de l'Issuing est à 0 $ par mois. Les plans Pro et Business apportent des frais plus bas et des versements plus rapides."}}, {"@type": "Question", "name": "Puis-je changer de plan ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, à tout moment depuis le tableau de bord, sans engagement."}}, {"@type": "Question", "name": "Les frais peuvent-ils être négociés ?", "acceptedAnswer": {"@type": "Answer", "text": "Les frais peuvent être personnalisés par l'équipe pour un marchand. Écrivez à issuing@fredapay.com."}}, {"@type": "Question", "name": "Comment tester avant de payer ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque compte a un mode test gratuit avec des clés sk_test_..., sans argent réel."}}]}]}</script>
 <style>
 :root{--ink:#111;--pink:#ff4081;--muted:#5f5560;--line:#ece4e8;--soft:#faf6f8}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -105,13 +105,21 @@ footer{border-top:1px solid var(--line);padding:32px 0;font-size:.88rem;color:va
 
 <div class="wrap"><section>
   <h2>Issuing : cartes virtuelles Visa et Mastercard</h2>
+  <p>Nouveau programme de cartes : cartes tokenisées compatibles Apple Pay et Google Pay, plafonds appliqués au moment du paiement, cartes à usage unique. Accès API et vérification d'identité des titulaires inclus sur tous les plans.</p>
   <div class="tbl"><table>
-    <tr><th>Plan</th><th>Abonnement</th><th>Création</th><th>Recharge</th><th>Retrait</th><th>Ajout de fonds au Master Wallet</th></tr>
-    <tr><td>Startup</td><td>0 $</td><td>5,00 $</td><td>1,60 $ (jusqu'à 100 $, puis 3 %)</td><td>1,30 $</td><td>4,5 %</td></tr>
-    <tr><td>Pro</td><td>150 $ par mois</td><td>3,50 $</td><td>1,25 $ (puis 2 %)</td><td>1,15 $</td><td>3 %</td></tr>
-    <tr><td>Premium</td><td>500 $ par mois</td><td>2,50 $</td><td>1,10 $ (puis 2 %)</td><td>1,10 $</td><td>2,5 %</td></tr>
+    <tr><th>Frais</th><th>Startup</th><th>Pro</th><th>Premium</th></tr>
+    <tr><td>Abonnement mensuel</td><td>0 $</td><td>150 $</td><td>500 $</td></tr>
+    <tr><td>Cartes incluses</td><td>Aucune</td><td>Aucune</td><td>50 par mois</td></tr>
+    <tr><td>Création de carte</td><td>3,00 $</td><td>2,00 $</td><td>2,50 $ (après les 50 offertes)</td></tr>
+    <tr><td>Recharge de carte</td><td>1,00 $</td><td>0,50 $</td><td>1,10 $</td></tr>
+    <tr><td>Dépôt au Master Wallet</td><td>4,0 %</td><td>2,7 %</td><td>2,5 %</td></tr>
+    <tr><td>Retrait sur carte</td><td>3,0 %</td><td>2,0 %</td><td>1,5 %</td></tr>
+    <tr><td>Frais sur achats réussis</td><td>1,0 %</td><td>0 %</td><td>0 %</td></tr>
+    <tr><td>Transactions internationales</td><td>2,30 % + 0,50 $</td><td>2,30 % + 0,50 $</td><td>2,30 % + 0,50 $</td></tr>
+    <tr><td>Maintenance mensuelle par carte active</td><td>0,50 $</td><td>0,50 $</td><td>Offerte</td></tr>
+    <tr><td>Autorisation refusée ou non réglée</td><td>0,50 $</td><td>0,50 $</td><td>0,50 $</td></tr>
   </table></div>
-  <p>Transactions en devise étrangère : 2,5 % + 0,60 $ sur tous les plans. Entretien mensuel des cartes : 0 $. Fermeture d'une carte : 0,50 $ retenus sur le solde reversé. Refus pour solde insuffisant : frais selon le plan, prélevés sur le Master Wallet. Un solde minimum de 50 $ reste réservé sur votre Master Wallet. Voir la page <a href="/cartes-virtuelles-haiti">cartes virtuelles</a>.</p>
+  <p>Entrée dans le programme : 20 $ une seule fois (gratuite en mode test). Recharge minimum du Master Wallet : 200 $. La maintenance (cartes actives, à la date anniversaire), les transactions internationales et les autorisations refusées sont prélevées sur le solde de la carte, sans jamais la mettre à découvert. Voir la page <a href="/cartes-virtuelles-haiti">cartes virtuelles</a> et <a href="/docs/nouveau-programme-cartes">le nouveau programme</a>.</p>
 </section></div>
 
 <div class="wrap"><section>
