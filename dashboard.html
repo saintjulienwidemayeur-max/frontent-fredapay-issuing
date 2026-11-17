@@ -1071,6 +1071,18 @@
               <input type="number" id="cardAmount" placeholder="20">
             </div>
           </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Plafond de dépense (USD, facultatif)</label>
+              <input type="number" id="cardLimitAmount" placeholder="Aucun plafond" min="1" step="0.01">
+            </div>
+            <div class="field">
+              <label>Période du plafond</label>
+              <select id="cardLimitInterval"><option value="daily">Par jour</option><option value="per_transaction">Par achat</option></select>
+            </div>
+          </div>
+          <label style="display:flex;gap:8px;align-items:center;font-size:.86rem;margin:2px 0 6px"><input type="checkbox" id="cardSingleUse" style="width:auto" onchange="document.getElementById('cardLimitAmount').disabled=this.checked;document.getElementById('cardLimitInterval').disabled=this.checked"> Carte à usage unique (un seul achat)</label>
+          <p style="font-size:.76rem;color:var(--muted);margin:0 0 8px">C'est vous qui fixez le plafond. Quand il est atteint, la carte est gelée : jusqu'au lendemain pour un plafond par jour, jusqu'à ce que vous la dégeliez pour un plafond par achat. Une carte à usage unique est gelée après son achat et ne se recharge pas.</p>
           <p style="font-size:.76rem;color:var(--muted);margin:2px 0 12px">Certaines catégories de commerçants et certains pays sont refusés. <a href="/docs/restrictions-cartes" target="_blank" rel="noopener">Voir la liste</a>.</p>
           <button class="btn" onclick="createCard()">Émettre la carte</button>
         </div>
@@ -1647,7 +1659,7 @@
       <div class="field"><label>Numéro de pièce d'identité</label><input type="text" id="hpIdNumber" placeholder="ID123456"></div>
       <div class="field"><label>Type de pièce</label><select id="hpIdType"><option value="PASSPORT">Passeport</option><option value="NIN">NIN</option><option value="DRIVERS_LICENSE">Permis de conduire</option><option value="VOTERS_CARD">Carte d'électeur</option></select></div>
       <div class="field"><label>Image de la pièce d'identité</label><input type="file" id="hpIdFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event)"><input type="hidden" id="hpIdImage"><div class="hint-text" id="hpIdImageHint">Photo nette de la pièce (PNG, JPEG ou WebP).</div></div>
-      <div class="field"><label>Verso de la pièce d'identité (si exigé pour votre pays)</label><input type="file" id="hpIdBackFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event, 'back')"><input type="hidden" id="hpIdBackImage"><div class="hint-text" id="hpIdBackImageHint">Facultatif. Certains pays exigent le recto et le verso.</div></div>
+      <div class="field"><label>Verso de la pièce d'identité (obligatoire, sauf passeport)</label><input type="file" id="hpIdBackFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event, 'back')"><input type="hidden" id="hpIdBackImage"><div class="hint-text" id="hpIdBackImageHint">Obligatoire pour une carte d'identité, un permis ou une carte électorale. Pas nécessaire pour un passeport.</div></div>
       <div class="field"><label>Pays (2 lettres)</label><select id="hpCountry"><option value="">Sélectionner…</option></select></div>
     </div>
     <div class="field-row">
@@ -1780,6 +1792,7 @@
 
     <div id="cdFailureNote" hidden style="font-size:.82rem;color:var(--red);background:var(--red-soft);border-radius:9px;padding:10px 12px;margin-top:12px"></div>
 
+    <div class="modal-row" id="cdRulesRow" hidden><span class="k">Règles</span><span class="v" id="cdRules">-</span></div>
     <div class="modal-row"><span class="k">ID de la carte</span><span class="v" id="cdCardId" style="font-family:monospace;font-size:.78rem">-</span></div>
     <div class="modal-row"><span class="k">Numéro</span><span class="v" id="cdNumberRow">-</span></div>
     <div class="modal-row"><span class="k">Type</span><span class="v" id="cdKind">-</span></div>
@@ -3772,7 +3785,7 @@
     ['hpFirstName','hpLastName','hpEmail','hpDob','hpIdNumber','hpIdImage','hpIdBackImage','hpCountry','hpPhoneCode','hpPhone','hpStreet','hpCity','hpState','hpPostalCode'].forEach(id => { document.getElementById(id).value = ''; });
     document.getElementById('hpIdFile').value = '';
     document.getElementById('hpIdBackFile').value = '';
-    document.getElementById('hpIdBackImageHint').textContent = 'Facultatif. Certains pays exigent le recto et le verso.';
+    document.getElementById('hpIdBackImageHint').textContent = "Obligatoire pour une carte d'identité, un permis ou une carte électorale. Pas nécessaire pour un passeport.";
     document.getElementById('hpIdImageHint').textContent = 'Photo nette de la pièce (PNG, JPEG ou WebP).';
     // no default country or dial code: the holder can live anywhere, and the country picks the dial code
     holderPhotoData = null;
@@ -3866,6 +3879,7 @@
       [body.dob, 'hpDob', 'la date de naissance'], [country, 'hpCountry', 'le pays (code à 2 lettres, ex. US)'],
       [body.identity.type, 'hpIdType', "le type de pièce d'identité"], [body.identity.number, 'hpIdNumber', "le numéro de la pièce d'identité"],
       [/^data:image\//.test(body.identity.imageUrl), 'hpIdFile', "l'image de la pièce d'identité (photo PNG, JPEG ou WebP ; si la photo vient d'un iPhone, choisissez-la en JPEG ou faites une capture d'écran)"],
+      [body.identity.type === 'PASSPORT' || !!body.identity.imageBackUrl, 'hpIdBackFile', "le verso de la pièce d'identité (obligatoire sauf pour un passeport)"],
       [body.phoneShortCode, 'hpPhoneCode', "l'indicatif téléphonique (ex. +509)"], [body.phoneNumber, 'hpPhone', 'le numéro de téléphone'],
       [body.address.street, 'hpStreet', "la rue de l'adresse"], [body.address.city, 'hpCity', "la ville de l'adresse"],
       [body.address.state, 'hpState', "l'état ou le département de l'adresse"], [body.address.postalCode, 'hpPostalCode', "le code postal de l'adresse"],
@@ -3912,6 +3926,14 @@
     if(!amount || amount <= 0){ showToast('Entrez un montant valide à préfinancer.', 'error'); return; }
 
     const body = { reference: 'CARD-' + Date.now(), brand, amount, kind: selectedCardKind };
+    const singleUse = document.getElementById('cardSingleUse').checked;
+    const limitRaw = document.getElementById('cardLimitAmount').value.trim();
+    if(singleUse) body.single_use = true;
+    else if(limitRaw){
+      const limit = parseFloat(limitRaw);
+      if(!(limit > 0)){ showToast('Entrez un plafond valide (en dollars) ou laissez le champ vide.', 'error'); return; }
+      body.spending_limit = { amount: limit, interval: document.getElementById('cardLimitInterval').value };
+    }
     if(selectedCardKind === 'business') body.business_name = businessName;
     if(selectedCardKind === 'individual') body.holder_id = holderId;
 
@@ -3921,6 +3943,8 @@
       document.getElementById('createCardForm').classList.remove('open');
       document.getElementById('cardAmount').value = '';
       document.getElementById('cardBusinessName').value = '';
+      document.getElementById('cardLimitAmount').value = ''; document.getElementById('cardSingleUse').checked = false;
+      document.getElementById('cardLimitAmount').disabled = false; document.getElementById('cardLimitInterval').disabled = false;
       loadCards();
       refreshBalances(); // the prefunding is debited from the Master Wallet right away
       pollCardStatus(card.id);
@@ -4111,6 +4135,12 @@
     document.getElementById('cdBalance').textContent = (Number(c.balance)||0).toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' $';
 
     document.getElementById('cdCardId').textContent = c.id;
+    const rules = [];
+    if(c.single_use) rules.push(c.single_use_consumed_at ? 'Usage unique (déjà utilisée)' : 'Usage unique');
+    if(c.spending_limit) rules.push('Plafond ' + Number(c.spending_limit.amount).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' $ ' + (c.spending_limit.interval === 'daily' ? 'par jour' : 'par achat'));
+    if(c.limit_reached_until) rules.push('Plafond atteint : dégel le ' + new Date(c.limit_reached_until).toLocaleString('fr-FR'));
+    document.getElementById('cdRulesRow').hidden = !rules.length;
+    document.getElementById('cdRules').textContent = rules.join(' · ');
     document.getElementById('cdNumberRow').textContent = c.masked_pan || 'Émission en cours…';
     document.getElementById('cdKind').textContent = c.kind === 'business' ? 'Carte entreprise' : 'Carte individuelle';
     document.getElementById('cdCurrency').textContent = c.currency || 'USD';
