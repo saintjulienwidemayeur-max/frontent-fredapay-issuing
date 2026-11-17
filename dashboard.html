@@ -162,6 +162,26 @@
   .qs-item h4{font-size:.9rem;margin-bottom:3px}
   .qs-item p{font-size:.82rem;color:var(--muted)}
 
+  .program-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(135deg,#0f172a,#5b21b6);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;cursor:pointer;box-shadow:0 10px 30px -12px rgba(91,33,182,.6)}
+  .program-banner .pb-tag{background:#ff4081;color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.06em;border-radius:999px;padding:3px 9px}
+  .program-banner .pb-text{flex:1;min-width:220px;font-size:.92rem;line-height:1.4}
+  .program-banner .pb-cta{background:#fff;color:#111;border:0;border-radius:9px;padding:8px 14px;font-weight:700;cursor:pointer;font-family:inherit}
+  .pg-stage{position:relative;height:215px;max-width:380px;margin:4px auto 18px}
+  .pg-card{position:absolute;width:300px;height:185px;border-radius:18px;padding:20px;color:#fff;box-shadow:0 15px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;justify-content:space-between}
+  .pg-card.c1{left:0;top:0;background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid #334155;z-index:2}
+  .pg-card.c2{left:70px;top:26px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:1px solid #8b5cf6;z-index:1;transform:rotate(4deg)}
+  .pg-card .t{display:flex;justify-content:space-between;align-items:flex-start;font-weight:800;letter-spacing:.06em;font-size:.95rem}
+  .pg-card .chip{width:40px;height:28px;border-radius:7px;background:linear-gradient(135deg,#f5d6d6,#d18e8e)}
+  .pg-card .n{font-family:monospace;font-size:1.05rem;letter-spacing:.15em}
+  .pg-card .d{display:flex;justify-content:space-between;font-size:.68rem;text-transform:uppercase;opacity:.85}
+  .pg-wallets{display:flex;gap:6px}
+  .pg-wallets span{background:rgba(255,255,255,.16);border-radius:6px;padding:2px 7px;font-size:.66rem;letter-spacing:0;font-weight:700}
+  .pg-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0 16px}
+  .pg-feat{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.86rem;line-height:1.45}
+  .pg-feat strong{display:block;margin-bottom:3px}
+  .pg-price{width:100%;border-collapse:collapse;font-size:.88rem;margin:6px 0 14px}
+  .pg-price td{padding:8px 4px;border-bottom:1px solid var(--line)}
+  .pg-price td:last-child{text-align:right;font-weight:700}
   .notice-banner{display:flex;align-items:flex-start;gap:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:11px;padding:11px 16px;margin-bottom:16px;font-size:.86rem;line-height:1.45}
   .notice-banner.warning{background:#fffbeb;border-color:#fde68a;color:#78350f}
   .notice-banner button{margin-left:auto;background:none;border:0;color:inherit;font-size:1.1rem;cursor:pointer;line-height:1;padding:0 2px}
@@ -492,6 +512,11 @@
 
   <!-- ===== Main ===== -->
   <main class="main">
+    <div class="program-banner" id="programBanner" hidden onclick="openProgramModal()" role="button" tabindex="0">
+      <span class="pb-tag">NOUVEAU</span>
+      <span class="pb-text"><strong>Nouveau programme de cartes</strong> : cartes tokenisées Visa et Mastercard, compatibles <strong>Apple Pay</strong> et <strong>Google Pay</strong>, avec plafonds appliqués au paiement. <span id="programBannerSub"></span></span>
+      <button type="button" class="pb-cta" onclick="event.stopPropagation();openProgramModal()">Découvrir</button>
+    </div>
     <div class="notice-banner" id="noticeBanner" hidden><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="flex:none;margin-top:1px"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span id="noticeText"></span><button type="button" aria-label="Masquer" onclick="hideNotice()">&times;</button></div>
     <div class="plan-banner" id="roleBanner" hidden>Accès en lecture seule : vous pouvez consulter ce compte, mais pas le modifier.</div>
     <div class="plan-banner" id="twofaBanner" hidden>
@@ -1484,6 +1509,36 @@
 </div>
 
 <!-- ===== Detail modal (payments & cards) ===== -->
+<div class="modal-overlay" id="programModal" onclick="if(event.target===this) closeProgramModal()">
+  <div class="modal-box" style="max-width:720px;width:100%;overflow-wrap:normal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="margin:0">Nouveau programme de cartes</h3>
+      <button class="key-btn" onclick="closeProgramModal()" aria-label="Fermer">&times;</button>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem;margin:0 0 12px">Une nouvelle génération de cartes virtuelles pour vos clients et votre équipe, émises par notre nouveau partenaire. Vos cartes actuelles ne changent pas.</p>
+    <div class="pg-stage">
+      <div class="pg-card c2"><div class="t"><span>VOTRE MARQUE</span><svg width="42" height="27" viewBox="4 2 40 26" aria-label="Mastercard"><circle cx="17" cy="15" r="13" fill="#EB001B"/><circle cx="31" cy="15" r="13" fill="#F79E1B"/><path fill="#FF5F00" d="M24 4.046A13 13 0 0 1 24 25.954A13 13 0 0 1 24 4.046Z"/></svg></div><div class="chip"></div><div class="n">•••• 8833</div><div class="d"><span>M. LEROY</span><span>09/29</span></div></div>
+      <div class="pg-card c1"><div class="t"><span>VOTRE MARQUE</span><span class="pg-wallets"><span>Apple Pay</span><span>G Pay</span></span></div><div class="chip"></div><div class="n">•••• 4912</div><div class="d"><span>J. DOE</span><span style="display:flex;gap:8px;align-items:center">12/29 <svg width="46" height="15" viewBox="0 8 24 8" aria-label="Visa"><path fill="#fff" d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 0 1 .894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 0 1 1.913.336l.34-1.59a5.207 5.207 0 0 0-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 0 0-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"/></svg></span></div></div>
+    </div>
+    <div class="pg-feats">
+      <div class="pg-feat"><strong>Cartes tokenisées</strong>Au téléphone, chaque paiement utilise un jeton à la place du vrai numéro : le numéro de la carte n'est jamais transmis au commerçant.</div>
+      <div class="pg-feat"><strong>Apple Pay et Google Pay</strong>Vos titulaires ajoutent la carte à leur iPhone ou Android et paient sans contact, en magasin et en ligne.</div>
+      <div class="pg-feat"><strong>Plafonds au moment du paiement</strong>Vous fixez un plafond par jour ou par achat : un paiement au-dessus est refusé directement par l'émetteur.</div>
+      <div class="pg-feat"><strong>Cartes à usage unique</strong>Une carte pour un seul achat, idéale pour un abonnement à tester ou un paiement ponctuel.</div>
+      <div class="pg-feat"><strong>Visa ou Mastercard</strong>Au choix pour chaque carte, en dollars US, acceptées dans le monde entier.</div>
+      <div class="pg-feat"><strong>Tout en temps réel</strong>Gel, dégel, recharge, retrait, et une notification (webhook) pour chaque achat, remboursement ou refus. Même API qu'aujourd'hui.</div>
+    </div>
+    <h4 style="margin:4px 0">Prix du programme</h4>
+    <table class="pg-price" id="programPrices"></table>
+    <div class="note note-pink" style="font-size:.84rem;line-height:1.55;margin-bottom:12px" id="programRules"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn" id="programJoinBtn" onclick="joinProgram()">Rejoindre le programme</button>
+      <a href="/docs/nouveau-programme-cartes" target="_blank" rel="noopener" style="font-size:.86rem">Ce qui change pour votre intégration →</a>
+      <span id="programJoinNote" style="font-size:.86rem"></span>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="txModal" onclick="closeModalOnOverlay(event)">
   <div class="modal-box">
     <div class="modal-head">
@@ -1961,6 +2016,49 @@
     try{ sessionStorage.setItem('fp_notice_hidden', document.getElementById('noticeText').textContent); }catch(e){}
   }
 
+
+  /* ===== Nouveau programme de cartes ===== */
+  let programState = null;
+  const PROGRAM_PRICE_LABELS = { card_creation_usd: 'Création de carte', card_recharge_usd: 'Recharge', card_withdrawal_usd: 'Retrait', card_decline_usd: 'Paiement refusé (solde insuffisant)', card_spend_usd: 'Frais par achat', card_closure_usd: 'Fermeture de carte', monthly_usd: 'Frais mensuel par carte' };
+  async function loadProgram(){
+    try{
+      programState = await apiFetch('/dashboard/card-program');
+      const live = programState.mode === 'live';
+      const member = live ? programState.member.live : programState.member.sandbox;
+      const b = document.getElementById('programBanner');
+      document.getElementById('programBannerSub').textContent = member ? 'Vous en faites partie : vos nouvelles cartes individuelles en profitent.' : (live ? ('Entrée : ' + Number(programState.join_fee_usd).toFixed(0) + ' $ une seule fois.') : 'Essayez-le gratuitement en Sandbox.');
+      b.hidden = !!member; // members already know it; everyone else sees the announcement
+    }catch(e){ /* the banner is optional */ }
+  }
+  function openProgramModal(){
+    if(!programState){ loadProgram().then(() => programState && openProgramModal()); return; }
+    const p = programState; const live = p.mode === 'live';
+    const member = live ? p.member.live : p.member.sandbox;
+    const rows = Object.keys(PROGRAM_PRICE_LABELS).map(k => '<tr><td>' + PROGRAM_PRICE_LABELS[k] + '</td><td>' + (p.prices && p.prices[k] != null ? Number(p.prices[k]).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' $' : 'selon votre plan') + '</td></tr>').join('');
+    document.getElementById('programPrices').innerHTML = '<tr><td><strong>Entrée dans le programme</strong> (une seule fois, prélevée sur le Master Wallet Live)</td><td>' + Number(p.join_fee_usd).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' $</td></tr>' + rows;
+    document.getElementById('programRules').innerHTML = '<strong>Bon à savoir</strong><br>• Vos cartes déjà créées restent chez leur émetteur actuel, à leurs prix actuels.<br>• Les nouvelles cartes <strong>individuelles</strong> sont émises dans le programme ; les cartes entreprise restent comme aujourd\'hui.<br>• Membre du programme : chaque recharge du Master Wallet doit être d\'au moins <strong>' + Number(p.min_topup_usd).toFixed(0) + ' $</strong>.<br>• Titulaires : 18 ans ou plus, recto et verso de la pièce (sauf passeport). Une carte ne se ferme pas le jour de sa création ; au moins 1 $ reste sur la carte après un retrait.<br>• En Sandbox, l\'entrée est gratuite pour tester.';
+    const btn = document.getElementById('programJoinBtn'); const note = document.getElementById('programJoinNote');
+    note.textContent = ''; note.style.color = '';
+    if(member){ btn.disabled = true; btn.textContent = 'Vous êtes membre' + (live ? '' : ' (Sandbox)'); }
+    else if(!(live ? p.open.live : p.open.sandbox)){ btn.disabled = true; btn.textContent = live ? 'Bientôt disponible en Live' : 'Bientôt disponible'; note.textContent = live && p.open.sandbox ? 'Passez en Sandbox pour l\'essayer dès maintenant.' : ''; }
+    else { btn.disabled = false; btn.textContent = live ? 'Rejoindre pour ' + Number(p.join_fee_usd).toFixed(0) + ' $' : 'Essayer gratuitement (Sandbox)'; }
+    document.getElementById('programModal').classList.add('open');
+  }
+  function closeProgramModal(){ document.getElementById('programModal').classList.remove('open'); }
+  async function joinProgram(){
+    const p = programState || {}; const live = p.mode === 'live';
+    if(live && !confirm(Number(p.join_fee_usd).toFixed(2) + ' $ vont être prélevés sur votre Master Wallet Live pour rejoindre le programme (une seule fois). Continuer ?')) return;
+    const note = document.getElementById('programJoinNote'); const btn = document.getElementById('programJoinBtn');
+    btn.disabled = true; note.style.color = ''; note.textContent = 'Inscription…';
+    try{
+      const r = await apiFetch('/dashboard/card-program/join', { method: 'POST', body: {} });
+      note.style.color = 'var(--green)'; note.textContent = r.already ? 'Vous étiez déjà membre.' : 'Bienvenue dans le programme ! Vos prochaines cartes individuelles en profitent.';
+      showToast('Programme de cartes rejoint' + (r.fee_usd ? ' (' + Number(r.fee_usd).toFixed(2) + ' $ prélevés)' : ''), 'success');
+      await loadProgram(); refreshBalances && refreshBalances();
+      btn.textContent = 'Vous êtes membre';
+    }catch(e){ btn.disabled = false; note.style.color = 'var(--red)'; note.textContent = e.message; }
+  }
+
   async function initDashboard(){
     const token = getSessionToken();
     if(!token){ window.location.href = pageUrl('signup'); return; }
@@ -1973,6 +2071,7 @@
       applyMerchantInfo(me.merchant);
       applyUserRole(me.user);
       loadNotice();
+      loadProgram();
     }catch(err){ /* apiFetch already redirects on auth failure */ return; }
 
     loadTwofa(); // the reminder banner shows on every page until 2FA is on
@@ -4731,7 +4830,7 @@
   }
 
   /* Read-only team members: the server answers 403 to every write, so disable the write buttons up front with a tooltip. */
-  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|cardAction|cardRowAction|cardLimitPrompt|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|cryptoSubmitProfile|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
+  const VIEWER_WRITE_RE = /^\s*(?:event\.stopPropagation\(\);\s*)?(createApiKey|revokeApiKey|createPaymentLink|disablePaymentLink|registerWebhook|rotateWebhookSecret|deleteWebhookConfirm|createCard|joinProgram|cardAction|cardRowAction|cardLimitPrompt|cardFundPrompt|cardWithdrawPrompt|cardTerminateConfirm|toggleRevealCardDetails|simulate\w+|doWithdraw|submit\w+|openTopupModal|openTopupPicker|cryptoPickChain|cryptoSend|cryptoConvert|cryptoNewWallet|cryptoShowWallet|cryptoSubmitProfile|saveAccountInfo|inviteMember|removeMemberConfirm|resendInvite|openBankAccountForm|deleteBankAccountConfirm|saveBankAccount|selectPlan|confirmPlanChange|openHolderModal|requestIssuingAccess|convertToBusiness|signContract)\(/;
   const VIEWER_TIP = 'Accès en lecture seule : action non disponible pour votre rôle.';
   function lockViewerControls(){
     if(currentUserRole !== 'viewer') return;
@@ -4783,7 +4882,7 @@
         return result;
       };
     }
-    ['cardAction','cardRowAction','cardLimitPrompt','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
+    ['openProgramModal','closeProgramModal','joinProgram','cardAction','cardRowAction','cardLimitPrompt','cardFundPrompt','cardTerminateConfirm','cardWithdrawPrompt','changePasswordSettings','twofaStart','twofaEnable','twofaNewRecovery','closeAmountModal','closeCardDetail','closeConfirmModal','closeConfirmOnOverlay','closeHolderModal','closeModalOnOverlay','closeNewKeyModal','closeTopupModal','closeTopupPicker','openCryptoModal','closeCryptoModal','cryptoTab','cryptoSetCoin','cryptoPickChain','cryptoCopy','cryptoCopyAddr','cryptoNewWallet','cryptoShowWallet','cryptoSubmitProfile','cryptoSend','cryptoConvert','cryptoMax','cryptoQuoteSend','cryptoQuoteConvert','closeTxModal','closeUserMenu','closeWebhookSecretModal','confirmPlanChange','convertToBusiness','copyKeyField','copyPaymentLink','createApiKey','createCard','createPaymentLink','deleteWebhookConfirm','disablePaymentLink','doWithdraw','inviteMember','logout','openCardDetail','openHolderModal','openPaymentDetail','openTopupModal','openTopupPicker','registerWebhook','removeMemberConfirm','resendInvite','revokeApiKey','rotateWebhookSecret','saveAccountInfo','selectCardKind','selectPlan','showSection','simulateCardTransaction','simulatePaymentReal','submitAmountModal','submitAutoTopup','submitHolder','submitManualTopup','submitVerification','toggleForm','toggleMobileSidebar','toggleRevealCardDetails','toggleUserMenu','saveBankAccount','submitDispute','requestIssuingAccess','signContract'].forEach(function(name){
       if(typeof window[name] === 'function') window[name] = wrap(window[name]);
     });
   })();
