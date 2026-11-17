@@ -289,11 +289,16 @@
             <tr><td><code>holder_id</code> <span class="opt">optionnel</span></td><td>texte</td><td>Carte individuelle : <code>id</code> du titulaire (<code>mpc_…</code>, voir <a href="/docs/titulaires-de-cartes#cards-profile">Titulaires</a>). <strong>Recommandé : toujours l'envoyer.</strong> Sans lui, l'API prend le titulaire <code>enrolled</code> le plus récent de votre compte dans l'environnement de la clé.</td></tr>
             <tr><td><code>business_name</code> <span class="opt">optionnel</span></td><td>texte</td><td>Requis si <code>kind</code> = <code>business</code>. Pas de profil titulaire nécessaire dans ce cas.</td></tr>
             <tr><td><code>spending_limit</code> <span class="opt">optionnel</span></td><td>objet</td><td>Plafond de dépense de la carte, <strong>fixé par vous</strong> : <code>{ "amount": 20, "interval": "daily" }</code>. <code>amount</code> en dollars ; <code>interval</code> = <code>daily</code> (par jour) ou <code>per_transaction</code> (par achat). Sans plafond, la carte peut dépenser tout son solde.</td></tr>
-            <tr><td><code>single_use</code> <span class="opt">optionnel</span></td><td>booléen</td><td><code>true</code> : carte valable pour <strong>un seul achat</strong>. Pas de recharge, pas de retrait, pas de <code>spending_limit</code> ; elle se ferme seule 30 jours après si elle n'a pas servi et son solde revient au Master Wallet.</td></tr>
+            <tr><td><code>single_use</code> <span class="opt">optionnel</span></td><td>booléen</td><td><code>true</code> : carte valable pour <strong>un seul achat</strong>. Après cet achat, elle est gelée définitivement (webhook <code>card.frozen</code>, <code>reason: "single_use"</code>) : fermez-la pour récupérer le reste du solde. Pas de recharge ni de retrait (<code>400 CARD_SINGLE_USE</code>), pas de <code>spending_limit</code>. Si elle ne sert pas, elle se ferme seule après 30 jours et son solde revient au Master Wallet.</td></tr>
           </table></div>
           <div class="callout">
             <strong>Le plafond de dépense, c'est vous qui le fixez</strong>
-            Freda Pay Issuing n'impose pas de plafond par carte en plus de celui de l'émetteur. Choisissez-le selon l'usage de la carte (abonnement, achats d'un employé, carte d'un client) avec <code class="inline">spending_limit</code>. Un achat au-dessus du plafond est refusé et vous recevez un <code class="inline">card.transaction</code> avec le motif.
+            Freda Pay Issuing n'impose pas de plafond par carte en plus de celui de l'émetteur. Choisissez-le selon l'usage de la carte (abonnement, achats d'un employé, carte d'un client) avec <code class="inline">spending_limit</code>. Le plafond est contrôlé à chaque achat :
+            <ul style="margin:6px 0 0 18px;padding:0">
+              <li><code class="inline">daily</code> : dès que les achats du jour (UTC) atteignent le plafond, la carte est <strong>gelée jusqu'au lendemain 00:00 UTC</strong>, puis dégelée automatiquement.</li>
+              <li><code class="inline">per_transaction</code> : un achat égal ou supérieur au plafond gèle la carte ; vous la dégelez quand vous voulez (<code class="inline">POST /cards/:id/unfreeze</code>).</li>
+            </ul>
+            Vous recevez le webhook <code class="inline">card.frozen</code> avec <code class="inline">reason: "spending_limit"</code> (puis <code class="inline">card.unfrozen</code> avec <code class="inline">reason: "spending_limit_reset"</code>). La carte indique <code class="inline">spending_limit</code>, <code class="inline">single_use</code> et, si elle est bloquée par le plafond du jour, <code class="inline">limit_reached_until</code>.
           </div>
           <div class="callout warn">
             <strong>Solde insuffisant ou échec de création</strong>
@@ -313,7 +318,7 @@
             <tr><td>400</td><td><code>CARD_LIMIT_REACHED</code></td><td>Limite de cartes du plan Issuing atteinte (par environnement).</td></tr>
             <tr><td>400</td><td><code>BELOW_MINIMUM_BALANCE</code></td><td>Master Wallet insuffisant.</td></tr>
             <tr><td>400</td><td><code>INVALID_SPENDING_LIMIT</code></td><td><code>spending_limit</code> invalide : <code>amount</code> positif et <code>interval</code> = <code>daily</code> ou <code>per_transaction</code>. Interdit avec <code>single_use</code>.</td></tr>
-            <tr><td>400</td><td><code>AMOUNT_TOO_SMALL</code></td><td>Le montant doit couvrir les frais d'émission + 1 $.</td></tr>
+            <tr><td>503</td><td><code>FEATURE_NOT_READY</code></td><td>Plafonds et cartes à usage unique pas encore activés sur le serveur ; rien n'est débité. Réessayez plus tard ou créez la carte sans ces options.</td></tr>
             <tr><td>403</td><td><code>ISSUING_LIVE_NOT_ENABLED</code></td><td>Clé live avant l'autorisation Issuing Live.</td></tr>
             <tr><td>401 / 403</td><td><code>MISSING_API_KEY</code>, <code>INVALID_API_KEY</code>, <code>LIVE_NOT_ENABLED</code></td><td>Voir <a href="/docs/erreurs-et-bonnes-pratiques#erreurs">Erreurs</a>.</td></tr>
             <tr><td>502 / 503</td><td><code>CARD_SERVICE_ERROR</code>, <code>CARD_PROVIDER_AUTH</code>, <code>CARD_LIVE_NOT_CONFIGURED</code></td><td>Service de cartes indisponible ; rien n'est débité (ou remboursé aussitôt). Réessayez plus tard.</td></tr>
