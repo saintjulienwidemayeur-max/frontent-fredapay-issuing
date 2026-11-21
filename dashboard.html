@@ -3871,7 +3871,9 @@
     const box = document.getElementById('holdersList');
     if(!box) return;
     if(!holdersCache.length){ box.innerHTML = '<div class="section-desc" style="margin:12px 0 0">Aucun titulaire pour le moment.</div>'; return; }
-    const stLabel = { enrolled:'Prêt', pending:'En cours', failed:'Échec' };
+    const stLabel = { enrolled:'Confirmé', pending:'En cours', failed:'Refusé' };
+    const npLabel = { accepted:'Nouveau programme : accepté', refused:'Nouveau programme : refusé', pending:'Nouveau programme : en vérification' };
+    const npColor = { accepted:'var(--green,#16a34a)', refused:'var(--red,#dc2626)', pending:'var(--gold,#b8860b)' };
     const stColor = { enrolled:'var(--green,#16a34a)', pending:'var(--gold,#b8860b)', failed:'var(--red,#dc2626)' };
     const row = (k,v) => v ? `<div style="display:flex;gap:10px;padding:3px 0;font-size:.82rem"><span style="min-width:120px;color:var(--muted)">${esc(k)}</span><span style="word-break:break-word">${esc(v)}</span></div>` : '';
     box.innerHTML = holdersCache.map(h => {
@@ -3885,13 +3887,15 @@
             <div style="font-weight:700">${esc(h.first_name||'')} ${esc(h.last_name||'')}</div>
             <div style="font-size:.78rem;color:var(--muted)"><code>${esc(h.id)}</code></div>
           </div>
-          <span style="font-size:.75rem;font-weight:700;color:${stColor[h.status]||'inherit'}">${esc(stLabel[h.status]||h.status)}</span>
+          <span style="text-align:right"><span style="font-size:.75rem;font-weight:700;color:${stColor[h.status]||'inherit'}">${esc(stLabel[h.status]||h.status)}</span>${h.new_program ? `<span style="display:block;font-size:.7rem;font-weight:700;color:${npColor[h.new_program.status]||'inherit'}">${esc(npLabel[h.new_program.status]||'')}</span>` : ''}</span>
           <button class="btn btn-ghost btn-sm" type="button" onclick="event.preventDefault();event.stopPropagation();copyHolderId('${esc(h.id)}')">Copier l'id</button>
         </summary>
         <div style="padding:10px 0 4px 56px">
           ${row('Identifiant (holder_id)', h.id)}
           ${row('Environnement', h.mode === 'live' ? 'Live' : 'Sandbox')}
-          ${row('Statut', h.status)}
+          ${row('Statut', stLabel[h.status] || h.status)}
+          ${row('Nouveau programme de cartes', h.new_program ? ({ accepted:'Accepté : les prochaines cartes de ce titulaire y sont créées', refused:'Refusé : ses cartes restent chez notre banque partenaire actuelle. Renvoyez sa pièce d\'identité (recto et verso) pour réessayer.', pending:'Vérification en cours' }[h.new_program.status]) : '')}
+          ${row('Raison du refus (nouveau programme)', h.new_program && h.new_program.reason)}
           ${row('Email', h.email)}
           ${row('Téléphone', h.phone)}
           ${row('Date de naissance', h.dob)}
