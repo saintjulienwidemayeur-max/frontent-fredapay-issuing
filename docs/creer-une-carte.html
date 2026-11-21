@@ -314,7 +314,7 @@
             <tr><td>400</td><td><code>HOLDER_PROFILE_REQUIRED</code></td><td>Carte individuelle, <code>holder_id</code> absent, et <strong>aucun</strong> titulaire n'existe dans l'environnement de la clé. Créez-en un (<code>POST /cards/holders</code>) avec une clé du même mode, puis envoyez son <code>id</code>.</td></tr>
             <tr><td>409</td><td><code>HOLDER_NOT_ENROLLED</code></td><td>Le titulaire (indiqué par <code>holder_id</code>, ou aucun titulaire prêt sans <code>holder_id</code>) n'a pas le statut <code>enrolled</code>. Le message donne le statut et la raison d'échec ; recréez le titulaire.</td></tr>
             <tr><td>409</td><td><code>HOLDER_MODE_MISMATCH</code></td><td>Le titulaire appartient à l'autre environnement (Sandbox/Live).</td></tr>
-            <tr><td>409</td><td><code>HOLDER_PROFILE_INCOMPLETE</code></td><td>Ancien titulaire sans lien avec le service de cartes et non récupérable : recréez-le.</td></tr>
+            <tr><td>409</td><td><code>HOLDER_PROFILE_INCOMPLETE</code></td><td>Ancien titulaire sans lien avec notre banque partenaire et non récupérable : recréez-le.</td></tr>
             <tr><td>404</td><td><code>NOT_FOUND</code></td><td><code>holder_id</code> inconnu pour votre compte.</td></tr>
             <tr><td>400</td><td><code>CARD_LIMIT_REACHED</code></td><td>Limite de cartes du plan Issuing atteinte (par environnement).</td></tr>
             <tr><td>400</td><td><code>BELOW_MINIMUM_BALANCE</code></td><td>Master Wallet insuffisant.</td></tr>
@@ -322,7 +322,7 @@
             <tr><td>503</td><td><code>FEATURE_NOT_READY</code></td><td>Plafonds et cartes à usage unique pas encore activés sur le serveur ; rien n'est débité. Réessayez plus tard ou créez la carte sans ces options.</td></tr>
             <tr><td>403</td><td><code>ISSUING_LIVE_NOT_ENABLED</code></td><td>Clé live avant l'autorisation Issuing Live.</td></tr>
             <tr><td>401 / 403</td><td><code>MISSING_API_KEY</code>, <code>INVALID_API_KEY</code>, <code>LIVE_NOT_ENABLED</code></td><td>Voir <a href="/docs/erreurs-et-bonnes-pratiques#erreurs">Erreurs</a>.</td></tr>
-            <tr><td>502 / 503</td><td><code>CARD_SERVICE_ERROR</code>, <code>CARD_PROVIDER_AUTH</code>, <code>CARD_LIVE_NOT_CONFIGURED</code></td><td>Service de cartes indisponible ; rien n'est débité (ou remboursé aussitôt). Réessayez plus tard.</td></tr>
+            <tr><td>502 / 503</td><td><code>CARD_SERVICE_ERROR</code>, <code>CARD_PROVIDER_AUTH</code>, <code>CARD_LIVE_NOT_CONFIGURED</code></td><td>Notre banque partenaire est indisponible ; rien n'est débité (ou remboursé aussitôt). Réessayez plus tard.</td></tr>
           </table></div>
           <p style="font-size:.85rem;color:var(--muted)">Spécification complète et publique : <a href="https://api.fredapay.com/openapi.yaml" target="_blank" rel="noopener">https://api.fredapay.com/openapi.yaml</a>.</p>
           <div class="ask-ai">Intégrer avec
