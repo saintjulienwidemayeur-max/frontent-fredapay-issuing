@@ -471,6 +471,11 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 9.5h20"/><circle cx="17" cy="15" r="1.2"/></svg>
         Cartes utilisateurs
       </div>
+      <div class="sb-link" data-section="holders" onclick="showSection('holders')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4a4 4 0 0 1 0 8"/><path d="M18 21a7 7 0 0 0-3-5.7"/></svg>
+        Titulaires
+        <span class="pill pill-amber" id="holdersPill" hidden></span>
+      </div>
     </nav>
 
     <div class="sb-group-label">Compte</div>
@@ -937,6 +942,21 @@
     </section>
 
     <!-- ===== Payment Links ===== -->
+    <section class="section" id="sec-holders">
+      <div class="card">
+        <h3 style="margin:0 0 4px">Titulaires de cartes</h3>
+        <p class="section-desc" style="margin:0 0 12px">Les personnes pour qui vous émettez des cartes. Pour chacune : si elle est <strong>confirmée</strong>, <strong>en cours</strong> ou <strong>refusée</strong>, son résultat dans le nouveau programme de cartes et la <strong>raison du refus</strong>. Complétez ce qui manque et renvoyez la vérification d'ici.</p>
+        <div class="act-tabs" id="hpTabs" style="margin-bottom:12px">
+          <button class="act-tab active" data-f="all" onclick="setHoldersFilter('all')">Tous<span class="n" id="hpN-all">0</span></button>
+          <button class="act-tab" data-f="todo" onclick="setHoldersFilter('todo')">À compléter<span class="n" id="hpN-todo">0</span></button>
+          <button class="act-tab" data-f="refused" onclick="setHoldersFilter('refused')">Refusés<span class="n" id="hpN-refused">0</span></button>
+          <button class="act-tab" data-f="accepted" onclick="setHoldersFilter('accepted')">Acceptés<span class="n" id="hpN-accepted">0</span></button>
+        </div>
+        <div id="holdersPage"></div>
+        <div style="margin-top:12px"><button class="btn btn-sm" onclick="openHolderModal()">Créer un titulaire</button></div>
+      </div>
+    </section>
+
     <section class="section" id="sec-activity">
       <div class="card">
         <div class="table-toolbar" style="align-items:center">
@@ -1701,6 +1721,32 @@
 </div>
 
 <!-- ===== Card detail modal ===== -->
+<div class="modal-overlay" id="holderFixModal" onclick="if(event.target===this) closeHolderFix()">
+  <div class="modal-box" style="max-width:560px;max-height:92vh;overflow-y:auto">
+    <div class="modal-head"><h3 id="hfTitle">Titulaire</h3><button class="modal-close" onclick="closeHolderFix()">&times;</button></div>
+    <div id="hfSub" style="font-size:.84rem;color:var(--muted);margin-bottom:10px"></div>
+    <div id="hfIssues" style="margin-bottom:10px"></div>
+    <div class="field"><label>Type de pièce</label><select id="hfDocType" onchange="hfDocChange()"><option value="national_id">Carte nationale d'identité</option><option value="passport">Passeport (une seule photo : la page avec la photo)</option><option value="driver_license">Permis de conduire</option><option value="voters_card">Carte d'électeur</option></select><div class="hint-text" id="hfDocNote"></div></div>
+    <div class="field-row">
+      <div class="field"><label>Numéro de la pièce (comme sur la pièce)</label><input type="text" id="hfId"></div>
+      <div class="field"><label>Date de naissance</label><input type="date" id="hfDob"></div>
+    </div>
+    <div class="field"><label>Adresse (lettres, chiffres, espaces et , . - seulement)</label><input type="text" id="hfLine1"></div>
+    <div class="field-row">
+      <div class="field"><label>Ville</label><input type="text" id="hfCity"></div>
+      <div class="field"><label>Département / région</label><input type="text" id="hfState"></div>
+    </div>
+    <div class="field"><label>Code postal (facultatif)</label><input type="text" id="hfPostal"></div>
+    <div class="field-row">
+      <div class="field"><label id="hfFrontLabel">Photo RECTO</label><input type="file" id="hfFront" accept="image/png,image/jpeg,image/heic" onchange="hfPick('front')"><div class="hint-text" id="hfFrontInfo"></div></div>
+      <div class="field" id="hfBackBox"><label>Photo VERSO</label><input type="file" id="hfBack" accept="image/png,image/jpeg,image/heic" onchange="hfPick('back')"><div class="hint-text" id="hfBackInfo"></div></div>
+    </div>
+    <div id="hfPreviews" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px"></div>
+    <div class="hint-text">Photographiez la <strong>pièce physique</strong> : entière (4 coins visibles), à plat, nette, bien éclairée, sans reflet et <strong>sans capture d'écran</strong>. Les photos ne sont à ajouter que si le titulaire n'en a pas encore, ou s'il a été refusé à cause de la photo. Elles sont redressées et compressées automatiquement (JPEG, 4 Mo au plus).</div>
+    <div id="hfResult" style="font-size:.9rem;margin:8px 0"></div>
+    <button class="btn" style="width:100%" id="hfSend" onclick="sendHolderFix()">Envoyer la vérification</button>
+  </div>
+</div>
 <div class="modal-overlay" id="holderModal" onclick="if(event.target===this) closeHolderModal()">
   <div class="modal-box" style="max-width:520px;max-height:92vh;overflow-y:auto">
     <div class="modal-head">
@@ -2428,7 +2474,7 @@
     document.getElementById('sec-'+view).classList.add('active');
     document.querySelectorAll('.sb-link').forEach(l => l.classList.toggle('active', l.dataset.section===name));
     const titles = {
-      overview:"Vue d'ensemble", crypto:"Wallet crypto", verification:"Vérification", balances:"Soldes & Wallet", activity:"Activité",
+      overview:"Vue d'ensemble", crypto:"Wallet crypto", verification:"Vérification", balances:"Soldes & Wallet", activity:"Activité", holders:"Titulaires",
       contracts:"Contrats", payments:"Paiements", transactions:"Transactions", performance:"Performance du mois", links:"Liens de paiement", 'cards-business':"Cartes business", 'cards-individual':"Cartes utilisateurs", billing:"Facturation", settings:"Paramètres",
       keys:"Clés API", plugins:"Plugins et SDK", quickstart:"Démarrage rapide",
       testdata:"Données de test", webhooks:"Webhooks"
@@ -2440,13 +2486,14 @@
 
   /* ===== Data is loaded for the section being opened, not all at once at start ===== */
   const SECTION_LOADERS = {
-    overview: () => [loadCryptoCard, refreshBalances, loadGatewaySummary, loadCards, loadIssuingAccessStatus, loadOverviewCardTransactions, loadPayments],
+    overview: () => [loadHoldersPage, loadCryptoCard, refreshBalances, loadGatewaySummary, loadCards, loadIssuingAccessStatus, loadOverviewCardTransactions, loadPayments],
     crypto: () => [loadCryptoPage],
     verification: () => [loadVerificationHistory],
     balances: () => [refreshBalances, loadWalletSummary, loadBankAccount, loadGatewaySummary],
     payments: () => [loadPayments, loadPayouts],
     transactions: () => [loadTransactions, loadTransactionsSummary],
     activity: () => [loadActivity],
+    holders: () => [loadHoldersPage],
     performance: () => [loadTransactionsSummary],
     links: () => [loadPaymentLinks],
     contracts: () => [loadContracts],
@@ -2459,7 +2506,7 @@
   };
   let loadedSections = new Set();
   const loadedAt = {};
-  const SECTION_REFRESHABLE = new Set(['activity','crypto','payments','transactions','balances','cards-business','cards-individual','contracts','overview']); // data lists that change without the user (forms and settings are not reloaded)
+  const SECTION_REFRESHABLE = new Set(['holders','activity','crypto','payments','transactions','balances','cards-business','cards-individual','contracts','overview']); // data lists that change without the user (forms and settings are not reloaded)
   const SECTION_REFRESH_MS = 30000; // reopening a section after this delay reloads its data
   function ensureSection(name, force){
     const loaders = (SECTION_LOADERS[name] || (() => []))();
@@ -3907,6 +3954,110 @@
         </div>
       </details>`;
     }).join('');
+  }
+
+  /* ===== Titulaires : statut, nouveau programme, raison du refus, et de quoi compléter ce qui manque ===== */
+  let holdersPageList = []; let holdersFilter = 'all'; let hfCurrent = null; const hfPhotos = { front: null, back: null };
+  const npText = { accepted:'Accepté', refused:'Refusé', pending:'En vérification' };
+  const npCol = { accepted:'var(--green,#16a34a)', refused:'var(--red,#dc2626)', pending:'var(--gold,#b8860b)' };
+  const holderTodo = h => !!h.new_program && h.new_program.status !== 'accepted' || (!h.new_program && h.status === 'enrolled');
+  async function loadHoldersPage(){
+    try{
+      const d = await apiFetch('/dashboard/cards/holders', { method: 'GET' });
+      holdersPageList = d.holders || [];
+      renderHoldersPage();
+    }catch(e){ const b = document.getElementById('holdersPage'); if(b) b.innerHTML = '<div class="section-desc">Impossible de charger les titulaires : ' + esc(e.message) + '</div>'; }
+  }
+  function setHoldersFilter(f){ holdersFilter = f; document.querySelectorAll('#hpTabs .act-tab').forEach(b => b.classList.toggle('active', b.dataset.f === f)); renderHoldersPage(); }
+  function renderHoldersPage(){
+    const box = document.getElementById('holdersPage'); if(!box) return;
+    const todo = holdersPageList.filter(h => h.new_program && h.new_program.status !== 'accepted');
+    const refused = holdersPageList.filter(h => h.new_program && h.new_program.status === 'refused');
+    const accepted = holdersPageList.filter(h => h.new_program && h.new_program.status === 'accepted');
+    const set = (id, n) => { const e = document.getElementById(id); if(e) e.textContent = String(n); };
+    set('hpN-all', holdersPageList.length); set('hpN-todo', todo.length); set('hpN-refused', refused.length); set('hpN-accepted', accepted.length);
+    const pill = document.getElementById('holdersPill'); if(pill){ pill.hidden = !refused.length; pill.textContent = refused.length + ' refusé' + (refused.length > 1 ? 's' : ''); }
+    const list = holdersFilter === 'todo' ? todo : holdersFilter === 'refused' ? refused : holdersFilter === 'accepted' ? accepted : holdersPageList;
+    if(!list.length){ box.innerHTML = '<div class="section-desc">' + (holdersPageList.length ? 'Aucun titulaire dans ce filtre.' : 'Aucun titulaire pour le moment.') + '</div>'; return; }
+    const stLabel = { enrolled:'Confirmé', pending:'En cours', failed:'Refusé' };
+    const stColor = { enrolled:'var(--green,#16a34a)', pending:'var(--gold,#b8860b)', failed:'var(--red,#dc2626)' };
+    box.innerHTML = list.map(h => {
+      const np = h.new_program;
+      const canFix = np ? np.status !== 'accepted' : h.status === 'enrolled';
+      return `<div style="border:1px solid var(--line,#e5e5ea);border-radius:12px;padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+          <div><div style="font-weight:700">${esc(h.first_name||'')} ${esc(h.last_name||'')}</div><div style="font-size:.78rem;color:var(--muted)">${esc(h.email||'')} · ${h.mode === 'live' ? 'Live' : 'Sandbox'} · <code>${esc(h.id)}</code></div></div>
+          <div style="text-align:right"><span style="font-size:.78rem;font-weight:700;color:${stColor[h.status]||'inherit'}">${esc(stLabel[h.status]||h.status)}</span>${np ? `<span style="display:block;font-size:.74rem;font-weight:700;color:${npCol[np.status]}">Nouveau programme : ${esc(npText[np.status])}</span>` : ''}</div>
+        </div>
+        ${np && np.status === 'refused' ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 10px;font-size:.84rem;margin-top:8px"><strong>Raison du refus :</strong> ${esc(np.reason || 'La photo de la pièce est en cause (capture d\'écran, coins coupés, image floue). Refaites une photo de la pièce physique, entière, nette, sans reflet.')}</div>` : ''}
+        ${h.status === 'failed' && h.failure_reason ? `<div style="font-size:.82rem;color:var(--red,#dc2626);margin-top:6px">${esc(h.failure_reason)}</div>` : ''}
+        ${canFix ? `<div style="margin-top:8px"><button class="btn btn-sm" onclick="openHolderFix('${esc(h.id)}')">${np ? 'Compléter et renvoyer' : 'Envoyer au nouveau programme'}</button></div>` : ''}
+      </div>`;
+    }).join('');
+  }
+  /** The photo as the programme wants it: upright (phone rotation applied), JPEG, at most 2400 px and 4 MB, at least 600x400. */
+  async function hfPrepare(file){
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)); const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+    if(Math.max(w, h) < 600 || Math.min(w, h) < 400) throw new Error(file.name + ' : image trop petite (600 x 400 pixels au minimum). Prenez la photo plus près de la pièce.');
+    const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+    let q = 0.92, url = c.toDataURL('image/jpeg', q);
+    while(url.length * 0.75 > 3.8 * 1024 * 1024 && q > 0.5){ q -= 0.1; url = c.toDataURL('image/jpeg', q); }
+    return { url, w, h, kb: Math.round(url.length * 0.75 / 1024) };
+  }
+  async function hfPick(side){
+    const input = document.getElementById(side === 'front' ? 'hfFront' : 'hfBack'); const info = document.getElementById(side === 'front' ? 'hfFrontInfo' : 'hfBackInfo');
+    hfPhotos[side] = null; info.style.color = ''; info.textContent = '';
+    const f = input.files[0];
+    if(f){
+      try{ const p = await hfPrepare(f); hfPhotos[side] = p; info.textContent = p.w + ' x ' + p.h + ' px · ' + p.kb + ' Ko'; }
+      catch(e){ info.style.color = '#b91c1c'; info.textContent = e.message; input.value = ''; }
+    }
+    document.getElementById('hfPreviews').innerHTML = ['front', 'back'].filter(k => hfPhotos[k]).map(k => '<div><div style="font-size:.74rem;color:var(--muted)">' + (k === 'front' ? 'Recto' : 'Verso') + '</div><img src="' + hfPhotos[k].url + '" style="height:110px;border-radius:8px;border:1px solid var(--line,#e5e5ea)"></div>').join('');
+  }
+  function hfDocChange(){
+    const pass = document.getElementById('hfDocType').value === 'passport';
+    document.getElementById('hfBackBox').style.display = pass ? 'none' : '';
+    document.getElementById('hfFrontLabel').textContent = pass ? 'Photo de la page avec la photo (passeport : une seule photo)' : 'Photo RECTO';
+    document.getElementById('hfDocNote').textContent = pass ? 'Passeport : numéro de 6 à 9 lettres ou chiffres, sans espace ni tiret, comme sur la page photo. Pas de verso.' : '';
+    if(pass){ document.getElementById('hfBack').value = ''; hfPhotos.back = null; document.getElementById('hfBackInfo').textContent = ''; }
+  }
+  async function openHolderFix(id){
+    try{
+      const d = await apiFetch('/dashboard/cards/holders/' + encodeURIComponent(id) + '/verification', { method: 'GET' }); const h = d.holder; hfCurrent = id;
+      document.getElementById('hfTitle').textContent = (h.first_name || '') + ' ' + (h.last_name || '');
+      document.getElementById('hfSub').textContent = (h.email || '') + ' · ' + (h.mode === 'live' ? 'Live' : 'Sandbox') + (d.new_program ? ' · Nouveau programme : ' + npText[d.new_program.status] : '');
+      const iss = d.issues || [];
+      document.getElementById('hfIssues').innerHTML = (d.new_program && d.new_program.status === 'refused' ? '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 10px;font-size:.84rem;margin-bottom:8px"><strong>Raison du refus :</strong> ' + esc(d.new_program.reason || 'photo de la pièce non acceptée') + '</div>' : '') + (iss.length ? '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 10px;font-size:.84rem"><strong>À compléter ou corriger :</strong><ul style="margin:4px 0 0 18px">' + iss.map(i => '<li>' + esc(i.label) + '</li>').join('') + '</ul></div>' : '<div style="color:#16a34a;font-size:.84rem">Rien ne manque : vous pouvez renvoyer la vérification.</div>');
+      const a = h.address || {};
+      document.getElementById('hfDocType').value = d.document_type || 'national_id';
+      document.getElementById('hfId').value = h.identification_number || ''; document.getElementById('hfDob').value = h.dob || '';
+      document.getElementById('hfLine1').value = a.street || a.line1 || ''; document.getElementById('hfCity').value = a.city || ''; document.getElementById('hfState').value = a.state || '';
+      document.getElementById('hfPostal').value = a.postal_code || a.postalCode || '';
+      document.getElementById('hfFront').value = ''; document.getElementById('hfBack').value = ''; hfPhotos.front = null; hfPhotos.back = null;
+      document.getElementById('hfFrontInfo').textContent = ''; document.getElementById('hfBackInfo').textContent = ''; document.getElementById('hfPreviews').innerHTML = ''; document.getElementById('hfResult').textContent = '';
+      hfDocChange();
+      document.getElementById('holderFixModal').classList.add('open');
+    }catch(e){ showToast(e.message, 'error'); }
+  }
+  function closeHolderFix(){ document.getElementById('holderFixModal').classList.remove('open'); hfCurrent = null; }
+  async function sendHolderFix(){
+    if(!hfCurrent) return; const btn = document.getElementById('hfSend'); const out = document.getElementById('hfResult');
+    const pass = document.getElementById('hfDocType').value === 'passport';
+    const front = hfPhotos.front && hfPhotos.front.url, back = pass ? null : (hfPhotos.back && hfPhotos.back.url);
+    if(hfPhotos.back && !hfPhotos.front && !pass){ out.style.color = '#b91c1c'; out.textContent = 'Ajoutez aussi la photo du RECTO : le verso seul ne peut pas être envoyé.'; return; }
+    btn.disabled = true; out.style.color = ''; out.textContent = 'Envoi…';
+    try{
+      const g = id => document.getElementById(id).value.trim();
+      const body = { document_type: g('hfDocType'), id_number: g('hfId'), birth_date: g('hfDob'), address: { street: g('hfLine1'), city: g('hfCity'), state: g('hfState'), postal_code: g('hfPostal') } };
+      if(front) body.documents = { front, back: back || undefined };
+      const r = await apiFetch('/dashboard/cards/holders/' + encodeURIComponent(hfCurrent) + '/verification', { method: 'POST', body });
+      const T = { accepted:'Accepté : ce titulaire est vérifié, ses prochaines cartes sont créées dans le nouveau programme.', pending:'Envoyé : la vérification est en cours, le résultat arrive dans un instant.', refused:'Refusé' };
+      out.style.color = r.status === 'accepted' ? '#16a34a' : (r.status === 'refused' || r.error ? '#b91c1c' : '');
+      out.textContent = (T[r.status] || r.status) + (r.reason ? ' · ' + r.reason : '') + (r.needs_photo ? ' · Une photo de la pièce est requise : ajoutez le recto (et le verso).' : '') + (r.error ? ' · ' + r.error : '') + (r.warning ? ' · Attention : ' + r.warning : '') + (r.documents_sent ? ' · Nouvelles photos envoyées.' : '');
+      loadHoldersPage();
+    }catch(e){ out.style.color = '#b91c1c'; out.textContent = e.message; }
+    btn.disabled = false;
   }
 
   function copyHolderId(id){
