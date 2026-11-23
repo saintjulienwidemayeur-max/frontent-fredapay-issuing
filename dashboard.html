@@ -1727,8 +1727,8 @@
     <div class="field-row">
       <div class="field"><label>Numéro de pièce d'identité</label><input type="text" id="hpIdNumber" placeholder="ID123456"></div>
       <div class="field"><label>Type de pièce</label><select id="hpIdType"><option value="PASSPORT">Passeport</option><option value="NIN">NIN</option><option value="DRIVERS_LICENSE">Permis de conduire</option><option value="VOTERS_CARD">Carte d'électeur</option></select></div>
-      <div class="field"><label>Image de la pièce d'identité</label><input type="file" id="hpIdFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event)"><input type="hidden" id="hpIdImage"><div class="hint-text" id="hpIdImageHint">Photo nette de la pièce (PNG, JPEG ou WebP).</div></div>
-      <div class="field"><label>Verso de la pièce d'identité (obligatoire, sauf passeport)</label><input type="file" id="hpIdBackFile" accept="image/png,image/jpeg,image/webp" onchange="onHolderIdImageChosen(event, 'back')"><input type="hidden" id="hpIdBackImage"><div class="hint-text" id="hpIdBackImageHint">Obligatoire pour une carte d'identité, un permis ou une carte électorale. Pas nécessaire pour un passeport.</div></div>
+      <div class="field"><label>Image de la pièce d'identité</label><input type="file" id="hpIdFile" accept="image/png,image/jpeg" onchange="onHolderIdImageChosen(event)"><input type="hidden" id="hpIdImage"><div class="hint-text" id="hpIdImageHint">Photographiez la pièce physique : entière (4 coins visibles), à plat, nette, bien éclairée, sans reflet et sans capture d'écran. JPEG ou PNG, 4 Mo au plus.</div></div>
+      <div class="field"><label>Verso de la pièce d'identité (obligatoire, sauf passeport)</label><input type="file" id="hpIdBackFile" accept="image/png,image/jpeg" onchange="onHolderIdImageChosen(event, 'back')"><input type="hidden" id="hpIdBackImage"><div class="hint-text" id="hpIdBackImageHint">Obligatoire pour une carte d'identité, un permis ou une carte électorale. Pas nécessaire pour un passeport.</div></div>
       <div class="field"><label>Pays (2 lettres)</label><select id="hpCountry"><option value="">Sélectionner…</option></select></div>
     </div>
     <div class="field-row">
@@ -3894,7 +3894,7 @@
           ${row('Identifiant (holder_id)', h.id)}
           ${row('Environnement', h.mode === 'live' ? 'Live' : 'Sandbox')}
           ${row('Statut', stLabel[h.status] || h.status)}
-          ${row('Nouveau programme de cartes', h.new_program ? ({ accepted:'Accepté : les prochaines cartes de ce titulaire y sont créées', refused:'Refusé : ses cartes restent chez notre banque partenaire actuelle. Renvoyez sa pièce d\'identité (recto et verso) pour réessayer.', pending:'Vérification en cours' }[h.new_program.status]) : '')}
+          ${row('Nouveau programme de cartes', h.new_program ? ({ accepted:'Accepté : les prochaines cartes de ce titulaire y sont créées', refused:'Refusé : ses cartes restent chez notre banque partenaire actuelle. Le plus souvent, la photo est en cause (capture d\'écran, coins coupés, image floue). Refaites la photo de la pièce physique, entière, nette, sans reflet, recto et verso, puis renvoyez-la.', pending:'Vérification en cours' }[h.new_program.status]) : '')}
           ${row('Raison du refus (nouveau programme)', h.new_program && h.new_program.reason)}
           ${row('Email', h.email)}
           ${row('Téléphone', h.phone)}
@@ -3931,7 +3931,7 @@
     document.getElementById('hpIdFile').value = '';
     document.getElementById('hpIdBackFile').value = '';
     document.getElementById('hpIdBackImageHint').textContent = "Obligatoire pour une carte d'identité, un permis ou une carte électorale. Pas nécessaire pour un passeport.";
-    document.getElementById('hpIdImageHint').textContent = 'Photo nette de la pièce (PNG, JPEG ou WebP).';
+    document.getElementById('hpIdImageHint').textContent = "Photographiez la pièce physique : entière (4 coins visibles), à plat, nette, bien éclairée, sans reflet et sans capture d'écran. JPEG ou PNG, 4 Mo au plus.";
     // no default country or dial code: the holder can live anywhere, and the country picks the dial code
     holderPhotoData = null;
     document.getElementById('hpPhotoPreview').innerHTML = '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
