@@ -304,6 +304,8 @@
       <ul>
         <li>Aucun nouvel endpoint : <code class="inline">POST /v1/cards</code> avec <code class="inline">kind: "individual"</code> émet la carte dans le programme si votre compte en fait partie.</li>
         <li>Envoyez toujours le <strong>verso</strong> de la pièce (<code class="inline">identity.imageBackUrl</code>) sauf pour un passeport.</li>
+        <li>Demandez à vos utilisateurs de <strong>photographier la pièce physique</strong>, entière (quatre coins visibles), à plat, nette, bien éclairée, sans reflet et <strong>sans capture d'écran</strong> (JPEG ou PNG, 4 Mo au plus) : c'est la première cause de refus. Détails : <a href="/docs/titulaires-de-cartes#photo-piece">photo de la pièce d'identité</a>.</li>
+        <li>Prénom, nom, date de naissance (<code class="inline">AAAA-MM-JJ</code>, 18 ans minimum) et numéro <strong>exactement comme sur la pièce</strong>, qui doit être en cours de validité.</li>
         <li>Fixez le plafond <strong>à la création</strong> (<code class="inline">spending_limit</code>) ; pour en changer, créez une nouvelle carte.</li>
         <li>Préchargez au moins 2 $ et prévoyez que le solde de départ de la carte soit le montant moins les frais de l'émetteur (lisez <code class="inline">balance</code> dans la réponse ou dans <code class="inline">card.created</code>).</li>
       </ul>
